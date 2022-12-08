@@ -136,7 +136,9 @@ public class KickCommand implements CommandExecutor {
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
             String reason = getReason(args, 3);
-            this.banManager.preformBan(player, BanType.TIMED_NOT_IP, reason, ((Player)sender), time, true);
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                this.banManager.preformBan(player, BanType.TIMED_NOT_IP, reason, ((Player)sender), time, true);
+            });
         }
 
         if(args[0].equalsIgnoreCase("tempbanip")) {
@@ -144,12 +146,17 @@ public class KickCommand implements CommandExecutor {
             if(player == null) {
                 long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
                 String reason = getReason(args, 3);
-                this.banManager.preformBan(args[1], BanType.TIMED_IP, reason, ((Player)sender), time, true);
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    this.banManager.preformBan(args[1], BanType.TIMED_IP, reason, ((Player)sender), time, true);
+                });
                 return true;
             }
             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
             String reason = getReason(args, 3);
-            this.banManager.preformBan(player, BanType.TIMED_IP, reason, ((Player)sender), time, true);
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                this.banManager.preformBan(player, BanType.TIMED_IP, reason, ((Player)sender), time, true);
+            });
+            return true;
         }
 
         if(args[0].equalsIgnoreCase("async")) {
@@ -158,6 +165,12 @@ public class KickCommand implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                 this.banManager.preformBan("azaza", BanType.PERMANENT_NOT_IP, "AZAZA", sender, 1000, true);
             });
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("getip")) {
+            Player player = (Player) sender;
+            sender.sendMessage(String.valueOf(player.getAddress().getAddress().getHostAddress()));
             return true;
         }
 

@@ -1,24 +1,25 @@
 package by.alis.functionalbans.spigot.Managers.BansManagers;
 
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import org.bukkit.Bukkit;
 
-import static by.alis.functionalbans.databases.SQLite.StaticSQL.getSQLManager;
+import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 
 public class BanContainerManager {
 
     public void loadBansIntoRAM() {
         getBannedPlayersContainer().addToBansContainer(
-                getSQLManager().getBanedIds(),
-                getSQLManager().getBanedIps(),
-                getSQLManager().getBanedNames(),
-                getSQLManager().getBanInitiators(),
-                getSQLManager().getBanedReasons(),
-                getSQLManager().getBanedTypes(),
-                getSQLManager().getBansDates(),
-                getSQLManager().getBansTimes(),
-                getSQLManager().getBanedUUIDs(),
-                getSQLManager().getUnbanTimes()
+                getSQLiteManager().getBannedIds(),
+                getSQLiteManager().getBannedIps(),
+                getSQLiteManager().getBannedPlayersNames(),
+                getSQLiteManager().getBanInitiators(),
+                getSQLiteManager().getBanReasons(),
+                getSQLiteManager().getBanTypes(),
+                getSQLiteManager().getBansDates(),
+                getSQLiteManager().getBansTimes(),
+                getSQLiteManager().getBannedUUIDs(),
+                getSQLiteManager().getUnbanTimes()
         );
     }
 
@@ -73,7 +74,9 @@ public class BanContainerManager {
             return;
         }
         if(expression.equalsIgnoreCase("-id")) {
-            if(getBannedPlayersContainer().getIpContainer().contains(param)) {
+            Bukkit.getConsoleSender().sendMessage("LOL2");
+            if(getBannedPlayersContainer().getIdsContainer().contains(param)) {
+                Bukkit.getConsoleSender().sendMessage("LOL1");
                 int indexOf = getBannedPlayersContainer().getIdsContainer().indexOf(param);
                 getBannedPlayersContainer().getIdsContainer().remove(indexOf);
                 getBannedPlayersContainer().getIpContainer().remove(indexOf);
@@ -85,8 +88,10 @@ public class BanContainerManager {
                 getBannedPlayersContainer().getRealBanTimeContainer().remove(indexOf);
                 getBannedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getBannedPlayersContainer().getBanTimeContainer().remove(indexOf);
+                Bukkit.getConsoleSender().sendMessage("LOL3");
                 return;
             }
+            Bukkit.getConsoleSender().sendMessage("LOL4");
             return;
         }
         if(expression.equalsIgnoreCase("-u")) {

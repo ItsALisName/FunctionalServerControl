@@ -48,6 +48,17 @@ plugin-settings:
   allow-use-ram: true
 
   ##############################################################################
+  #     Hide some non-mandatory information in the console on startup?         #
+  ##############################################################################
+  less-information: true
+
+  ##############################################################################
+  #     If enabled, players will not be able to interact with themselves       #
+  #                    in any way within this plugin.                          #
+  ##############################################################################
+  prohibit-interaction-to-yourself: true
+
+  ##############################################################################
   #    Show the description of the command when it is entered incorrectly?     #
   ##############################################################################
   show-description: true

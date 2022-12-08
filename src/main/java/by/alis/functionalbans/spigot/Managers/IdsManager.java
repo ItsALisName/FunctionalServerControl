@@ -9,12 +9,12 @@ public class IdsManager {
     }
 
     private boolean isIdFree(double id) {
-        return !getBannedPlayersContainer().getIdsContainer().contains((int)Math.round(id));
+        return !getBannedPlayersContainer().getIdsContainer().contains(String.valueOf((int)Math.round(id)));
     }
 
     public String getId() {
         String sId = "ID_ERROR";
-        for(int a = 0; a < 25; a++) {
+        for(int a = 0; a < 50; a++) {
             double id = generateId();
             if(isIdFree(id)) {
                 sId = String.valueOf((int)Math.round(id));

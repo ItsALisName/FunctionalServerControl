@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
-public class AsyncBanPlayerPreprocessEvent extends Event implements Cancellable {
+public class AsyncBanPreprocessEvent extends Event implements Cancellable {
 
     public static final HandlerList handlers = new HandlerList();
 
@@ -39,7 +39,7 @@ public class AsyncBanPlayerPreprocessEvent extends Event implements Cancellable 
     private String nullPlayer;
 
 
-    public AsyncBanPlayerPreprocessEvent(String banId, OfflinePlayer player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, boolean isApiEnabled, String translatedTime) {
+    public AsyncBanPreprocessEvent(String banId, OfflinePlayer player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, boolean isApiEnabled, String translatedTime) {
 
         super(true);
         this.banId = banId;
@@ -55,7 +55,7 @@ public class AsyncBanPlayerPreprocessEvent extends Event implements Cancellable 
 
     }
 
-    public AsyncBanPlayerPreprocessEvent(String banId, String player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, boolean isApiEnabled, String translatedTime) {
+    public AsyncBanPreprocessEvent(String banId, String player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, boolean isApiEnabled, String translatedTime) {
 
         super(true);
         this.banId = banId;

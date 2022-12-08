@@ -70,7 +70,7 @@ public class BanCommand implements CommandExecutor {
                                             this.banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                         });
                                     }
-                                } else {
+                                } else if(target.hasPermission("functionalbans.ban.bypass")) {
                                     if(sender.hasPermission("functionalbans.bypass-break")) {
                                         a = a + 1;
                                         this.cache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
@@ -112,6 +112,20 @@ public class BanCommand implements CommandExecutor {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                                             this.banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                         });
+                                    }
+                                } else if(target.hasPermission("functionalbans.ban.bypass")) {
+                                    if(sender.hasPermission("functionalbans.bypass-break")) {
+                                        a = a + 1;
+                                        this.cache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
+                                        if(!sender.hasPermission("functionalbans.time-bypass")) {
+                                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                                this.banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player)sender), true);
+                                            });
+                                        } else {
+                                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                                this.banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
+                                            });
+                                        }
                                     }
                                 }
                             }
@@ -164,6 +178,20 @@ public class BanCommand implements CommandExecutor {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                                             this.banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                         });
+                                    }
+                                } else if(target.hasPermission("functionalbans.ban.bypass")) {
+                                    if(sender.hasPermission("functionalbans.bypass-break")) {
+                                        a = a + 1;
+                                        this.cache.setUnsafeBannedPlayers(((OfflinePlayer)target), sender);
+                                        if(!sender.hasPermission("functionalbans.time-bypass")) {
+                                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                                this.banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player)sender), true);
+                                            });
+                                        } else {
+                                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                                this.banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
+                                            });
+                                        }
                                     }
                                 }
                             }
@@ -414,6 +442,83 @@ public class BanCommand implements CommandExecutor {
                             return true;
                         }
 
+                    }
+
+                    if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1]) && args.length > 2) {
+                        long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
+                        if(!sender.hasPermission("functionalbans.time-bypass")) {
+                            if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
+                                return true;
+                            }
+                        }
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                        if(player == null) {
+                            if(!sender.hasPermission("functionalbans.ban.offline")) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
+                                return true;
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                this.banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
+                            });
+                            return true;
+                        } else {
+                            if(!player.isOnline()) {
+                                if(!sender.hasPermission("functionalbans.ban.offline")) {
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
+                                    return true;
+                                }
+                            }
+                            if(player.isOnline()) {
+                                if(player.getPlayer().hasPermission("functionalbans.ban.bypass") && !sender.hasPermission("functionalbans.bypass-break")) {
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.target-bypass")));
+                                    return true;
+                                }
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                this.banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
+                            });
+                            return true;
+                        }
+                    }
+
+                    if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2]) && args[0].equalsIgnoreCase("-s") && args.length > 3) {
+                        long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
+                        if(!sender.hasPermission("functionalbans.time-bypass")) {
+                            if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
+                                return true;
+                            }
+                        }
+
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                        if(player == null) {
+                            if(!sender.hasPermission("functionalbans.ban.offline")) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
+                                return true;
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                this.banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
+                            });
+                            return true;
+                        } else {
+                            if(!player.isOnline()) {
+                                if(!sender.hasPermission("functionalbans.ban.offline")) {
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
+                                    return true;
+                                }
+                            }
+                            if(player.isOnline()) {
+                                if(player.getPlayer().hasPermission("functionalbans.ban.bypass") && !sender.hasPermission("functionalbans.bypass-break")) {
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.target-bypass")));
+                                    return true;
+                                }
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                                this.banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
+                            });
+                            return true;
+                        }
                     }
 
                     // A Bans with time

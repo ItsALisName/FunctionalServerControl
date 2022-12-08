@@ -115,16 +115,18 @@ public class GlobalVariables {
             this.VAR_UNKNOWN_TIME = this.accessor.getGeneralConfig().getString("global-variables.unknown-time");
             this.VAR_DEFAULT_REASON = this.accessor.getGeneralConfig().getString("plugin-settings.reason-settings.default-reason");
             this.VAR_ALL = this.accessor.getGeneralConfig().getString("global-variables.all");
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOADED));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                    break;
+            if(getConfigSettings().isLessInformation()) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOADED));
+                        break;
+                    case "en_US":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
+                        break;
+                    default:
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
+                        break;
+                }
             }
         } catch (ExceptionInInitializerError ignored) {
             switch (getConfigSettings().getConsoleLanguageMode()) {

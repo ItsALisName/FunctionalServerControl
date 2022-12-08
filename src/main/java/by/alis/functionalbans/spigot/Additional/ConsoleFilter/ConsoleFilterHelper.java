@@ -49,16 +49,18 @@ public class ConsoleFilterHelper {
         this.functionalBansCommands.clear();
         try {
             Collections.addAll(this.functionalBansCommands, commands);
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                    break;
+            if(getConfigSettings().isLessInformation()) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
+                        break;
+                    case "en_US":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
+                        break;
+                    default:
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
+                        break;
+                }
             }
         } catch (Exception ignored) {
             switch (getConfigSettings().getConsoleLanguageMode()) {

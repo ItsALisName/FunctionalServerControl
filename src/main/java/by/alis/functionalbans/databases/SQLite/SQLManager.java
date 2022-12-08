@@ -6,7 +6,6 @@ import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRus
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -89,10 +88,10 @@ public class SQLManager extends SQLCore {
                         Class.forName("org.sqlite.JDBC");
                         sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
                         Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_RECONNECTION_SUCCESS));
-                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255) PRIMARY KEY, uuid varchar(255), ip varchar(255));";
-                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
+                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
                         sqlStatement = sqlConnection.createStatement();
                         sqlStatement.executeUpdate(queryTableOne);
                         sqlStatement.executeUpdate(queryTableTwo);
@@ -131,10 +130,10 @@ public class SQLManager extends SQLCore {
                         Class.forName("org.sqlite.JDBC");
                         sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
                         Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
-                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255) PRIMARY KEY, uuid varchar(255), ip varchar(255));";
-                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
+                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
                         sqlStatement = sqlConnection.createStatement();
                         sqlStatement.executeUpdate(queryTableOne);
                         sqlStatement.executeUpdate(queryTableTwo);
@@ -172,10 +171,10 @@ public class SQLManager extends SQLCore {
                     Class.forName("org.sqlite.JDBC");
                     sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
                     Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
-                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255) PRIMARY KEY, uuid varchar(255), ip varchar(255));";
-                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
+                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
                     sqlStatement = sqlConnection.createStatement();
                     sqlStatement.executeUpdate(queryTableOne);
                     sqlStatement.executeUpdate(queryTableTwo);
@@ -204,10 +203,10 @@ public class SQLManager extends SQLCore {
     @Override
     public void setupTables() {
         sqlConnection = getSQLConnection();
-        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255) PRIMARY KEY, uuid varchar(255), ip varchar(255));";
-        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255) PRIMARY KEY, ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
+        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
+        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
         try {
             sqlStatement = sqlConnection.createStatement();
             sqlStatement.executeUpdate(queryTableOne);
@@ -405,16 +404,17 @@ public class SQLManager extends SQLCore {
             }
             sqlConnection.close();
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
-                return;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -449,16 +449,17 @@ public class SQLManager extends SQLCore {
             }
             sqlConnection.close();
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
-                return;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -487,17 +488,18 @@ public class SQLManager extends SQLCore {
             String insert = "INSERT INTO bannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unbanTime + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
-        } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
-                return;
+        } catch (SQLException ex) {
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
         } finally {
             try {
                 if(sqlConnection != null) {
@@ -524,16 +526,17 @@ public class SQLManager extends SQLCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
-                return;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
         } finally {
             try {
                 if(sqlConnection != null) {
@@ -572,17 +575,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return unbanTimes;
@@ -606,17 +609,17 @@ public class SQLManager extends SQLCore {
             }
             return ips;
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
     }
@@ -638,17 +641,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return uuids;
@@ -671,17 +674,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banDates;
@@ -704,17 +707,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banTimes;
@@ -737,17 +740,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return ids;
@@ -770,17 +773,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return names;
@@ -803,17 +806,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return iNames;
@@ -836,17 +839,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return reasons;
@@ -869,17 +872,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banTypes;
@@ -905,17 +908,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return ids;
@@ -938,17 +941,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return ids;
@@ -971,17 +974,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return names;
@@ -1004,17 +1007,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return initiators;
@@ -1037,17 +1040,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return reasons;
@@ -1070,17 +1073,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banTypes;
@@ -1103,17 +1106,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banDates;
@@ -1136,17 +1139,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return banTimes;
@@ -1169,17 +1172,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return uuids;
@@ -1202,17 +1205,17 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
-                return null;
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR));
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
+                }
             }
-
-            if(getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
-                return null;
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR));
             return null;
         }
         return unbanTimes;
@@ -1221,21 +1224,21 @@ public class SQLManager extends SQLCore {
 
     //Combining nullBannedPlayers and bannedPlayers list
 
-    public List<String> getBanedIds() {
+    public List<String> getBannedIds() {
         List<String> ids = new ArrayList<>();
         ids.addAll(idsFromBannedPlayersTable());
         ids.addAll(idsFromNullBannedPlayersTable());
         return ids;
     }
 
-    public List<String> getBanedIps() {
+    public List<String> getBannedIps() {
         List<String> ips = new ArrayList<>();
         ips.addAll(ipsFromBannedPlayersTable());
         ips.addAll(ipsFromNullBannedPlayersTable());
         return ips;
     }
 
-    public List<String> getBanedNames() {
+    public List<String> getBannedPlayersNames() {
         List<String> banedNames = new ArrayList<>();
         banedNames.addAll(namesFromBannedPlayersTable());
         banedNames.addAll(namesFromNullBannedPlayersTable());
@@ -1249,14 +1252,14 @@ public class SQLManager extends SQLCore {
         return banInitiators;
     }
 
-    public List<String> getBanedReasons() {
+    public List<String> getBanReasons() {
         List<String> reasons = new ArrayList<>();
         reasons.addAll(reasonsFromBannedPlayersTable());
         reasons.addAll(reasonsFromNullBannedPlayersTable());
         return reasons;
     }
 
-    public List<BanType> getBanedTypes() {
+    public List<BanType> getBanTypes() {
         List<BanType> banTypes = new ArrayList<>();
         banTypes.addAll(banTypesFromBannedPlayersTable());
         banTypes.addAll(banTypesFromNullBannedPlayersTable());
@@ -1277,7 +1280,7 @@ public class SQLManager extends SQLCore {
         return banTimes;
     }
 
-    public List<String> getBanedUUIDs() {
+    public List<String> getBannedUUIDs() {
         List<String> uuids = new ArrayList<>();
         uuids.addAll(uuidsFromBannedPlayersTable());
         uuids.addAll(uuidFromNullBannedPlayersTable());
