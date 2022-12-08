@@ -1,0 +1,16 @@
+name: FunctionalBans
+version: '${project.version}'
+main: by.alis.functionalbans.spigot.FunctionalBansSpigot
+api-version: 1.13
+authors: [ ALis ]
+description: Система блокировок аккаунтов
+website: https://vk.com/alphatwo
+softdepend: [Vault, LuckPerms, ProtocolLib]
+commands:
+  kick:
+    description: The main command for kicking the specified players
+  functionalbans:
+    aliases: [fb, fbans, funcbans]
+    description: The main command of the plugin
+  ban:
+    description: The main command for blocking the specified players

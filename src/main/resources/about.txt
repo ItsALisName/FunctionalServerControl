@@ -1,0 +1,34 @@
+########################################################################################################################
+######                                                                                                            ######
+####                                                                                                                ####
+##                                               About FunctionalBans                                                 ##
+####                                                                                                                ####
+######                                                                                                            ######
+########################################################################################################################
+######                                                                                                            ######
+####                                                                                                                ####
+##                                                     Commands                                                       ##
+####                                                                                                                ####
+######                                                                                                            ######
+########################################################################################################################
+#######
+####
+##                                                   Permissions
+##
+##  -> functionalbans.ban - access to use "/ban" command
+##  -> functionalbans.use.re-ban - allows overwriting the ban of an already banned player
+##  -> functionalbans.time-bypass - allows punish a player for a longer time than specified in the
+##  configuration file
+##  -> functionalbans.ban-ip -
+##  -> functionalbans.ban.offline -
+##  -> functionalbans.use.unsafe-flags -
+##  -> functionalbans.ban.bypass -
+##  -> functionalbans.purge -
+##  -> functionalbans.use.silently -
+##  -> functionalbans.use.no-reason -
+##  -> functionalbans.bypass-break -
+##  -> functionalbans.temp-ban -
+##  -> functionalbans.temp-ban.offline -
+##  -> functionalbans.temp-ban.re-ban -
+##  -> functionalbans.help -
+##  -> functionalbans.reload -

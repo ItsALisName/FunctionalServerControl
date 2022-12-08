@@ -1,0 +1,7 @@
+{
+  "id": "functionalbans",
+  "name": "FunctionalBans",
+  "version": "0.0.1-SNAPSHOT",
+  "authors": "ALis",
+  "main": "by.alis.functionalbans.velocity.FunctionalBansVelocity"
+}
