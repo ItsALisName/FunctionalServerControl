@@ -1,6 +1,6 @@
 package by.alis.functionalbans.spigot.Managers.BansManagers;
 
-import by.alis.functionalbans.API.Spigot.Events.BanPlayerPreProccessEvent;
+import by.alis.functionalbans.API.Spigot.Events.AsyncBanPlayerPreprocessEvent;
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
 import by.alis.functionalbans.spigot.Additional.WorldDate.WorldTimeAndDateClass;
@@ -92,7 +92,7 @@ public class BanManager {
         }
     }
 
-    public void banPlayer(OfflinePlayer player, BanType type, String reason, CommandSender initiator, long time, boolean announceBan) {
+    public void preformBan(OfflinePlayer player, BanType type, String reason, CommandSender initiator, long time, boolean announceBan) {
 
         String realTime = WorldTimeAndDateClass.getTime();
         String realDate = WorldTimeAndDateClass.getDate();
@@ -107,7 +107,7 @@ public class BanManager {
             convertedTime = this.timeManager.convertFromMillis(time - System.currentTimeMillis());
         }
         String id = idsManager.getId();
-        BanPlayerPreProccessEvent banPlayerEvent = new BanPlayerPreProccessEvent(id, player, initiator, type, time, reason, realTime, realDate, getConfigSettings().isApiEnabled(), convertedTime);
+        AsyncBanPlayerPreprocessEvent banPlayerEvent = new AsyncBanPlayerPreprocessEvent(id, player, initiator, type, time, reason, realTime, realDate, getConfigSettings().isApiEnabled(), convertedTime);
         if(getConfigSettings().isApiEnabled()) {
             if(!getConfigSettings().isApiProtectedByPassword()) {
                 Bukkit.getPluginManager().callEvent(banPlayerEvent);
@@ -438,7 +438,7 @@ public class BanManager {
 
     }
 
-    public void banPlayer(String player, BanType type, String reason, CommandSender initiator, long time, boolean announceBan) {
+    public void preformBan(String player, BanType type, String reason, CommandSender initiator, long time, boolean announceBan) {
 
         String realTime = WorldTimeAndDateClass.getTime();
         String realDate = WorldTimeAndDateClass.getDate();
@@ -452,7 +452,7 @@ public class BanManager {
         if(reason == null || reason.equalsIgnoreCase("")) {
             reason = getGlobalVariables().getDefaultReason();
         }
-        BanPlayerPreProccessEvent banPlayerEvent = new BanPlayerPreProccessEvent(id, player, initiator, type, time, reason, realTime, realDate, getConfigSettings().isApiEnabled(), convertedTime);
+        AsyncBanPlayerPreprocessEvent banPlayerEvent = new AsyncBanPlayerPreprocessEvent(id, player, initiator, type, time, reason, realTime, realDate, getConfigSettings().isApiEnabled(), convertedTime);
         reason = banPlayerEvent.getReason().replace("'", "\"");
         time = banPlayerEvent.getBanTime();
         if(type == BanType.PERMANENT_IP || type == BanType.PERMANENT_NOT_IP) time = -1;

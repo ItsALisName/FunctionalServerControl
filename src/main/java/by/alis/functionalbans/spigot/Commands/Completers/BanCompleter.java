@@ -50,6 +50,15 @@ public class BanCompleter implements TabCompleter {
             return a;
         }
 
+        if(args[0].equalsIgnoreCase("-s") && args.length == 3) {
+            List<String> a = new ArrayList<>();
+            if(sender.hasPermission("functionalbans.ban") && sender.hasPermission("functionalbans.use.silently")) {
+                a.add("1min"); a.add("1day"); a.add("1mon");
+                return a;
+            }
+            return null;
+        }
+
         return null;
     }
 }

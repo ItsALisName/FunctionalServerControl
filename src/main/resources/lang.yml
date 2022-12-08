@@ -78,7 +78,7 @@ commands:
 
   ban:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует указанного игрока по указанной причине"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f {флаг} <игрок> {причина}"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f {флаг} <игрок> {время} {причина}"
     example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 Нарушение правил сервера 1.2"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал аккаунт игрока &c%2$f &7по причине: &c%3$f"
     target-bypass: "&c[FunctionalBans] &7Вы не можете заблокировать данного игрока"

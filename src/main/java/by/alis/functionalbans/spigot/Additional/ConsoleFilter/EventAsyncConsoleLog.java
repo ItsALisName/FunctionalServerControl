@@ -24,18 +24,18 @@ public class EventAsyncConsoleLog implements Filter {
         AsyncConsoleLogOutEvent asyncConsoleLogOutEvent = new AsyncConsoleLogOutEvent(message, getConfigSettings().isApiEnabled());
         if(!getConfigSettings().isApiEnabled()) return Result.NEUTRAL;
         if(!getConfigSettings().isApiProtectedByPassword()) {
-            Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                if(getServer().getPluginManager().isPluginEnabled(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class))){
+            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class))) {
+                Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
                     Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
-                }
-            });
+                });
+            }
         } else {
             if(asyncConsoleLogOutEvent.getApiPassword() != null && asyncConsoleLogOutEvent.getApiPassword().equalsIgnoreCase(accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                    if(getServer().getPluginManager().isPluginEnabled(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class))){
+                if (Bukkit.getPluginManager().isPluginEnabled(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class))) {
+                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
                         Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
-                    }
-                });
+                    });
+                }
             }
         }
         if(asyncConsoleLogOutEvent.isCancelled()) return Result.DENY;

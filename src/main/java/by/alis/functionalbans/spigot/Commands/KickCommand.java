@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Additional.Placeholders.TimeLangGlobal;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.getReason;
 
 public class KickCommand implements CommandExecutor {
@@ -113,11 +113,11 @@ public class KickCommand implements CommandExecutor {
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
             if(player == null) {
                 String reason = getReason(args, 3);
-                this.banManager.banPlayer(args[1], BanType.PERMANENT_NOT_IP, reason, ((Player)sender), -1, true);
+                this.banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, reason, ((Player)sender), -1, true);
                 return true;
             }
             String reason = getReason(args, 3);
-            this.banManager.banPlayer(player, BanType.PERMANENT_NOT_IP, reason, ((Player)sender), -1, true);
+            this.banManager.preformBan(player, BanType.PERMANENT_NOT_IP, reason, ((Player)sender), -1, true);
         }
 
         if(args[0].equalsIgnoreCase("banip")) {
@@ -125,18 +125,18 @@ public class KickCommand implements CommandExecutor {
             if(player == null) {
                 String reason = getReason(args, 3);
                 String p = args[1];
-                this.banManager.banPlayer(p, BanType.PERMANENT_IP, reason, ((Player)sender), -1, true);
+                this.banManager.preformBan(p, BanType.PERMANENT_IP, reason, ((Player)sender), -1, true);
                 return true;
             }
             String reason = getReason(args, 3);
-            this.banManager.banPlayer(player, BanType.PERMANENT_IP, reason, ((Player)sender), -1, true);
+            this.banManager.preformBan(player, BanType.PERMANENT_IP, reason, ((Player)sender), -1, true);
         }
 
         if(args[0].equalsIgnoreCase("tempban")) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
             String reason = getReason(args, 3);
-            this.banManager.banPlayer(player, BanType.TIMED_NOT_IP, reason, ((Player)sender), time, true);
+            this.banManager.preformBan(player, BanType.TIMED_NOT_IP, reason, ((Player)sender), time, true);
         }
 
         if(args[0].equalsIgnoreCase("tempbanip")) {
@@ -144,12 +144,21 @@ public class KickCommand implements CommandExecutor {
             if(player == null) {
                 long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
                 String reason = getReason(args, 3);
-                this.banManager.banPlayer(args[1], BanType.TIMED_IP, reason, ((Player)sender), time, true);
+                this.banManager.preformBan(args[1], BanType.TIMED_IP, reason, ((Player)sender), time, true);
                 return true;
             }
             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
             String reason = getReason(args, 3);
-            this.banManager.banPlayer(player, BanType.TIMED_IP, reason, ((Player)sender), time, true);
+            this.banManager.preformBan(player, BanType.TIMED_IP, reason, ((Player)sender), time, true);
+        }
+
+        if(args[0].equalsIgnoreCase("async")) {
+            TemporaryCache cache = new TemporaryCache();
+            sender.sendMessage(String.valueOf(cache.getUnsafeBannedPlayers().size()));
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                this.banManager.preformBan("azaza", BanType.PERMANENT_NOT_IP, "AZAZA", sender, 1000, true);
+            });
+            return true;
         }
 
         /*

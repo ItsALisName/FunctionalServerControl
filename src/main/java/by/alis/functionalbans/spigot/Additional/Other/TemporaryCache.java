@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class TemporaryCache {
 
-    private final Map<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
-    private final Map<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
+    private HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
+    private HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
 
 
-    public Map<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
+    public HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
         return unsafeMutedPlayers;
     }
 
@@ -20,7 +20,7 @@ public class TemporaryCache {
         this.unsafeMutedPlayers.put(whoBanned, initiator);
     }
 
-    public Map<OfflinePlayer, CommandSender> getUnsafeBannedPlayers() {
+    public HashMap<OfflinePlayer, CommandSender> getUnsafeBannedPlayers() {
         return unsafeBannedPlayers;
     }
     public void setUnsafeBannedPlayers(OfflinePlayer whoMuted, CommandSender initiator) {
