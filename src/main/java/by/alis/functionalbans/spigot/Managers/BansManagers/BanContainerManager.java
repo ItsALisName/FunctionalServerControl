@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Managers.BansManagers;
 
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
@@ -9,18 +10,20 @@ import static by.alis.functionalbans.spigot.Additional.Containers.StaticContaine
 public class BanContainerManager {
 
     public void loadBansIntoRAM() {
-        getBannedPlayersContainer().addToBansContainer(
-                getSQLiteManager().getBannedIds(),
-                getSQLiteManager().getBannedIps(),
-                getSQLiteManager().getBannedPlayersNames(),
-                getSQLiteManager().getBanInitiators(),
-                getSQLiteManager().getBanReasons(),
-                getSQLiteManager().getBanTypes(),
-                getSQLiteManager().getBansDates(),
-                getSQLiteManager().getBansTimes(),
-                getSQLiteManager().getBannedUUIDs(),
-                getSQLiteManager().getUnbanTimes()
-        );
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+            getBannedPlayersContainer().addToBansContainer(
+                    getSQLiteManager().getBannedIds(),
+                    getSQLiteManager().getBannedIps(),
+                    getSQLiteManager().getBannedPlayersNames(),
+                    getSQLiteManager().getBanInitiators(),
+                    getSQLiteManager().getBanReasons(),
+                    getSQLiteManager().getBanTypes(),
+                    getSQLiteManager().getBansDates(),
+                    getSQLiteManager().getBansTimes(),
+                    getSQLiteManager().getBannedUUIDs(),
+                    getSQLiteManager().getUnbanTimes()
+            );
+        });
     }
 
     public void addToBanContainer(String id, String ip, String playerName, String initiatorName, String reason, BanType banType, String realBanDate, String realBanTime, String uuid, Long time) {

@@ -52,9 +52,11 @@ other:
   flag-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав использовать флаг &c&o%1$f"
   offline-no-perms: "&c[FunctionalBans] &7Вы не можете взаимодействовать с оффлайн игроками"
   ban-over-time: "&c[FunctionalBans] &7Вы не можете блокировать более чем на &c%1$f"
-  flags:
-    s:
-      ban: "&c[FunctionalBans] &7Использование: &c/ban -s <игрок> <причина>"
+  no-yourself-actions: "&c[FunctionalBans] &7Вы не можете взаимодействовать с собой"
+  notifications:
+    ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
+    ban-ip: "&c[FunctionalBans] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
+    mute: "&c[FunctionalBans] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
 
 unsafe-actions:
   unsafe-flag-no-perms: "&c[FunctionalBans] &7У Вас недостатоно прав использовать флаг &4%1$f"

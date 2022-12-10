@@ -9,7 +9,8 @@ import by.alis.functionalbans.spigot.Commands.KickCommand;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
 import by.alis.functionalbans.spigot.Listeners.AsyncJoinListener;
 import by.alis.functionalbans.spigot.Listeners.CommandSendListener;
-import by.alis.functionalbans.spigot.Listeners.FirstPlayerJoinListener;
+import by.alis.functionalbans.spigot.Listeners.JoinListener;
+import by.alis.functionalbans.spigot.Listeners.NullPlayerJoinListener;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
@@ -68,12 +69,14 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         //End commands registering
 
         //Events registering
-        new FirstPlayerJoinListener();
-        Bukkit.getPluginManager().registerEvents(new FirstPlayerJoinListener(), this);
+        new JoinListener();
+        Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
             new CommandSendListener();
             Bukkit.getPluginManager().registerEvents(new CommandSendListener(), this);
         }
+        new NullPlayerJoinListener();
+        Bukkit.getPluginManager().registerEvents(new NullPlayerJoinListener(), this);
         new AsyncJoinListener();
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
         //Events registering

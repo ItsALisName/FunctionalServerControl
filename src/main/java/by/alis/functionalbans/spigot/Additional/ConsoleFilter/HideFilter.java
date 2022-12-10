@@ -16,7 +16,9 @@ import org.bukkit.Bukkit;
 public class HideFilter implements Filter {
 
     public Filter.Result checkMessage(String message) {
-
+        if(message.contains("com.mojang.authlib.GameProfile")) {
+            return Filter.Result.DENY;
+        }
         if(StaticConsoleFilterHelper.getConsoleFilterHelper().isHidedMessage(message)) {
             if(StaticSettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
                 if(StaticSettingsAccessor.getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {

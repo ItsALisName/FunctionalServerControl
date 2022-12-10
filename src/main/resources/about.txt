@@ -16,19 +16,40 @@
 ##                                                   Permissions
 ##
 ##  -> functionalbans.ban - access to use "/ban" command
+##
 ##  -> functionalbans.use.re-ban - allows overwriting the ban of an already banned player
+##
 ##  -> functionalbans.time-bypass - allows punish a player for a longer time than specified in the
 ##  configuration file
-##  -> functionalbans.ban-ip -
-##  -> functionalbans.ban.offline -
-##  -> functionalbans.use.unsafe-flags -
-##  -> functionalbans.ban.bypass -
-##  -> functionalbans.purge -
-##  -> functionalbans.use.silently -
-##  -> functionalbans.use.no-reason -
-##  -> functionalbans.bypass-break -
-##  -> functionalbans.temp-ban -
-##  -> functionalbans.temp-ban.offline -
-##  -> functionalbans.temp-ban.re-ban -
-##  -> functionalbans.help -
-##  -> functionalbans.reload -
+##
+##  -> functionalbans.ban-ip - access to use "/banip" command
+##
+##  -> functionalbans.ban.offline - Allows use the "/ban" command on offline players
+##
+##  -> functionalbans.use.unsafe-flags - allows the use of dangerous flags
+##
+##  -> functionalbans.ban.bypass - gives protection against account blocking
+##
+##  -> functionalbans.purge - access to use "/fb purge" command
+##
+##  -> functionalbans.use.silently - allows the use of the -s flag
+##
+##  -> functionalbans.use.no-reason - allows blocking accounts without specifying a reason
+##   (used if general.yml prohibits punishing without a reason)
+##
+##  -> functionalbans.bypass-break - Attention! This permission gives you the opportunity to block, kick, mute
+##  everyone and every possible online player
+##
+##  -> functionalbans.temp-ban - access to use "/tempban" command
+##
+##  -> functionalbans.temp-ban.offline - Allows use the "/tempban" command on offline players
+##
+##  -> functionalbans.help - Allows use "/functionalbans" command
+##
+##  -> functionalbans.reload - Allows use "/fb reload" command
+##
+##  -> functionalbans.notification.mute - players with this permission will receive a notification when
+##  a muted player tries to write to the chat
+##
+##  -> functionalbans.notification.ban - players with this right permission receive a notification when
+##  a banned player tries to join

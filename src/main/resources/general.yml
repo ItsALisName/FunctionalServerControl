@@ -53,6 +53,23 @@ plugin-settings:
   less-information: true
 
   ##############################################################################
+  #                           Notification Settings                            #
+  ##############################################################################
+  notifications:
+
+    ##############################################################################
+    #     Will the console be notified when a blocked player tries to log in     #
+    #               or a gagged player tries to write to the chat?               #
+    ##############################################################################
+    console: true
+
+    ##############################################################################
+    #  Will players with a certain permission be notified when a blocked player  #
+    #       tries to log in or a gagged player tries to write to the chat?       #
+    ##############################################################################
+    players: true
+
+  ##############################################################################
   #     If enabled, players will not be able to interact with themselves       #
   #                    in any way within this plugin.                          #
   ##############################################################################
@@ -107,16 +124,21 @@ plugin-settings:
     #         Settings for using commands without specifying a reason            #
     ##############################################################################
     bans-with-out-reason:
+
       ##############################################################################
       #        Is it allowed to block a player without specifying a reason?        #
       ##############################################################################
       allowed: false
+
     kick-with-out-reason:
+
       ##############################################################################
       #        Is it allowed to kick a player without specifying a reason?        #
       ##############################################################################
       allowed: false
+
     mute-with-out-reason:
+
       ##############################################################################
       #        Is it allowed to mute a player without specifying a reason?        #
       ##############################################################################

@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.Completers.BanCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
@@ -142,7 +143,6 @@ public class BanCommand implements CommandExecutor {
                 }
 
                 if (args.length == 1) {
-
                     if(args[0].equalsIgnoreCase("-s")) {
                         if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.description").replace("%1$f", command.getName()))); }
                         sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.usage").replace("%1$f", command.getName())));
@@ -206,13 +206,19 @@ public class BanCommand implements CommandExecutor {
                         }
                     }
 
+                    if(getConfigSettings().isProhibitYourselfInteraction()) {
+                        if(args[0].equalsIgnoreCase(sender.getName())) {
+                            sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                            return true;
+                        }
+                    }
+
                     if(!sender.hasPermission("functionalbans.use.no-reason")) {
                         sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                         return true;
                     }
-
                     OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                    if(player == null) {
+                    if(!OtherUtils.isNotNullPlayer(args[0])) {
                         if(!sender.hasPermission("functionalbans.ban.offline")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                             return true;
@@ -265,8 +271,14 @@ public class BanCommand implements CommandExecutor {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[1].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[1])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -315,8 +327,14 @@ public class BanCommand implements CommandExecutor {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                             return true;
                         }
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[1].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[1])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -363,6 +381,12 @@ public class BanCommand implements CommandExecutor {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[0].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
                         if(!sender.hasPermission("functionalbans.time-bypass")) {
                             if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
@@ -371,7 +395,7 @@ public class BanCommand implements CommandExecutor {
                             }
                         }
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[0])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -405,6 +429,12 @@ public class BanCommand implements CommandExecutor {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[1].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
                         if(!sender.hasPermission("functionalbans.time-bypass")) {
                             if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
@@ -414,7 +444,7 @@ public class BanCommand implements CommandExecutor {
                         }
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[1])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -446,6 +476,12 @@ public class BanCommand implements CommandExecutor {
 
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1]) && args.length > 2) {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[0].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         if(!sender.hasPermission("functionalbans.time-bypass")) {
                             if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
@@ -453,7 +489,7 @@ public class BanCommand implements CommandExecutor {
                             }
                         }
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[0])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -484,6 +520,12 @@ public class BanCommand implements CommandExecutor {
 
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2]) && args[0].equalsIgnoreCase("-s") && args.length > 3) {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
+                        if(getConfigSettings().isProhibitYourselfInteraction()) {
+                            if(args[1].equalsIgnoreCase(sender.getName())) {
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                                return true;
+                            }
+                        }
                         if(!sender.hasPermission("functionalbans.time-bypass")) {
                             if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
@@ -492,7 +534,7 @@ public class BanCommand implements CommandExecutor {
                         }
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(player == null) {
+                        if(!OtherUtils.isNotNullPlayer(args[1])) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -523,8 +565,14 @@ public class BanCommand implements CommandExecutor {
 
                     // A Bans with time
 
+                    if(getConfigSettings().isProhibitYourselfInteraction()) {
+                        if(args[0].equalsIgnoreCase(sender.getName())) {
+                            sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-yourself-actions")));
+                            return true;
+                        }
+                    }
                     OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                    if(player == null) {
+                    if(!OtherUtils.isNotNullPlayer(args[0])) {
                         if(!sender.hasPermission("functionalbans.ban.offline")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                             return true;

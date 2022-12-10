@@ -31,88 +31,52 @@ public class GeneralConfigSettings {
     private String storageType = "sqlite";
     private boolean isApiProtectedByPassword = false;
     private boolean isProhibitYourselfInteraction = false;
+    private boolean isConsoleNotification = true;
+    private boolean isPlayersNotification = true;
 
 
 
-    public boolean isUnsafeActionsConfirmation() {
-        return unsafeActionsConfirmation;
-    }
-    public boolean showDescription() {
-        return showDescription;
-    }
-    public void setShowDescription(boolean showDescription) {
-        this.showDescription = showDescription;
-    }
-    public void setUnsafeActionsConfirmation(boolean unsafeActionsConfirmation) { this.unsafeActionsConfirmation = unsafeActionsConfirmation; }
-    private void setApiEnabled(boolean apiEnabled) {
-        this.isApiEnabled = apiEnabled;
-    }
-    public boolean isApiEnabled() {
-        return this.isApiEnabled;
-    }
-    public boolean isPurgeConfirmation() {
-        return purgeConfirmation;
-    }
-    public void setPurgeConfirmation(boolean purgeConfirmation) {
-        this.purgeConfirmation = purgeConfirmation;
-    }
-    public boolean isApiProtectedByPassword() {
-        return this.isApiProtectedByPassword;
-    }
+    public boolean isUnsafeActionsConfirmation() { return unsafeActionsConfirmation; }
+    public boolean showDescription() { return showDescription; }
+    private void setShowDescription(boolean showDescription) { this.showDescription = showDescription; }
+    private void setUnsafeActionsConfirmation(boolean unsafeActionsConfirmation) { this.unsafeActionsConfirmation = unsafeActionsConfirmation; }
+    private void setApiEnabled(boolean apiEnabled) { this.isApiEnabled = apiEnabled; }
+    public boolean isApiEnabled() { return this.isApiEnabled; }
+    public boolean isPurgeConfirmation() { return purgeConfirmation; }
+    private void setPurgeConfirmation(boolean purgeConfirmation) { this.purgeConfirmation = purgeConfirmation; }
+    public boolean isApiProtectedByPassword() { return this.isApiProtectedByPassword; }
     private void setApiProtectedByPassword(boolean apiProtectedByPassword) { this.isApiProtectedByPassword = apiProtectedByPassword; }
-    public boolean isBanAllowedWithoutReason() {
-        return isBanAllowedWithoutReason;
-    }
+    public boolean isBanAllowedWithoutReason() { return isBanAllowedWithoutReason; }
     public void setBanAllowedWithoutReason(boolean banAllowedWithoutReason) { isBanAllowedWithoutReason = banAllowedWithoutReason; }
-    public boolean isKickAllowedWithoutReason() {
-        return isKickAllowedWithoutReason;
-    }
+    public boolean isKickAllowedWithoutReason() { return isKickAllowedWithoutReason; }
     public void setKickAllowedWithoutReason(boolean kickAllowedWithoutReason) { isKickAllowedWithoutReason = kickAllowedWithoutReason; }
-    public Set<String> getPossibleGroups() {
-        return timeRestrictionGroups;
-    }
+    public Set<String> getPossibleGroups() { return timeRestrictionGroups; }
     public void setPossibleGroups(Set<String> timeRestrictionGroups) {
         this.timeRestrictionGroups.clear();
         this.timeRestrictionGroups = timeRestrictionGroups;
     }
-    public boolean isMuteAllowedWithoutReason() {
-        return isMuteAllowedWithoutReason;
-    }
+    public boolean isMuteAllowedWithoutReason() { return isMuteAllowedWithoutReason; }
     public void setMuteAllowedWithoutReason(boolean muteAllowedWithoutReason) { isMuteAllowedWithoutReason = muteAllowedWithoutReason; }
-    public boolean isAllowedUseRamAsContainer() {
-        return this.isAllowedUseRamAsContainer;
-    }
+    public boolean isAllowedUseRamAsContainer() { return this.isAllowedUseRamAsContainer; }
     private void setAllowedUseRamAsContainer(boolean allowedUseRamAsContainer) { this.isAllowedUseRamAsContainer = allowedUseRamAsContainer; }
-    public boolean showExamples() {
-        return showExamples;
-    }
-    public void setShowExamples(boolean showExamples) {
-        this.showExamples = showExamples;
-    }
-    public String getStorageType() {
-        return this.storageType;
-    }
-    private void setStorageType(String storageType) {
-        this.storageType = storageType;
-    }
-    public String getConsoleLanguageMode() {
-        return this.consoleLanguageMode;
-    }
-    private void setConsoleLanguageMode(String mode) {
-        this.consoleLanguageMode = mode;
-    }
+    public boolean showExamples() { return showExamples; }
+    public void setShowExamples(boolean showExamples) { this.showExamples = showExamples; }
+    public String getStorageType() { return this.storageType; }
+    private void setStorageType(String storageType) { this.storageType = storageType; }
+    public String getConsoleLanguageMode() { return this.consoleLanguageMode; }
+    private void setConsoleLanguageMode(String mode) { this.consoleLanguageMode = mode; }
     public boolean isAnnounceWhenLogHided() { return this.isAnnounceWhenLogHided; }
     private void setAnnounceWhenLogHided(boolean status) { this.isAnnounceWhenLogHided = status; }
-    public boolean hideMainCommand() {
-        return hideMainCommand;
-    }
-    private void setHideMainCommand(boolean hideMainCommand) {
-        this.hideMainCommand = hideMainCommand;
-    }
+    public boolean hideMainCommand() { return hideMainCommand; }
+    private void setHideMainCommand(boolean hideMainCommand) { this.hideMainCommand = hideMainCommand; }
     public boolean isLessInformation() { return isLessInformation; }
     private void setLessInformation(boolean lessInformation) { isLessInformation = lessInformation; }
     public boolean isProhibitYourselfInteraction() { return isProhibitYourselfInteraction; }
     private void setProhibitYourselfInteraction(boolean prohibitYourselfInteraction) { isProhibitYourselfInteraction = prohibitYourselfInteraction; }
+    public boolean isPlayersNotification() { return isPlayersNotification; }
+    public boolean isConsoleNotification() { return isConsoleNotification; }
+    private void setPlayersNotification(boolean playersNotification) { isPlayersNotification = playersNotification; }
+    private void setConsoleNotification(boolean consoleNotification) { isConsoleNotification = consoleNotification; }
 
     public void loadConfigSettings() {
 
@@ -191,6 +155,8 @@ public class GeneralConfigSettings {
         setShowExamples(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-examples"));
         setShowDescription(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-description"));
         setHideMainCommand(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.hide-main-command"));
+        setConsoleNotification(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
+        setPlayersNotification(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
         this.timeRestrictionGroups.clear();
         setPossibleGroups(this.fileAccessor.getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
 
