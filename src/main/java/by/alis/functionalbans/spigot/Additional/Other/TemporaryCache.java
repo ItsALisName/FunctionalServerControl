@@ -4,26 +4,23 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class TemporaryCache {
 
-    private HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
-    private HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
+    static HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
+    static HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
 
 
     public HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
         return unsafeMutedPlayers;
     }
-
-    public void setUnsafeMutedPlayers(OfflinePlayer whoBanned, CommandSender initiator) {
-        this.unsafeMutedPlayers.put(whoBanned, initiator);
+    public static void setUnsafeMutedPlayers(OfflinePlayer whoBanned, CommandSender initiator) {
+        unsafeMutedPlayers.put(whoBanned, initiator);
     }
-
-    public HashMap<OfflinePlayer, CommandSender> getUnsafeBannedPlayers() {
+    public static HashMap<OfflinePlayer, CommandSender> getUnsafeBannedPlayers() {
         return unsafeBannedPlayers;
     }
-    public void setUnsafeBannedPlayers(OfflinePlayer whoMuted, CommandSender initiator) {
-        this.unsafeBannedPlayers.put(whoMuted, initiator);
+    public static void setUnsafeBannedPlayers(OfflinePlayer whoMuted, CommandSender initiator) {
+        unsafeBannedPlayers.put(whoMuted, initiator);
     }
 }

@@ -174,7 +174,7 @@ public class TimeManager {
                     long maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player) + ".ban").replace("|", ""));
                     return maxTime;
                 } else {
-                    return getMaxPossiblePunishTime() + System.currentTimeMillis();
+                    return getMaxPossiblePunishTime();
                 }
             }
             if (StaticExpansions.getLuckPermsManager().isLuckPermsSetuped()) {
@@ -182,13 +182,13 @@ public class TimeManager {
                     long maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
                     return maxTime;
                 } else {
-                    return getMaxPossiblePunishTime() + System.currentTimeMillis();
+                    return getMaxPossiblePunishTime();
                 }
             }
-        } else if(playerRestrictionType(player) == TimeRestrictionType.DEFAULT) {
-            return System.currentTimeMillis() + getMaxPossiblePunishTime();
+        } else {
+            return getMaxPossiblePunishTime();
         }
-        return System.currentTimeMillis() + getMaxPossiblePunishTime();
+        return getMaxPossiblePunishTime();
     }
 
     public boolean isBanTimeBiggerThanAllowedByGroup(Player player, String argTime) {
@@ -210,14 +210,16 @@ public class TimeManager {
         if (StaticExpansions.getVaultManager().isVaultSetuped()) {
             if (this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player))) {
                 return TimeRestrictionType.GROUP;
+            } else {
+                return TimeRestrictionType.DEFAULT;
             }
-            return TimeRestrictionType.DEFAULT;
         } else {
             if (StaticExpansions.getLuckPermsManager().isLuckPermsSetuped()) {
                 if (this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()))) {
                     return TimeRestrictionType.GROUP;
+                } else {
+                    return TimeRestrictionType.DEFAULT;
                 }
-                return TimeRestrictionType.DEFAULT;
             }
             return TimeRestrictionType.DEFAULT;
         }
@@ -225,6 +227,10 @@ public class TimeManager {
 
     public long getBanTime(long a) {
         return a - System.currentTimeMillis();
+    }
+
+    public long convertFromSecToMillis(int param) {
+        return param * 1000L;
     }
 
 }

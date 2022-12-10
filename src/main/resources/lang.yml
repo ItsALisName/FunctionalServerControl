@@ -53,6 +53,7 @@ other:
   offline-no-perms: "&c[FunctionalBans] &7Вы не можете взаимодействовать с оффлайн игроками"
   ban-over-time: "&c[FunctionalBans] &7Вы не можете блокировать более чем на &c%1$f"
   no-yourself-actions: "&c[FunctionalBans] &7Вы не можете взаимодействовать с собой"
+  cooldown: "&c[FunctionalBans] &7Вы сможете использовать команду &c/%1$f &7только через &c%2$f"
   notifications:
     ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
     ban-ip: "&c[FunctionalBans] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"

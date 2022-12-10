@@ -51,5 +51,7 @@
 ##  -> functionalbans.notification.mute - players with this permission will receive a notification when
 ##  a muted player tries to write to the chat
 ##
-##  -> functionalbans.notification.ban - players with this right permission receive a notification when
+##  -> functionalbans.notification.ban - players with this permission receive a notification when
 ##  a banned player tries to join
+##  -> functionalbans.cooldowns.bypass - players with this permission do not have a delay on
+##  commands, even if it is enabled

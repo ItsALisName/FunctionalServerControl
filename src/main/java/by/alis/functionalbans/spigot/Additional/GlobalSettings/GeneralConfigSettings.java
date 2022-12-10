@@ -3,6 +3,7 @@ package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import org.bukkit.Bukkit;
 
@@ -14,6 +15,9 @@ import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors
 public class GeneralConfigSettings {
 
     private final FileAccessor fileAccessor = new FileAccessor();
+
+
+
     private String consoleLanguageMode = "en_US";
     private boolean isAnnounceWhenLogHided = true;
     private boolean isAllowedUseRamAsContainer = false;
@@ -33,6 +37,8 @@ public class GeneralConfigSettings {
     private boolean isProhibitYourselfInteraction = false;
     private boolean isConsoleNotification = true;
     private boolean isPlayersNotification = true;
+    private boolean isCooldownsEnabled = false;
+    private boolean isSaveCooldowns = false;
 
 
 
@@ -77,6 +83,10 @@ public class GeneralConfigSettings {
     public boolean isConsoleNotification() { return isConsoleNotification; }
     private void setPlayersNotification(boolean playersNotification) { isPlayersNotification = playersNotification; }
     private void setConsoleNotification(boolean consoleNotification) { isConsoleNotification = consoleNotification; }
+    private void setCooldownsEnabled(boolean cooldownsEnabled) { isCooldownsEnabled = cooldownsEnabled; }
+    public boolean isCooldownsEnabled() { return isCooldownsEnabled; }
+    public boolean isSaveCooldowns() { return isSaveCooldowns; }
+    private void setSaveCooldowns(boolean saveCooldowns) { isSaveCooldowns = saveCooldowns; }
 
     public void loadConfigSettings() {
 
@@ -142,9 +152,13 @@ public class GeneralConfigSettings {
                     break;
             }
         }
-
         StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
         StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
+
+        setCooldownsEnabled(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
+        setSaveCooldowns(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
+        CooldownsManager.setupCooldowns();
+
         setLessInformation(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
         setProhibitYourselfInteraction(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
         setBanAllowedWithoutReason(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-with-out-reason"));
@@ -246,7 +260,14 @@ public class GeneralConfigSettings {
             Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_LANGUAGE_ERROR));
         }
         setLessInformation(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
+        setConsoleNotification(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
+        setPlayersNotification(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
         setProhibitYourselfInteraction(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
+
+        setCooldownsEnabled(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
+        setSaveCooldowns(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
+        CooldownsManager.setupCooldowns();
+
         setBanAllowedWithoutReason(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-with-out-reason"));
         setKickAllowedWithoutReason(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-with-out-reason"));
         setMuteAllowedWithoutReason(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-with-out-reason"));

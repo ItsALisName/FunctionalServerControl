@@ -5,6 +5,7 @@ import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Additional.Placeholders.TimeLangGlobal;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
+import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -28,6 +29,7 @@ public class KickCommand implements CommandExecutor {
     TimeLangGlobal timeLang = new TimeLangGlobal();
     TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     BanManager banManager = new BanManager();
+    CooldownsManager cooldownsManager = new CooldownsManager();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -172,6 +174,11 @@ public class KickCommand implements CommandExecutor {
             Player player = (Player) sender;
             sender.sendMessage(String.valueOf(player.getAddress().getAddress().getHostAddress()));
             return true;
+        }
+
+        if(args[0].equalsIgnoreCase("cd")) {
+            sender.sendMessage("COUNT: " + CooldownsManager.cooldowns.size());
+            sender.sendMessage("VAL: " + CooldownsManager.cooldowns.values());
         }
 
         /*

@@ -61,4 +61,13 @@ public class OtherUtils {
         }
     }
 
+    public static boolean isNumber(String arg) {
+        try {
+            Integer.parseInt(arg);
+            return true;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
+    }
+
 }

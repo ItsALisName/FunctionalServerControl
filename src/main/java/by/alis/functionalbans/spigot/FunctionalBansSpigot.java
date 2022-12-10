@@ -3,6 +3,7 @@ package by.alis.functionalbans.spigot;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.BanCommand;
 import by.alis.functionalbans.spigot.Commands.FunctionalBansCommand;
 import by.alis.functionalbans.spigot.Commands.KickCommand;
@@ -12,6 +13,7 @@ import by.alis.functionalbans.spigot.Listeners.CommandSendListener;
 import by.alis.functionalbans.spigot.Listeners.JoinListener;
 import by.alis.functionalbans.spigot.Listeners.NullPlayerJoinListener;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
+import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -26,9 +28,8 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 
 
 public final class FunctionalBansSpigot extends JavaPlugin {
-    FileManager fileManager = new FileManager();
-
-    BanManager banManager = new BanManager();
+    private final FileManager fileManager = new FileManager();
+    private final BanManager banManager = new BanManager();
     ConsoleFilterCore consoleFilterCore;
 
     @Override
@@ -46,6 +47,8 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         //Settings initializer
         getConfigSettings().loadConfigSettings();
         StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
+        CooldownsManager.loadCooldowns();
+        getSQLiteManager().clearCooldowns();
         //Settings initializer
 
         //Expansions
@@ -81,9 +84,8 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
         //Events registering
 
-        //Packet events
-
-        //Packet events
+        //Other
+        //Other
 
         //Console filters
         getConsoleFilterHelper().loadFunctionalBansCommands();
@@ -97,10 +99,10 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        CooldownsManager.saveCooldowns();
     }
 
-    public ConsoleFilterCore getConsoleFilterCore() {
+    private ConsoleFilterCore getConsoleFilterCore() {
         return consoleFilterCore;
     }
 }
