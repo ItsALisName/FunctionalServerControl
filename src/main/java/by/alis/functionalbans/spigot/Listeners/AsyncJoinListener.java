@@ -59,15 +59,15 @@ public class AsyncJoinListener implements Listener {
                             currentTime
                     );
                     switch (getConfigSettings().getStorageType()) {
-                        case "sqlite": {
+                        case SQLITE: {
                             getSQLiteManager().deleteFromBannedPlayers("-id", id);
                             getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                             break;
                         }
-                        case "mysql": {
+                        case MYSQL: {
                             break;
                         }
-                        case "h2": {
+                        case H2: {
                             break;
                         }
                         default: {
@@ -147,15 +147,15 @@ public class AsyncJoinListener implements Listener {
                             currentTime
                     );
                     switch (getConfigSettings().getStorageType()) {
-                        case "sqlite": {
+                        case SQLITE: {
                             getSQLiteManager().deleteFromBannedPlayers("-id", id);
                             getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                             break;
                         }
-                         case "mysql": {
+                         case MYSQL: {
                              break;
                          }
-                        case "h2": {
+                        case H2: {
                             break;
                         }
                         default: {
@@ -347,7 +347,7 @@ public class AsyncJoinListener implements Listener {
         // TODO: 10.12.2022
         else {
             switch (getConfigSettings().getStorageType()) {
-                case "sqlite": {
+                case SQLITE: {
                     if(getSQLiteManager().getBannedPlayersNames().contains(event.getName()) && getSQLiteManager().getBannedUUIDs().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(String.valueOf(event.getUniqueId()))) {
                         if((getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.TIMED_IP
                                 || getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.PERMANENT_IP)
@@ -604,12 +604,12 @@ public class AsyncJoinListener implements Listener {
                 }
 
 
-                case "mysql": {
+                case MYSQL: {
                     break;
                 }
 
 
-                case "h2": {
+                case H2: {
                     break;
                 }
 

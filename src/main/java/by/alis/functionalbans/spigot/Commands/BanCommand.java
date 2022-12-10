@@ -164,9 +164,9 @@ public class BanCommand implements CommandExecutor {
 
                 if (args.length == 1) {
                     if(args[0].equalsIgnoreCase("-s")) {
-                        if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.description").replace("%1$f", command.getName()))); }
-                        sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.usage").replace("%1$f", command.getName())));
-                        if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.example").replace("%1$f", command.getName()))); }
+                        if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.description").replace("%1$f", label))); }
+                        sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.usage").replace("%1$f", label)));
+                        if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.example").replace("%1$f", label))); }
                         return true;
                     }
 
@@ -723,9 +723,9 @@ public class BanCommand implements CommandExecutor {
             }
 
             if (args.length == 0) {
-                if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.description").replace("%1$f", command.getName()))); }
-                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.usage").replace("%1$f", command.getName())));
-                if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.example").replace("%1$f", command.getName()))); }
+                if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.description").replace("%1$f", label))); }
+                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.usage").replace("%1$f", label)));
+                if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(this.fileAccessor.getLang().getString("commands.ban.example").replace("%1$f", label))); }
                 return true;
             }
         } else {

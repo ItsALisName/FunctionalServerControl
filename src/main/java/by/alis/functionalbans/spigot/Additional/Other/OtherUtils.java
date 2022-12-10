@@ -29,13 +29,13 @@ public class OtherUtils {
 
     public static boolean isNotNullPlayer(String name) {
         switch (getConfigSettings().getStorageType()) {
-            case "sqlite": {
+            case SQLITE: {
                 return getSQLiteManager().getNamesFromAllPlayers().contains(name);
             }
-            case "mysql": {
+            case MYSQL: {
                 return true;
             }
-            case "h2": {
+            case H2: {
                 return true;
             }
             default: {
@@ -46,13 +46,13 @@ public class OtherUtils {
 
     public static boolean isNotNullPlayer(UUID uuid) {
         switch (getConfigSettings().getStorageType()) {
-            case "sqlite": {
+            case SQLITE: {
                 return getSQLiteManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
             }
-            case "mysql": {
+            case MYSQL: {
                 return true;
             }
-            case "h2": {
+            case H2: {
                 return true;
             }
             default: {

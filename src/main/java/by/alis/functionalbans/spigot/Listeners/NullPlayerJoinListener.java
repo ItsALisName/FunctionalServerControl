@@ -38,15 +38,15 @@ public class NullPlayerJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 this.banManager.getBanContainerManager().removeFromBanContainer("-n", player.getName());
                 switch (getConfigSettings().getStorageType()) {
-                    case "sqlite": {
+                    case SQLITE: {
                         getSQLiteManager().deleteFromNullBannedPlayers("-n", player.getName());
                         getSQLiteManager().insertIntoBannedPlayers(id, player.getAddress().getAddress().getHostAddress(), player.getName(), initiatorName, reason, banType, realDate, realTime, player.getUniqueId(), time);
                         break;
                     }
-                    case "mysql": {
+                    case MYSQL: {
                         break;
                     }
-                    case "h2": {
+                    case H2: {
                         break;
                     }
                     default: {
@@ -123,7 +123,7 @@ public class NullPlayerJoinListener implements Listener {
             }
         } else {
             switch (getConfigSettings().getStorageType()) {
-                case "sqlite": {
+                case SQLITE: {
                     if(getBannedPlayersContainer().getNameContainer().contains(player.getName()) && getBannedPlayersContainer().getUUIDContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(player.getName())).equalsIgnoreCase("NULL_PLAYER")) {
                         int indexOf = getBannedPlayersContainer().getNameContainer().indexOf(player.getName());
                         String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
@@ -204,11 +204,11 @@ public class NullPlayerJoinListener implements Listener {
                     }
                 }
 
-                case "mysql": {
+                case MYSQL: {
                     break;
                 }
 
-                case "h2": {
+                case H2: {
                     break;
                 }
 

@@ -1,0 +1,118 @@
+ban-message-format:
+- "&6Your account has been banned!"
+- ""
+- "&bBan ID: &3%1$f"
+- "&cReason: &6%2$f"
+- "&2Initiator: &a%3$f"
+- "&5Ban date: &d%4$f"
+- "&6Unban via: &e%5$f"
+- ""
+- "&9&oIf you think this is an mistake, please contact https://example.com"
+
+temporary-ban-message-format:
+- "&6Your account has been temporarily banned!"
+- ""
+- "&bBan ID: &3%1$f"
+- "&cReason: &6%2$f"
+- "&2Initiator: &a%3$f"
+- "&5Ban date: &d%4$f"
+- "&6Unban via: &e%5$f"
+- ""
+- "&9&oIf you think this is an mistake, please contact https://example.com "
+
+ban-ip-message-format:
+- "&6Your IP address has been banned!"
+- ""
+- "&bBan ID: &3%1$f"
+- "&cReason: &6%2$f"
+- "&2Initiator: &a%3$f"
+- "&5Ban date: &d%4$f"
+- "&6Unban via: &e%5$f"
+- ""
+- "&9&oIf you think this is an mistake, please contact https://example.com"
+
+temporary-ban-ip-message-format:
+- "&6Your IP address has been temporarily banned!"
+- ""
+- "&bBan ID: &3%1$f"
+- "&cReason: &6%2$f"
+- "&2Initiator: &a%3$f"
+- "&5Ban date: &d%4$f"
+- "&6Unban via: &e%5$f"
+- ""
+- "&9&oIf you think this is an mistake, please contact https://example.com "
+
+other:
+  unknown-player: "&c[FunctionalBans] &7&oIgrok &c&o%1$f &7&he has never logged on to the server!"
+  last-ban-removed: "&c[FunctionalBans] &7 The player's previous blocking &c%1$f &7 has been removed."
+  no-permissions: "&c[FunctionalBans] &7&You don't have enough rights to execute this command."
+  already-banned: "&c[FunctionalBans] &7The player has already been banned, you don't have enough rights to overwrite the lock"
+  unknown-subcommand: "&c[FunctionalBans] &7The well-known argument &c%1$f&7, use &c/fb help &7 to help "
+  no-reason: "&c[FunctionalBans] &7You have not specified a reason, this is mandatory."
+  flag-no-perms: "&c[FunctionalBans] &7You don't have enough rights to use the flag &c&o%1$f"
+  offline-no-perms: "&c[FunctionalBans] &7You can't interact with offline players"
+  ban-over-time: "&c[FunctionalBans] &7You cannot ban for more than &c%1$f"
+  no-yourself-actions: "&c[FunctionalBans] &7You cannot interact with yourself"
+  cooldown: "&c[FunctionalBans] &7You will be able to use the command &c/%1$f &7 only through &c%2$f"
+  flag-not-support: "&c[FunctionalBans] &7Flag &c%1$f &7is not available for this command"
+  unknown-time: "&c[FunctionalBans] &7Looks like &c%1$f &7is not a valid time format, try for example &c1d, 1h, 1mon"
+  notifications:
+    ban: "&c[FunctionalBans] &7The banned player &c%1$f &7tried to log in (Unban via: &c%2$f&7)"
+    ban-ip: "&c[FunctionalBans] &7The player &c%1$f&7 tried to log in but his IP address(&c%2$f&7) banned (Unban via: &c%3$f&7)"
+    mute: "&c[FunctionalBans] &7A muted player &c%1$f &7tried to write to the chat: &c%2$f&7(Unmute via: &c%3$f&7)"
+
+unsafe-actions:
+  unsafe-flag-no-perms: "&c[FunctionalBans] &7You don't have permissions to use the flag &4%1$f"
+  unsafe-ban-success: "&c[FunctionalBans] &7You have blocked &6%1$f &accounts!"
+  unsafe-action-confirm: "&c[FunctionalBans] &7Confirm your action by entering the command again."
+  unsafe-ban-cached-notify: "&c[FunctionalBans] &7Players blocked in this way have been cached, you have the option to undo this action - &c/fb undo"
+
+commands:
+
+  help:
+  - "&4-> &c/fb reload <type> &7- reloads the plugin configuration"
+  - "&4-> &c/fb purge <type> &7- clears some optional data from memory"
+
+  reload:
+    description: "&c[FunctionalBans] &7Command Description &c/%1$f&7: Reloads certain plugin files"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f <type>"
+    example: "&c[FunctionalBans] &7example: &c/%1$f settings"
+    done: "&c[FunctionalBans] &c%1$f &7successfully reloaded"
+    unknown-type: "&c[FunctionalBans] &7Unknown type &c%1$f"
+    failed: "&c[FunctionalBans] &7Failed to reload &c%1$f"
+
+  ban:
+    description: "&c[FunctionalBans] &7Command Description &c/%1$f&7: Blocks the specified player for the specified reason"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f {flag} <player> {time} {reason}"
+    example: "&c[FunctionalBans] &7Example: &c/%1$f Hacker228 Violation of Server rules 1.2"
+    broadcast-message: "&7Administrator &c%1$f &7blocked the player's account &c%2$f &7for the reason: &c%3$f"
+    target-bypass: "&c[FunctionalBans] &7You cannot block this player"
+
+  ban-ip:
+    description: "&c[FunctionalBans] &7Command Description &c%1$f&7: Blocks the specified IP address for the specified reason"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f <player> {reason}"
+    example: "&c[FunctionalBans] &7Example: &c/%1$f Hacker228 Violation of Server rules 1.2"
+    broadcast-message: "&7Administrator &c%1$f &7blocked IP address &c%2$f &7for the reason: &c%3$f"
+
+  tempban:
+    description: "&c[FunctionalBans] &7 Team Description &c/%1$f&7: Blocks the account of the specified player for the specified time for the specified reason"
+    example: "&c[FunctionalBans] &7Example: &c/%1$f Hacker228 1day Violation of Server rules 1.2"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f <player> <time> {reason}"
+    broadcast-message: "&7Administrator &c%1$f &7 has blocked the player's account &c%2$f &7a &c%3$f &7 for the reason: &c%4$f"
+
+  tempban-ip:
+    description: "&c[FunctionalBans] &7Command Description &c/%1$f&7: Blocks the account specified IP address for the specified time for the specified reason"
+    example: "&c[FunctionalBans] &7Example: &c/%1$f Hacker228 1day Server Rules Violation 1.2"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f <player> <time> {reason}"
+    broadcast-message: "&7Administrator &c%1$f &7has blocked the IP address &c%2$f &7a &c%3$f &7 for the reason: &c%4$f"
+
+
+  purge:
+    description: "&c[FunctionalBans] &7Command Description &c/%1$f&7: Clears some data types in the plugin"
+    example: "&c[FunctionalBans] &7Example: &c/%1$f cache"
+    usage: "&c[FunctionalBans] &7Use: &c/%1$f <goal>"
+    confirm: "&c[FunctionalBans] &7Please confirm the cleanup by entering the command again."
+    unknown-type: "&c[FunctionalBans] &7The known type of cleanup available: &c%1$f"
+    cache:
+      cleared: "&c[FunctionalBans] &7Cache has been successfully cleared."
+      empty: "&c[FunctionalBans] &7Cache is already empty"

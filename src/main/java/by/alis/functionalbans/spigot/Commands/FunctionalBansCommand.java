@@ -85,6 +85,7 @@ public class FunctionalBansCommand implements CommandExecutor {
             if(args[1].equalsIgnoreCase("settings")) {
                 try{
                     this.accessor.reloadGeneralConfig();
+                    this.accessor.reloadLang();
                     getConfigSettings().reloadConfig();
                     sender.sendMessage(setColors(this.accessor.getLang().getString("commands.reload.done").replace("%1$f", args[1])));
                     return true;

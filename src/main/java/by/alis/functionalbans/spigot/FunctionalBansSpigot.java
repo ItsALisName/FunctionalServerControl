@@ -3,10 +3,10 @@ package by.alis.functionalbans.spigot;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.BanCommand;
 import by.alis.functionalbans.spigot.Commands.FunctionalBansCommand;
 import by.alis.functionalbans.spigot.Commands.KickCommand;
+import by.alis.functionalbans.spigot.Commands.TempbanCommand;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
 import by.alis.functionalbans.spigot.Listeners.AsyncJoinListener;
 import by.alis.functionalbans.spigot.Listeners.CommandSendListener;
@@ -14,6 +14,7 @@ import by.alis.functionalbans.spigot.Listeners.JoinListener;
 import by.alis.functionalbans.spigot.Listeners.NullPlayerJoinListener;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
+import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -30,6 +31,7 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final BanManager banManager = new BanManager();
+    private final FileAccessor accessor = new FileAccessor();
     ConsoleFilterCore consoleFilterCore;
 
     @Override
@@ -39,10 +41,9 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         this.fileManager.initializeAndCreateFilesIfNotExists();
         //Creating files if not exists
 
-        //SQL functions
-        getSQLiteManager().setupTables();
-        //SQL functions
-
+        //Bases files
+        this.accessor.basesFiles();
+        //Bases files
 
         //Settings initializer
         getConfigSettings().loadConfigSettings();
@@ -50,6 +51,12 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         CooldownsManager.loadCooldowns();
         getSQLiteManager().clearCooldowns();
         //Settings initializer
+
+        //Bases functions
+        getSQLiteManager().setupTables();
+        //Bases functions
+
+
 
         //Expansions
         StaticExpansions.getVaultManager().setupVaultPermissions();
@@ -69,6 +76,7 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         new KickCommand(this);
         new BanCommand(this);
         new FunctionalBansCommand(this);
+        new TempbanCommand(this);
         //End commands registering
 
         //Events registering
@@ -83,9 +91,6 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         new AsyncJoinListener();
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
         //Events registering
-
-        //Other
-        //Other
 
         //Console filters
         getConsoleFilterHelper().loadFunctionalBansCommands();

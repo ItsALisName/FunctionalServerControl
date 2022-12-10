@@ -4,6 +4,13 @@
 plugin-settings:
 
   ##############################################################################
+  #      The language in which the messages will be displayed in the game      #
+  #                      "en_US" - English language                            #
+  #                      "ru_RU" - Russian language                            #
+  ##############################################################################
+  global-language: "ru_RU"
+
+  ##############################################################################
   #      The language in which messages will be displayed in the console       #
   #                      "en_US" - English language                            #
   #                      "ru_RU" - Russian language                            #
@@ -180,13 +187,15 @@ plugin-settings:
     ##############################################################################
     save-cooldowns: true
 
-    ##############################################################################
-    #                       Command delays (In seconds)                          #
-    ##############################################################################
+    ###############################################################################
+    #                       Command delays (In seconds)                           #
+    # It is assumed that the timer will continue its countdown, but will not stop #
+    ###############################################################################
     command:
       ban: 120
       kick: 60
       mute: 90
+      tempban: 100
 
 
   ##############################################################################

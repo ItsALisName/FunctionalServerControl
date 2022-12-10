@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
+import by.alis.functionalbans.spigot.Additional.Enums.StorageType;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
@@ -32,13 +33,13 @@ public class GeneralConfigSettings {
     private boolean showExamples = true;
     private Set<String> timeRestrictionGroups = new HashSet<>();
     private boolean isApiEnabled = true;
-    private String storageType = "sqlite";
     private boolean isApiProtectedByPassword = false;
     private boolean isProhibitYourselfInteraction = false;
     private boolean isConsoleNotification = true;
     private boolean isPlayersNotification = true;
     private boolean isCooldownsEnabled = false;
     private boolean isSaveCooldowns = false;
+    private StorageType storageType = StorageType.SQLITE;
 
 
 
@@ -67,8 +68,8 @@ public class GeneralConfigSettings {
     private void setAllowedUseRamAsContainer(boolean allowedUseRamAsContainer) { this.isAllowedUseRamAsContainer = allowedUseRamAsContainer; }
     public boolean showExamples() { return showExamples; }
     public void setShowExamples(boolean showExamples) { this.showExamples = showExamples; }
-    public String getStorageType() { return this.storageType; }
-    private void setStorageType(String storageType) { this.storageType = storageType; }
+    public StorageType getStorageType() { return this.storageType; }
+    private void setStorageType(StorageType storageType) { this.storageType = storageType; }
     public String getConsoleLanguageMode() { return this.consoleLanguageMode; }
     private void setConsoleLanguageMode(String mode) { this.consoleLanguageMode = mode; }
     public boolean isAnnounceWhenLogHided() { return this.isAnnounceWhenLogHided; }
@@ -108,14 +109,64 @@ public class GeneralConfigSettings {
             Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_LANGUAGE_ERROR));
         }
 
-        try {
-            setStorageType(this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"));
-            if(!getStorageType().equalsIgnoreCase("sqlite") && !getStorageType().equalsIgnoreCase("h2") && !getStorageType().equalsIgnoreCase("mysql")) {
-                setStorageType("sqlite");
+
+        switch (this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method")) {
+            case "sqlite": {
+                setStorageType(StorageType.SQLITE);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            case "mysql": {
+                setStorageType(StorageType.MYSQL);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            case "h2": {
+                setStorageType(StorageType.H2);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            default: {
+                setStorageType(StorageType.SQLITE);
                 switch (getConsoleLanguageMode()) {
                     case "ru_RU":
                         Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                        break;
                     case "en_US":
                         Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
                         break;
@@ -123,35 +174,10 @@ public class GeneralConfigSettings {
                         Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
                         break;
                 }
-            } else {
-                if(isLessInformation()) {
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", getStorageType())));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", getStorageType())));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", getStorageType())));
-                            break;
-                    }
-                }
-            }
-        } catch (RuntimeException ignored) {
-            setStorageType("sqlite");
-            switch (getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOAD_ERROR));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOAD_ERROR));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOAD_ERROR));
-                    break;
+                break;
             }
         }
+
         StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
         StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
 
@@ -258,6 +284,73 @@ public class GeneralConfigSettings {
             }
         } catch (ExceptionInInitializerError ignored) {
             Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_LANGUAGE_ERROR));
+        }
+        switch (this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method")) {
+            case "sqlite": {
+                setStorageType(StorageType.SQLITE);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            case "mysql": {
+                setStorageType(StorageType.MYSQL);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            case "h2": {
+                setStorageType(StorageType.H2);
+                if(!isLessInformation()) {
+                    switch (getConsoleLanguageMode()) {
+                        case "ru_RU":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        case "en_US":
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                        default:
+                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
+                            break;
+                    }
+                }
+                break;
+            }
+            default: {
+                setStorageType(StorageType.SQLITE);
+                switch (getConsoleLanguageMode()) {
+                    case "ru_RU":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
+                    case "en_US":
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
+                        break;
+                    default:
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", this.fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
+                        break;
+                }
+                break;
+            }
         }
         setLessInformation(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
         setConsoleNotification(this.fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.console"));

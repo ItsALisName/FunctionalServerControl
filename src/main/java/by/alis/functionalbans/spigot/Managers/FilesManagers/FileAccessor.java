@@ -18,7 +18,15 @@ public class FileAccessor {
         return this.fileManager.configuration;
     }
 
-    public FileConfiguration getLang() { return this.fileManager.lang; }
+    public FileConfiguration getLang() {
+        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
+            return this.fileManager.langRU;
+        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
+            return this.fileManager.langEN;
+        } else {
+            return this.fileManager.langEN;
+        }
+    }
 
 
     public void saveGeneralConfig() throws IOException {
@@ -26,7 +34,13 @@ public class FileAccessor {
     }
 
     public void saveLang() throws IOException {
-        this.fileManager.lang.save(this.fileManager.langFile);
+        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
+            this.fileManager.langRU.save(this.fileManager.langFileRU);
+        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
+            this.fileManager.langRU.save(this.fileManager.langFileEN);
+        } else {
+            this.fileManager.langRU.save(this.fileManager.langFileEN);
+        }
     }
 
     public void reloadGeneralConfig() throws IOError {
@@ -38,11 +52,25 @@ public class FileAccessor {
     }
 
     public void reloadLang() throws IOError {
-        if(!this.fileManager.langFile.exists()) {
-            FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("lang.yml", false);
-            return;
+        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
+            if(!this.fileManager.langFileRU.exists()) {
+                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_ru.yml", false);
+                return;
+            }
+            this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
+        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
+            if(!this.fileManager.langFileRU.exists()) {
+                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
+                return;
+            }
+            this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
+        } else {
+            if(!this.fileManager.langFileRU.exists()) {
+                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
+                return;
+            }
+            this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
         }
-        this.fileManager.lang = YamlConfiguration.loadConfiguration(this.fileManager.langFile);
     }
 
     //SQL_File
@@ -50,5 +78,29 @@ public class FileAccessor {
         return this.fileManager.sqlFile;
     }
     //SQL_File
+
+    public void basesFiles() {
+        switch (getGeneralConfig().getString("plugin-settings.storage-method")) {
+            case "sqlite": {
+                if(!this.fileManager.sqlFile.exists()) {
+                    FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("sqlite.db", false);
+                }
+                break;
+            }
+            case "mysql": {
+                break;
+            }
+            case "h2": {
+                break;
+            }
+            default: {
+                if(!this.fileManager.sqlFile.exists()) {
+                    FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("sqlite.db", false);
+                }
+                break;
+            }
+        }
+    }
+
 
 }

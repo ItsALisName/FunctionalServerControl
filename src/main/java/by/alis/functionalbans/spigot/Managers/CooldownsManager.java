@@ -24,6 +24,7 @@ public class CooldownsManager {
     private static int BAN_COOLDOWN = 0;
     private static int MUTE_COOLDOWN = 0;
     private static int KICK_COOLDOWN = 0;
+    private static int TEMPBAN_COOLDOWN = 0;
     public static final TreeMap<String, Long> cooldowns = new TreeMap<>();
 
     public static void setCooldown(Player player, String command) {
@@ -40,6 +41,10 @@ public class CooldownsManager {
                     }
                     case "mute": {
                         cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(MUTE_COOLDOWN));
+                        break;
+                    }
+                    case "tempban": {
+                        cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(TEMPBAN_COOLDOWN));
                         break;
                     }
                 }
@@ -79,7 +84,22 @@ public class CooldownsManager {
 
     public static void saveCooldowns() {
         if(getConfigSettings().isSaveCooldowns()) {
-            getSQLiteManager().saveCooldowns(cooldowns);
+            switch (getConfigSettings().getStorageType()) {
+                case SQLITE: {
+                    getSQLiteManager().saveCooldowns(cooldowns);
+                    break;
+                }
+                case MYSQL: {
+                    break;
+                }
+                case H2: {
+                    break;
+                }
+                default: {
+                    getSQLiteManager().saveCooldowns(cooldowns);
+                    break;
+                }
+            }
         }
     }
 
@@ -105,6 +125,9 @@ public class CooldownsManager {
             }
             if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.mute") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"))) {
                 MUTE_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"));
+            }
+            if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.tempban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.tempban"))) {
+                TEMPBAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.tempban"));
             }
         }
     }

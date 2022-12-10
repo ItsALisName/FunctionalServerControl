@@ -13,4 +13,8 @@ commands:
     aliases: [fb, fbans, funcbans]
     description: The main command of the plugin
   ban:
+    aliases: [permanentban]
     description: The main command for blocking the specified players
+  tempban:
+    aliases: [temporaryban]
+    description: Basic command for temporarily blocking accounts

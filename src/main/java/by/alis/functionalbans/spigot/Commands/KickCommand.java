@@ -163,7 +163,7 @@ public class KickCommand implements CommandExecutor {
 
         if(args[0].equalsIgnoreCase("async")) {
             TemporaryCache cache = new TemporaryCache();
-            sender.sendMessage(String.valueOf(cache.getUnsafeBannedPlayers().size()));
+            sender.sendMessage(String.valueOf(TemporaryCache.getUnsafeBannedPlayers().size()));
             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                 this.banManager.preformBan("azaza", BanType.PERMANENT_NOT_IP, "AZAZA", sender, 1000, true);
             });
