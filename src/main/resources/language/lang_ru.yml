@@ -81,6 +81,15 @@ commands:
     unknown-type: "&c[FunctionalBans] &сНеизвестный тип &c%1$f"
     failed: "&c[FunctionalBans] &7Не удалось перезагрузить &c%1$f"
 
+  unban:
+    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Снимает блокировку с указанного аккаунта"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 Ошибочная блокировка"
+    player-not-banned: "&c[FunctionalBans] &7Игрок &c%1$f &7и так не заблокирован"
+    broadcast-message:
+      with-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f &7по причине: &c%3$f"
+      without-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f"
+
   ban:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует указанного игрока по указанной причине"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f {флаг} <игрок> {время} {причина}"

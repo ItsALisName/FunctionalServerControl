@@ -5,6 +5,7 @@ import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,12 +34,6 @@ public class AsyncJoinListener implements Listener {
                 && !getBannedPlayersContainer().getIpContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName())).equalsIgnoreCase(event.getAddress().getHostAddress())) {
                     long currentTime = getBannedPlayersContainer().getBanTimeContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
                     BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
-                    if(banType != BanType.PERMANENT_IP){
-                        if (System.currentTimeMillis() >= currentTime) {
-                            //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
-                            return;
-                        }
-                    }
                     String reason = getBannedPlayersContainer().getReasonContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
                     String id = getBannedPlayersContainer().getIdsContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
                     String timeAndDate = getBannedPlayersContainer().getRealBanDateContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName())) + ", " + getBannedPlayersContainer().getRealBanTimeContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
@@ -93,6 +88,15 @@ public class AsyncJoinListener implements Listener {
                         }
                         return;
                     }
+
+                    if(banType != BanType.PERMANENT_IP){
+                        if (System.currentTimeMillis() >= currentTime) {
+                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            return;
+                        }
+                    }
+
                     if(banType == BanType.TIMED_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
@@ -121,12 +125,6 @@ public class AsyncJoinListener implements Listener {
                     int indexOf = getBannedPlayersContainer().getIpContainer().indexOf(event.getAddress().getHostAddress());
                     long currentTime = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
                     BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
-                    if(banType != BanType.PERMANENT_IP){
-                        if (System.currentTimeMillis() >= currentTime) {
-                            //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
-                            return;
-                        }
-                    }
                     String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
                     String id = getBannedPlayersContainer().getIdsContainer().get(indexOf);
                     String timeAndDate = getBannedPlayersContainer().getRealBanDateContainer().get(indexOf) + ", " + getBannedPlayersContainer().getRealBanTimeContainer().get(indexOf);
@@ -165,6 +163,16 @@ public class AsyncJoinListener implements Listener {
                         }
 
                     }
+
+                    if(banType != BanType.PERMANENT_IP){
+                        if (System.currentTimeMillis() >= currentTime) {
+                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            event.allow();
+                            return;
+                        }
+                    }
+
                     if(banType == BanType.PERMANENT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
@@ -205,7 +213,9 @@ public class AsyncJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
                     if (System.currentTimeMillis() >= currentTime) {
-                        //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                        this.banManager.preformUnban(player, "The Ban time has expired");
+                        event.allow();
                         return;
                     }
                 }
@@ -293,8 +303,10 @@ public class AsyncJoinListener implements Listener {
                 int indexOf = getBannedPlayersContainer().getUUIDContainer().indexOf(String.valueOf(event.getUniqueId()));
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 long currentTime = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
-                if(System.currentTimeMillis() >= currentTime) {
-                    //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                if (System.currentTimeMillis() >= currentTime) {
+                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                    this.banManager.preformUnban(player, "The Ban time has expired");
+                    event.allow();
                     return;
                 }
                 if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {
@@ -357,7 +369,9 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
+                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    this.banManager.preformUnban(player, "The Ban time has expired");
+                                    event.allow();
                                     return;
                                 }
                             }
@@ -416,7 +430,9 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
+                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    this.banManager.preformUnban(player, "The Ban time has expired");
+                                    event.allow();
                                     return;
                                 }
                             }
@@ -468,7 +484,9 @@ public class AsyncJoinListener implements Listener {
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
                             if (System.currentTimeMillis() >= currentTime) {
-                                //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                                OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                this.banManager.preformUnban(player, "The Ban time has expired");
+                                event.allow();
                                 return;
                             }
                         }
@@ -556,8 +574,10 @@ public class AsyncJoinListener implements Listener {
                         int indexOf = getSQLiteManager().getBannedUUIDs().indexOf(String.valueOf(event.getUniqueId()));
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                        if(System.currentTimeMillis() >= currentTime) {
-                            //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                        if (System.currentTimeMillis() >= currentTime) {
+                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            event.allow();
                             return;
                         }
                         if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {
@@ -624,7 +644,9 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
+                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    this.banManager.preformUnban(player, "The Ban time has expired");
+                                    event.allow();
                                     return;
                                 }
                             }
@@ -683,7 +705,9 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА MULTI-IPS
+                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    this.banManager.preformUnban(player, "The Ban time has expired");
+                                    event.allow();
                                     return;
                                 }
                             }
@@ -735,7 +759,9 @@ public class AsyncJoinListener implements Listener {
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
                             if (System.currentTimeMillis() >= currentTime) {
-                                //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                                OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                this.banManager.preformUnban(player, "The Ban time has expired");
+                                event.allow();
                                 return;
                             }
                         }
@@ -823,8 +849,10 @@ public class AsyncJoinListener implements Listener {
                         int indexOf = getSQLiteManager().getBannedUUIDs().indexOf(String.valueOf(event.getUniqueId()));
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                        if(System.currentTimeMillis() >= currentTime) {
-                            //ЛОГИКА РАЗБЛОКИРОВКИ АККАУНТА
+                        if (System.currentTimeMillis() >= currentTime) {
+                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            event.allow();
                             return;
                         }
                         if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {

@@ -14,9 +14,9 @@ import by.alis.functionalbans.spigot.Listeners.JoinListener;
 import by.alis.functionalbans.spigot.Listeners.NullPlayerJoinListener;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
+import by.alis.functionalbans.spigot.Managers.FilesManagers.StaticFileAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,7 +31,6 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final BanManager banManager = new BanManager();
-    private final FileAccessor accessor = new FileAccessor();
     ConsoleFilterCore consoleFilterCore;
 
     @Override
@@ -41,19 +40,15 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         this.fileManager.initializeAndCreateFilesIfNotExists();
         //Creating files if not exists
 
-        //Bases files
-        this.accessor.basesFiles();
-        //Bases files
-
         //Settings initializer
-        getConfigSettings().loadConfigSettings();
+        StaticSettingsAccessor.getConfigSettings().loadConfigSettings();
         StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
-        CooldownsManager.loadCooldowns();
-        getSQLiteManager().clearCooldowns();
         //Settings initializer
 
         //Bases functions
         getSQLiteManager().setupTables();
+        CooldownsManager.loadCooldowns();
+        getSQLiteManager().clearCooldowns();
         //Bases functions
 
 
@@ -110,4 +105,5 @@ public final class FunctionalBansSpigot extends JavaPlugin {
     private ConsoleFilterCore getConsoleFilterCore() {
         return consoleFilterCore;
     }
+
 }

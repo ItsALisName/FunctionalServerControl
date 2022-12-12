@@ -11,27 +11,26 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 public class FileManager {
 
 
-    public FileManager() {
-        this.initializeFiles();
-    }
+    public FileManager() {this.initializeFiles();}
 
-    protected File configFile;
-    protected FileConfiguration configuration;
-    protected File langFileRU;
-    protected FileConfiguration langRU;
-    protected File langFileEN;
-    protected FileConfiguration langEN;
-    protected File sqlFile;
-    protected File helpFile;
+    public File configFile;
+    public FileConfiguration configuration;
+    public File langFileRU;
+    public FileConfiguration langRU;
+    public File langFileEN;
+    public FileConfiguration langEN;
+    public File sqlFile;
+    public File helpFile;
 
-    private void initializeFiles() {
+    public void initializeFiles() {
         this.configFile = new File("plugins/FunctionalBans/", "general.yml");
         this.configuration = YamlConfiguration.loadConfiguration(this.configFile);
-        this.langFileRU = new File("plugins/FunctionalBans/language/", "language/lang_ru.yml");
+        this.langFileRU = new File("plugins/FunctionalBans/language/", "lang_ru.yml");
         this.langRU = YamlConfiguration.loadConfiguration(this.langFileRU);
         this.sqlFile = new File("plugins/FunctionalBans/", "sqlite.db");
         this.helpFile = new File("plugins/FunctionalBans/", "about.txt");
         this.langFileEN = new File("plugins/FunctionalBans/language/", "lang_en.yml");
+        this.langEN = YamlConfiguration.loadConfiguration(this.langFileEN);
     }
 
     public void initializeAndCreateFilesIfNotExists() {
@@ -47,6 +46,10 @@ public class FileManager {
 
         if(!this.langFileEN.exists()) {
             FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
+        }
+
+        if(!this.sqlFile.exists()) {
+            FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("sqlite.db", false);
         }
 
         if(!this.helpFile.exists()) {

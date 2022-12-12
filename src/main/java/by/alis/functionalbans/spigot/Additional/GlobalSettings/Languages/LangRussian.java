@@ -50,5 +50,6 @@ public class LangRussian {
     public static String PROTOCOL_LIB_FINDED = "&e[FunctionalBans -> ProtocolLib] ProtocolLib обнаружен, подключаюсь...";
     public static String PROTOCOL_LIB_HOOKED = "&a[FunctionalBans -> ProtocolLib] Подключение к ProtocolLib прошло успешно.";
     public static String PROTOCOL_LIB_ERROR = "&c[FunctionalBans -> ProtocolLib] Не удалось подключться к ProtocolLib";
+    public static String UNBAN_FAILED = "&4[FunctionalBans | Ошибка] Не удалось разблокировать игрока %player%";
 
 }

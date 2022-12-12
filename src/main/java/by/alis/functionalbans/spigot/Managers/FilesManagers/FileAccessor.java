@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Managers.FilesManagers;
 
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -8,9 +9,11 @@ import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
 
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+
 public class FileAccessor {
 
-    FileManager fileManager = new FileManager();
+    public FileManager fileManager = new FileManager();
 
     public FileAccessor() {}
 
@@ -19,9 +22,9 @@ public class FileAccessor {
     }
 
     public FileConfiguration getLang() {
-        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
+        if(getConfigSettings().getGlobalLanguage().equalsIgnoreCase("ru_RU")) {
             return this.fileManager.langRU;
-        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
+        } else if(getConfigSettings().getGlobalLanguage().equalsIgnoreCase("en_US")) {
             return this.fileManager.langEN;
         } else {
             return this.fileManager.langEN;
@@ -34,73 +37,35 @@ public class FileAccessor {
     }
 
     public void saveLang() throws IOException {
-        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
-            this.fileManager.langRU.save(this.fileManager.langFileRU);
-        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
-            this.fileManager.langRU.save(this.fileManager.langFileEN);
-        } else {
-            this.fileManager.langRU.save(this.fileManager.langFileEN);
-        }
+        this.fileManager.langRU.save(this.fileManager.langFileRU);
+        this.fileManager.langRU.save(this.fileManager.langFileEN);
+        this.fileManager.langRU.save(this.fileManager.langFileEN);
     }
 
     public void reloadGeneralConfig() throws IOError {
-        if(!this.fileManager.configFile.exists()) {
-            FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("general.yml", false);
-            return;
-        }
+        Bukkit.getConsoleSender().sendMessage("1: " + this.fileManager.configuration.getName());
+        Bukkit.getConsoleSender().sendMessage("2: " + this.fileManager.configFile.getPath());
         this.fileManager.configuration = YamlConfiguration.loadConfiguration(this.fileManager.configFile);
     }
 
     public void reloadLang() throws IOError {
-        if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
-            if(!this.fileManager.langFileRU.exists()) {
-                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_ru.yml", false);
-                return;
-            }
+        if(!this.fileManager.langFileRU.exists()) {
+            FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_ru.yml", false);
             this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
-        } else if(getGeneralConfig().getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
-            if(!this.fileManager.langFileRU.exists()) {
-                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
-                return;
-            }
-            this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
-        } else {
-            if(!this.fileManager.langFileRU.exists()) {
-                FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
-                return;
-            }
+        }
+        this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
+        if (!this.fileManager.langFileEN.exists()) {
+            FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("language/lang_en.yml", false);
             this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
         }
+        this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
     }
 
     //SQL_File
-    public File getSQLFile() {
+    public File getSQLiteFile() {
         return this.fileManager.sqlFile;
     }
     //SQL_File
-
-    public void basesFiles() {
-        switch (getGeneralConfig().getString("plugin-settings.storage-method")) {
-            case "sqlite": {
-                if(!this.fileManager.sqlFile.exists()) {
-                    FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("sqlite.db", false);
-                }
-                break;
-            }
-            case "mysql": {
-                break;
-            }
-            case "h2": {
-                break;
-            }
-            default: {
-                if(!this.fileManager.sqlFile.exists()) {
-                    FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("sqlite.db", false);
-                }
-                break;
-            }
-        }
-    }
 
 
 }

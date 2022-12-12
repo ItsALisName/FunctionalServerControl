@@ -1,11 +1,15 @@
 package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.GeneralConfigSettings;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
+import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Additional.Placeholders.TimeLangGlobal;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
+import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -17,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.getReason;
 
 public class KickCommand implements CommandExecutor {
@@ -26,10 +31,9 @@ public class KickCommand implements CommandExecutor {
         this.plugin = plugin;
         plugin.getCommand("kick").setExecutor(this);
     }
-    TimeLangGlobal timeLang = new TimeLangGlobal();
     TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     BanManager banManager = new BanManager();
-    CooldownsManager cooldownsManager = new CooldownsManager();
+    GeneralConfigSettings generalConfigSettings = new GeneralConfigSettings();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -179,6 +183,30 @@ public class KickCommand implements CommandExecutor {
         if(args[0].equalsIgnoreCase("cd")) {
             sender.sendMessage("COUNT: " + CooldownsManager.cooldowns.size());
             sender.sendMessage("VAL: " + CooldownsManager.cooldowns.values());
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("unban")) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+            if(OtherUtils.isNotNullPlayer(args[1])) {
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    this.banManager.preformUnban(player, sender, getReason(args, 1), true);
+                });
+            } else {
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    this.banManager.preformUnban(args[1], sender, getReason(args, 1), true);
+                });
+            }
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("sett")) {
+            sender.sendMessage("LANG " + generalConfigSettings.getConsoleLanguageMode());
+            sender.sendMessage("LANG2 " + generalConfigSettings.getGlobalLanguage());
+            FileAccessor fileAccessor = new FileAccessor();
+            sender.sendMessage("LANG TRUE " + fileAccessor.getGeneralConfig().getString("plugin-settings.global-language"));
+            sender.sendMessage("PURGE: " + String.valueOf(getConfigSettings().isPurgeConfirmation()));
+            return true;
         }
 
         /*

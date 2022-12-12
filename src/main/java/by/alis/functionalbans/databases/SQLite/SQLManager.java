@@ -5,11 +5,8 @@ import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEng
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
-import com.comphenix.net.bytebuddy.utility.nullability.MaybeNull;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -30,11 +27,11 @@ public class SQLManager extends SQLCore {
 
     @Override
     protected Connection getSQLConnection() {
-        if (this.fileAccessor.getSQLFile().exists()) {
+        if (this.fileAccessor.getSQLiteFile().exists()) {
             if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                     return sqlConnection;
                 } catch (ClassNotFoundException | SQLException ignored) {
                     Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_CONNECTION_ERROR));
@@ -49,7 +46,7 @@ public class SQLManager extends SQLCore {
             if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                     return sqlConnection;
                 } catch (ClassNotFoundException | SQLException ignored) {
                     Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
@@ -63,7 +60,7 @@ public class SQLManager extends SQLCore {
 
             try {
                 Class.forName("org.sqlite.JDBC");
-                sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                 return sqlConnection;
             } catch (ClassNotFoundException | SQLException ignored) {
                 Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
@@ -81,14 +78,14 @@ public class SQLManager extends SQLCore {
                 Bukkit.getConsoleSender().sendMessage("");
                 Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_ATTEMPT_FILE_RECREATE));
                 try {
-                    this.fileAccessor.getSQLFile().createNewFile();
+                    this.fileAccessor.getSQLiteFile().createNewFile();
                 } catch (IOException ignored) {
                 }
-                if (this.fileAccessor.getSQLFile().exists()) {
+                if (this.fileAccessor.getSQLiteFile().exists()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_FILE_RECREATED));
                     try {
                         Class.forName("org.sqlite.JDBC");
-                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                         Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_RECONNECTION_SUCCESS));
                         String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
                         String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
@@ -125,14 +122,14 @@ public class SQLManager extends SQLCore {
                 Bukkit.getConsoleSender().sendMessage("");
                 Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_ATTEMPT_FILE_RECREATE));
                 try {
-                    this.fileAccessor.getSQLFile().createNewFile();
+                    this.fileAccessor.getSQLiteFile().createNewFile();
                 } catch (IOException ignored) {
                 }
-                if (this.fileAccessor.getSQLFile().exists()) {
+                if (this.fileAccessor.getSQLiteFile().exists()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_FILE_RECREATED));
                     try {
                         Class.forName("org.sqlite.JDBC");
-                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                         Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
                         String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
                         String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
@@ -168,14 +165,14 @@ public class SQLManager extends SQLCore {
             Bukkit.getConsoleSender().sendMessage("");
             Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_ATTEMPT_FILE_RECREATE));
             try {
-                this.fileAccessor.getSQLFile().createNewFile();
+                this.fileAccessor.getSQLiteFile().createNewFile();
             } catch (IOException ignored) {
             }
-            if (this.fileAccessor.getSQLFile().exists()) {
+            if (this.fileAccessor.getSQLiteFile().exists()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_FILE_RECREATED));
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLFile());
+                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
                     Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
                     String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
                     String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";

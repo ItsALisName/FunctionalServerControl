@@ -32,19 +32,27 @@ public class CooldownsManager {
             if (!player.hasPermission("functionalbans.cooldowns.bypass")) {
                 switch (command) {
                     case "ban": {
-                        cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(BAN_COOLDOWN));
+                        if(BAN_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(BAN_COOLDOWN));
+                        }
                         break;
                     }
                     case "kick": {
-                        cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(KICK_COOLDOWN));
+                        if(KICK_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(KICK_COOLDOWN));
+                        }
                         break;
                     }
                     case "mute": {
-                        cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(MUTE_COOLDOWN));
+                        if(MUTE_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(MUTE_COOLDOWN));
+                        }
                         break;
                     }
                     case "tempban": {
-                        cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(TEMPBAN_COOLDOWN));
+                        if(TEMPBAN_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(TEMPBAN_COOLDOWN));
+                        }
                         break;
                     }
                 }

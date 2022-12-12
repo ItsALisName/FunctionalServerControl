@@ -173,7 +173,7 @@ public class BanCommand implements CommandExecutor {
                     if(args[0].equalsIgnoreCase("-a")) {
                         if(sender.hasPermission("functionalbans.use.unsafe-flags")) {
 
-                            if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                            if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                                 return true;
                             }
@@ -241,7 +241,7 @@ public class BanCommand implements CommandExecutor {
                         }
                     }
 
-                    if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                    if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                         sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                         return true;
                     }
@@ -305,7 +305,7 @@ public class BanCommand implements CommandExecutor {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                             return true;
                         }
-                        if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                        if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
@@ -435,7 +435,7 @@ public class BanCommand implements CommandExecutor {
 
                     // A Bans with time
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1]) && args.length == 2) {
-                        if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                        if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
@@ -493,7 +493,7 @@ public class BanCommand implements CommandExecutor {
                     }
 
                     if(args.length == 3 && args[0].equalsIgnoreCase("-s") && this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
-                        if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                        if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.no-reason")));
                             return true;
                         }
@@ -685,11 +685,11 @@ public class BanCommand implements CommandExecutor {
                         }
                         if(!sender.hasPermission("functionalbans.time-bypass")) {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                this.banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 1), sender, this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player)sender), true);
+                                this.banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player)sender), true);
                             });
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                this.banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
+                                this.banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                             });
                         }
                         return true;

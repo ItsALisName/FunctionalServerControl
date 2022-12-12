@@ -1,13 +1,16 @@
 package by.alis.functionalbans.spigot.Managers.BansManagers;
 
 import by.alis.functionalbans.API.Spigot.Events.AsyncBanPreprocessEvent;
+import by.alis.functionalbans.API.Spigot.Events.AsyncUnbanPreprocessEvent;
 import by.alis.functionalbans.spigot.Additional.Enums.BanType;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
 import by.alis.functionalbans.spigot.Additional.WorldDate.WorldTimeAndDateClass;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.IdsManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeManager;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,15 +18,13 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
 
 public class BanManager {
 
     FileAccessor accessor = new FileAccessor();
-    GlobalVariables variables = new GlobalVariables();
     IdsManager idsManager = new IdsManager();
     TimeManager timeManager = new TimeManager();
 
@@ -87,6 +88,8 @@ public class BanManager {
      * @return true if IP banned
      */
     public boolean isIpBanned(String ipAddress) {
+
+
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getBannedPlayersContainer().getIpContainer().contains(ipAddress);
         } else {
@@ -114,6 +117,7 @@ public class BanManager {
      * @return true if player ip is banned
      */
     public boolean isIpBanned(OfflinePlayer player) {
+
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getBannedPlayersContainer().getIpContainer().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId()));
         } else {
@@ -173,7 +177,7 @@ public class BanManager {
         String initiatorName = null;
         if(initiator instanceof Player) {
             initiatorName = ((Player)initiator).getPlayerListName();
-        } else if(initiator instanceof ConsoleCommandSender) {
+        } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
 
@@ -782,10 +786,10 @@ public class BanManager {
         }
         if(banPlayerEvent.isCancelled()) return;
 
-        String initiatorName = null;
+        String initiatorName = "ERROR";
         if(initiator instanceof Player) {
             initiatorName = ((Player)initiator).getPlayerListName();
-        } else if(initiator instanceof ConsoleCommandSender) {
+        } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
 
@@ -1219,6 +1223,512 @@ public class BanManager {
             }
         }
 
+    }
+
+    public void preformUnban(OfflinePlayer player, CommandSender unbanInitiator, String unbanReason, boolean announceUnban) {
+        String initiatorName = null;
+        if(unbanInitiator instanceof Player) {
+            initiatorName = ((Player) unbanInitiator).getPlayerListName();
+        } else {
+            initiatorName = getGlobalVariables().getConsoleVariableName();
+        }
+        if(!isPlayerBanned(player)) {
+            unbanInitiator.sendMessage(setColors(this.accessor.getLang().getString("commands.unban.player-not-banned")).replace("%1$f", player.getName()));
+            return;
+        }
+
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason, getConfigSettings().isApiEnabled());
+
+        if(getConfigSettings().isApiEnabled()) {
+            if(getConfigSettings().isApiProtectedByPassword()) {
+                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+                }
+            } else {
+                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+            }
+        }
+
+        if(asyncUnbanPreprocessEvent.isCancelled()) return;
+
+        unbanReason = asyncUnbanPreprocessEvent.getReason();
+
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            try {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        break;
+                    }
+                    case MYSQL: {
+                        break;
+                    }
+                    case H2: {
+                        break;
+                    }
+                    default: {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        break;
+                    }
+                }
+                this.getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                if(unbanReason == "" || unbanReason == null) {
+                    if(announceUnban) {
+                        Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                    }
+                } else {
+                    if(announceUnban) {
+                        Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unbanReason)));
+                    }
+                }
+                return;
+            } catch (NullPointerException ignored) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                        break;
+                    }
+                    case "en_US": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                    default: {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            switch (getConfigSettings().getStorageType()) {
+                case SQLITE: {
+                    try {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    if(unbanReason == "" || unbanReason == null) {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                        }
+                    } else {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unbanReason)));
+                        }
+                    }
+                    break;
+                }
+                case MYSQL: {
+                    break;
+                }
+                case H2: {
+                    break;
+                }
+                default: {
+                    try {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    if(unbanReason == "" || unbanReason == null) {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                        }
+                    } else {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unbanReason)));
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public void preformUnban(String player, CommandSender unbanInitiator, String unbanReason, boolean announceUnban) {
+        String initiatorName = null;
+        if(!isPlayerBanned(player)) {
+            unbanInitiator.sendMessage(setColors(this.accessor.getLang().getString("commands.unban.player-not-banned")).replace("%1$f", player));
+            return;
+        }
+        if(unbanInitiator instanceof Player) {
+            initiatorName = ((Player) unbanInitiator).getPlayerListName();
+        } else {
+            initiatorName = getGlobalVariables().getConsoleVariableName();
+        }
+
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason, getConfigSettings().isApiEnabled());
+
+        if(getConfigSettings().isApiEnabled()) {
+            if(getConfigSettings().isApiProtectedByPassword()) {
+                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+                }
+            } else {
+                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+            }
+        }
+
+        unbanReason = asyncUnbanPreprocessEvent.getReason();
+
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            try {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        break;
+                    }
+                    case MYSQL: {
+                        break;
+                    }
+                    case H2: {
+                        break;
+                    }
+                    default: {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        break;
+                    }
+                }
+                this.getBanContainerManager().removeFromBanContainer("-n", player);
+                if(unbanReason == "" || unbanReason == null) {
+                    if(announceUnban) {
+                        Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                    }
+                } else {
+                    if(announceUnban) {
+                        Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unbanReason)));
+                    }
+                }
+                return;
+            } catch (NullPointerException ignored) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                        break;
+                    }
+                    case "en_US": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                    default: {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            switch (getConfigSettings().getStorageType()) {
+                case SQLITE: {
+                    try {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    if(unbanReason == "" || unbanReason == null) {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                        }
+                    } else {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unbanReason)));
+                        }
+                    }
+                    break;
+                }
+                case MYSQL: {
+                    break;
+                }
+                case H2: {
+                    break;
+                }
+                default: {
+                    try {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    if(unbanReason == "" || unbanReason == null) {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                        }
+                    } else {
+                        if(announceUnban) {
+                            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unbanReason)));
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public void preformUnban(OfflinePlayer player, String unbanReason) { //NEW
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason, getConfigSettings().isApiEnabled());
+
+        if(getConfigSettings().isApiEnabled()) {
+            if(getConfigSettings().isApiProtectedByPassword()) {
+                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+                }
+            } else {
+                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+            }
+        }
+
+        if(asyncUnbanPreprocessEvent.isCancelled()) return;
+
+        unbanReason = "The Ban time has expired";
+
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            try {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        break;
+                    }
+                    case MYSQL: {
+                        break;
+                    }
+                    case H2: {
+                        break;
+                    }
+                    default: {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        break;
+                    }
+                }
+                this.getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                return;
+            } catch (NullPointerException ignored) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                        break;
+                    }
+                    case "en_US": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                    default: {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            switch (getConfigSettings().getStorageType()) {
+                case SQLITE: {
+                    try {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case MYSQL: {
+                    break;
+                }
+                case H2: {
+                    break;
+                }
+                default: {
+                    try {
+                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public void preformUnban(String player, String unbanReason) { //Another
+
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason, getConfigSettings().isApiEnabled());
+
+        if(getConfigSettings().isApiEnabled()) {
+            if(getConfigSettings().isApiProtectedByPassword()) {
+                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+                }
+            } else {
+                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
+            }
+        }
+
+        unbanReason = "The Ban time has expired";
+
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            try {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        break;
+                    }
+                    case MYSQL: {
+                        break;
+                    }
+                    case H2: {
+                        break;
+                    }
+                    default: {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        break;
+                    }
+                }
+                this.getBanContainerManager().removeFromBanContainer("-n", player);
+                return;
+            } catch (NullPointerException ignored) {
+                switch (getConfigSettings().getConsoleLanguageMode()) {
+                    case "ru_RU": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                        break;
+                    }
+                    case "en_US": {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                    default: {
+                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            switch (getConfigSettings().getStorageType()) {
+                case SQLITE: {
+                    try {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case MYSQL: {
+                    break;
+                }
+                case H2: {
+                    break;
+                }
+                default: {
+                    try {
+                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                    } catch (NullPointerException ignored) {
+                        switch (getConfigSettings().getConsoleLanguageMode()) {
+                            case "ru_RU": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.UNBAN_FAILED));
+                                break;
+                            }
+                            case "en_US": {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                            default: {
+                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.UNBAN_FAILED));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     public BanContainerManager getBanContainerManager() {

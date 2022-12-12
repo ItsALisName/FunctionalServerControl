@@ -5,6 +5,7 @@ import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +32,10 @@ public class NullPlayerJoinListener implements Listener {
                 int indexOf = getBannedPlayersContainer().getNameContainer().indexOf(player.getName());
                 String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                 long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
+                if (System.currentTimeMillis() >= time) {
+                    this.banManager.preformUnban(player, "The Ban time has expired");
+                    return;
+                }
                 String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
                 String realDate = getBannedPlayersContainer().getRealBanDateContainer().get(indexOf);
                 String realTime = getBannedPlayersContainer().getRealBanTimeContainer().get(indexOf);
@@ -128,6 +133,10 @@ public class NullPlayerJoinListener implements Listener {
                         int indexOf = getBannedPlayersContainer().getNameContainer().indexOf(player.getName());
                         String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                         long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
+                        if (System.currentTimeMillis() >= time) {
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            return;
+                        }
                         String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
                         String realDate = getBannedPlayersContainer().getRealBanDateContainer().get(indexOf);
                         String realTime = getBannedPlayersContainer().getRealBanTimeContainer().get(indexOf);
@@ -217,6 +226,10 @@ public class NullPlayerJoinListener implements Listener {
                         int indexOf = getBannedPlayersContainer().getNameContainer().indexOf(player.getName());
                         String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                         long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
+                        if (System.currentTimeMillis() >= time) {
+                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            return;
+                        }
                         String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
                         String realDate = getBannedPlayersContainer().getRealBanDateContainer().get(indexOf);
                         String realTime = getBannedPlayersContainer().getRealBanTimeContainer().get(indexOf);

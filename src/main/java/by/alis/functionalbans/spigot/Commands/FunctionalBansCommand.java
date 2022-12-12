@@ -1,9 +1,13 @@
 package by.alis.functionalbans.spigot.Commands;
 
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.GeneralConfigSettings;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.Completers.FunctionalBansCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.FilesManagers.StaticFileAccessor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +18,7 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 
 public class FunctionalBansCommand implements CommandExecutor {
+
 
     FunctionalBansSpigot plugin;
     public FunctionalBansCommand(FunctionalBansSpigot plugin) {
@@ -26,8 +31,9 @@ public class FunctionalBansCommand implements CommandExecutor {
     private boolean purgeConfirmation = false;
 
 
-    private final FileAccessor accessor = new FileAccessor();
-    private final TemporaryCache cache = new TemporaryCache();
+    FileAccessor accessor = new FileAccessor();
+    TemporaryCache cache = new TemporaryCache();
+    GlobalVariables globalVariables = new GlobalVariables();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -61,7 +67,7 @@ public class FunctionalBansCommand implements CommandExecutor {
                     this.accessor.reloadGeneralConfig();
                     this.accessor.reloadLang();
                     getConfigSettings().reloadConfig();
-                    getGlobalVariables().reloadGlobalVariables();
+                    StaticSettingsAccessor.getGlobalVariables().reloadGlobalVariables();
                     sender.sendMessage(setColors(this.accessor.getLang().getString("commands.reload.done").replace("%1$f", getGlobalVariables().getVariableAll())));
                     return true;
                 } catch (RuntimeException ignored) {
@@ -73,7 +79,7 @@ public class FunctionalBansCommand implements CommandExecutor {
             if(args[1].equalsIgnoreCase("globalvariables")) {
                 try{
                     this.accessor.reloadLang();
-                    getGlobalVariables().reloadGlobalVariables();
+                    StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
                     sender.sendMessage(setColors(this.accessor.getLang().getString("commands.reload.done").replace("%1$f", args[1])));
                     return true;
                 } catch (RuntimeException ingored) {
@@ -86,7 +92,7 @@ public class FunctionalBansCommand implements CommandExecutor {
                 try{
                     this.accessor.reloadGeneralConfig();
                     this.accessor.reloadLang();
-                    getConfigSettings().reloadConfig();
+                    StaticSettingsAccessor.getConfigSettings().reloadConfig();
                     sender.sendMessage(setColors(this.accessor.getLang().getString("commands.reload.done").replace("%1$f", args[1])));
                     return true;
                 } catch (RuntimeException ingored) {

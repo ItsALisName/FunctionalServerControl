@@ -85,7 +85,7 @@ public class TempbanCommand implements CommandExecutor {
 
                 if(args.length == 2) {
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
-                        if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                        if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                             sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
                             return true;
                         }
@@ -167,7 +167,7 @@ public class TempbanCommand implements CommandExecutor {
                                 return true;
                             }
 
-                            if(!sender.hasPermission("functionalbans.use.no-reason")) {
+                            if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
                                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
                                 return true;
                             }

@@ -52,5 +52,6 @@ public class LangEnglish {
     public static String PROTOCOL_LIB_FINDED = "&e[FunctionalBans -> ProtocolLib] ProtocolLib detected, connecting...";
     public static String PROTOCOL_LIB_HOOKED = "&a[FunctionalBans -> ProtocolLib] Connection to ProtocolLib was successful.";
     public static String PROTOCOL_LIB_ERROR ="&c[FunctionalBans -> ProtocolLib] Failed to connect to ProtocolLib";
+    public static String UNBAN_FAILED = "&4[FunctionalBans | Error] Failed to unban player %player%";
 
 }
