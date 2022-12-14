@@ -1,11 +1,9 @@
 package by.alis.functionalbans.spigot.Managers.TimeManagers;
 
-import by.alis.functionalbans.spigot.Additional.Enums.TimeRestrictionType;
-import by.alis.functionalbans.spigot.Additional.Enums.TimeUnit;
+import by.alis.functionalbans.API.Enums.TimeRestrictionType;
+import by.alis.functionalbans.API.Enums.TimeUnit;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
-import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
-import org.bukkit.Bukkit;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.entity.Player;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;

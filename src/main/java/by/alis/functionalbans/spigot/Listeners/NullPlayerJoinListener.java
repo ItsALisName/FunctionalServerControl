@@ -1,16 +1,16 @@
 package by.alis.functionalbans.spigot.Listeners;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
-import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.API.Enums.BanType;
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
+import by.alis.functionalbans.spigot.Managers.Bans.UnbanManager;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
@@ -23,6 +23,7 @@ public class NullPlayerJoinListener implements Listener {
     private final BanManager banManager = new BanManager();
     private final FileAccessor accessor = new FileAccessor();
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
+    private final UnbanManager unbanManager = new UnbanManager();
 
     @EventHandler
     public void onNullPlayerJoin(PlayerJoinEvent event) {
@@ -33,7 +34,9 @@ public class NullPlayerJoinListener implements Listener {
                 String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                 long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
                 if (System.currentTimeMillis() >= time) {
-                    this.banManager.preformUnban(player, "The Ban time has expired");
+                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+                        this.unbanManager.preformUnban(player, "The Ban time has expired");
+                    });
                     return;
                 }
                 String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
@@ -134,7 +137,9 @@ public class NullPlayerJoinListener implements Listener {
                         String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                         long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
                         if (System.currentTimeMillis() >= time) {
-                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+                                this.unbanManager.preformUnban(player, "The Ban time has expired");
+                            });
                             return;
                         }
                         String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);
@@ -227,7 +232,9 @@ public class NullPlayerJoinListener implements Listener {
                         String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                         long time = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
                         if (System.currentTimeMillis() >= time) {
-                            this.banManager.preformUnban(player, "The Ban time has expired");
+                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+                                this.unbanManager.preformUnban(player, "The Ban time has expired");
+                            });
                             return;
                         }
                         String reason = getBannedPlayersContainer().getReasonContainer().get(indexOf);

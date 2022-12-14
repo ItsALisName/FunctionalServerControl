@@ -1,8 +1,8 @@
 package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import org.bukkit.Bukkit;
 
@@ -20,7 +20,7 @@ public class ConsoleFilterHelper {
     private final List<String> functionalBansCommands = new ArrayList<>();
     private static final String ISSUED_COMMAND_TEXT = "issued server command: ";
     private static final String[] commands = {"/ban", "/tempban", "/kick", "/kickall", "/unban", "/mute", "/unmute", "/check", "/fb", "/functionalbans", "/fbans", "/funcbans", "/temporaryban", "/crazykick", "/permanentban", "/banip", "/tempbanip",
-    "/temporarybanip", "/permanentbanip" };
+    "/temporarybanip", "/permanentbanip", "/kickall" };
 
     protected boolean isFunctionalBansCommand(String consoleMessage) {
         if(!this.functionalBansCommands.isEmpty()) {

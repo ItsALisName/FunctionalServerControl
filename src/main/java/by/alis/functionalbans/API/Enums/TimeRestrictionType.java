@@ -1,4 +1,4 @@
-package by.alis.functionalbans.spigot.Additional.Enums;
+package by.alis.functionalbans.API.Enums;
 
 public enum TimeRestrictionType {
 

@@ -1,12 +1,10 @@
-package by.alis.functionalbans.spigot.Managers.FilesManagers;
+package by.alis.functionalbans.spigot.Managers.Files;
 
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-
-import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
 public class FileManager {
 

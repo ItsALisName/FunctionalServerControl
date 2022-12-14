@@ -1,4 +1,4 @@
-package by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages;
+package by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages;
 
 public class LangEnglish {
 
@@ -53,5 +53,5 @@ public class LangEnglish {
     public static String PROTOCOL_LIB_HOOKED = "&a[FunctionalBans -> ProtocolLib] Connection to ProtocolLib was successful.";
     public static String PROTOCOL_LIB_ERROR ="&c[FunctionalBans -> ProtocolLib] Failed to connect to ProtocolLib";
     public static String UNBAN_FAILED = "&4[FunctionalBans | Error] Failed to unban player %player%";
-
+    public static String CONFIG_NICKNAME_UNKNOWN_CHECK_MODE = "&c[Functional Bans | Error] The type of verification of nicknames is incorrect in general.yml, use the standard type (contains)";
 }

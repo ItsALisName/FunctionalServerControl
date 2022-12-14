@@ -18,3 +18,9 @@ commands:
   tempban:
     aliases: [temporaryban]
     description: Basic command for temporarily blocking accounts
+  kickall:
+    description: Kicks all players from the server
+  unban:
+    description: Command to unban an account
+  test:
+    description: test

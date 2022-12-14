@@ -1,19 +1,17 @@
 package by.alis.functionalbans.spigot.Commands;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.API.Enums.BanType;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Commands.Completers.TempbanCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
-import by.alis.functionalbans.spigot.Managers.CooldownsManager;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
@@ -85,37 +83,11 @@ public class TempbanCommand implements CommandExecutor {
 
                 if(args.length == 2) {
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
-                        if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
-                            sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
-                            return true;
-                        }
-
-                        if(getConfigSettings().isProhibitYourselfInteraction()) {
-                            if(args[0].equalsIgnoreCase(sender.getName())) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
-                                return true;
-                            }
-                        }
 
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
-                        if(!sender.hasPermission("functionalbans.time-bypass")) {
-                            if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
-                                return true;
-                            }
-                        }
-
-                        if(sender instanceof Player) {
-                            if(CooldownsManager.playerHasCooldown(((Player) sender).getPlayer(), command.getName())) {
-                                CooldownsManager.notifyAboutCooldown(((Player) sender).getPlayer(), command.getName());
-                                return true;
-                            } else {
-                                CooldownsManager.setCooldown(((Player) sender).getPlayer(), command.getName());
-                            }
-                        }
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(OtherUtils.isNotNullPlayer(args[0])) {
+                        if(!OtherUtils.isNotNullPlayer(args[0])) {
                             if(!sender.hasPermission("functionalbans.temp-ban.offline")) {
                                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -162,42 +134,10 @@ public class TempbanCommand implements CommandExecutor {
                     if(args.length == 3 && args[0].equalsIgnoreCase("-s")) {
                         if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
 
-                            if (!sender.hasPermission("functionalbans.use.silently")) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
-                                return true;
-                            }
-
-                            if(!getConfigSettings().isBanAllowedWithoutReason() && !sender.hasPermission("functionalbans.use.no-reason")) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
-                                return true;
-                            }
-
-                            if(getConfigSettings().isProhibitYourselfInteraction()) {
-                                if(args[1].equalsIgnoreCase(sender.getName())) {
-                                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
-                                    return true;
-                                }
-                            }
-
                             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
-                            if(!sender.hasPermission("functionalbans.time-bypass")) {
-                                if(time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
-                                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
-                                    return true;
-                                }
-                            }
-
-                            if(sender instanceof Player) {
-                                if(CooldownsManager.playerHasCooldown(((Player) sender).getPlayer(), command.getName())) {
-                                    CooldownsManager.notifyAboutCooldown(((Player) sender).getPlayer(), command.getName());
-                                    return true;
-                                } else {
-                                    CooldownsManager.setCooldown(((Player) sender).getPlayer(), command.getName());
-                                }
-                            }
 
                             OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if(OtherUtils.isNotNullPlayer(args[1])) {
+                            if(!OtherUtils.isNotNullPlayer(args[1])) {
                                 if(!sender.hasPermission("functionalbans.temp-ban.offline")) {
                                     sender.sendMessage(setColors(this.accessor.getLang().getString("other.offline-no-perms")));
                                     return true;
@@ -233,37 +173,11 @@ public class TempbanCommand implements CommandExecutor {
                     if(args.length > 3 && args[0].equalsIgnoreCase("-s")) {
 
                         if (this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
-                            if (!sender.hasPermission("functionalbans.use.silently")) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
-                                return true;
-                            }
-
-                            if (getConfigSettings().isProhibitYourselfInteraction()) {
-                                if (args[1].equalsIgnoreCase(sender.getName())) {
-                                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
-                                    return true;
-                                }
-                            }
 
                             long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
-                            if (!sender.hasPermission("functionalbans.time-bypass")) {
-                                if (time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
-                                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
-                                    return true;
-                                }
-                            }
-
-                            if (sender instanceof Player) {
-                                if (CooldownsManager.playerHasCooldown(((Player) sender).getPlayer(), command.getName())) {
-                                    CooldownsManager.notifyAboutCooldown(((Player) sender).getPlayer(), command.getName());
-                                    return true;
-                                } else {
-                                    CooldownsManager.setCooldown(((Player) sender).getPlayer(), command.getName());
-                                }
-                            }
 
                             OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if (OtherUtils.isNotNullPlayer(args[1])) {
+                            if (!OtherUtils.isNotNullPlayer(args[1])) {
                                 if (!sender.hasPermission("functionalbans.temp-ban.offline")) {
                                     sender.sendMessage(setColors(this.accessor.getLang().getString("other.offline-no-perms")));
                                     return true;
@@ -298,32 +212,10 @@ public class TempbanCommand implements CommandExecutor {
 
                     if (this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
 
-                        if (getConfigSettings().isProhibitYourselfInteraction()) {
-                            if (args[0].equalsIgnoreCase(sender.getName())) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
-                                return true;
-                            }
-                        }
-
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
-                        if (!sender.hasPermission("functionalbans.time-bypass")) {
-                            if (time > this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)) {
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("other.ban-over-time").replace("%1$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getMaxPlayerPunishTime((Player) sender)))));
-                                return true;
-                            }
-                        }
-
-                        if (sender instanceof Player) {
-                            if (CooldownsManager.playerHasCooldown(((Player) sender).getPlayer(), command.getName())) {
-                                CooldownsManager.notifyAboutCooldown(((Player) sender).getPlayer(), command.getName());
-                                return true;
-                            } else {
-                                CooldownsManager.setCooldown(((Player) sender).getPlayer(), label);
-                            }
-                        }
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if (OtherUtils.isNotNullPlayer(args[0])) {
+                        if (!OtherUtils.isNotNullPlayer(args[0])) {
                             if (!sender.hasPermission("functionalbans.temp-ban.offline")) {
                                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.offline-no-perms")));
                                 return true;

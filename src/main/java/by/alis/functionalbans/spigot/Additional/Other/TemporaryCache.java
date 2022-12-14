@@ -1,14 +1,26 @@
 package by.alis.functionalbans.spigot.Additional.Other;
 
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import by.alis.functionalbans.spigot.Managers.Bans.UnbanManager;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.util.*;
+
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 
 public class TemporaryCache {
 
     static HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
     static HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
+    static List<String> onlinePlayerNames = new ArrayList<>();
+    static int bansDeletedCount, muteDeletedCount;
+    private static final UnbanManager unbanManager = new UnbanManager();
+    private static final FileAccessor accessor = new FileAccessor();
 
 
     public HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
@@ -22,5 +34,63 @@ public class TemporaryCache {
     }
     public static void setUnsafeBannedPlayers(OfflinePlayer whoMuted, CommandSender initiator) {
         unsafeBannedPlayers.put(whoMuted, initiator);
+    }
+
+    public static void preformCommandUndo(CommandSender initiator) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+            for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeBannedPlayers.entrySet()) {
+                if(e.getValue().equals(initiator)) {
+                    bansDeletedCount = bansDeletedCount + 1;
+                    unsafeBannedPlayers.remove(e.getKey());
+                    unbanManager.preformUnban(e.getKey(), getGlobalVariables().getDefaultReason());
+                }
+            }
+            if(bansDeletedCount != 0) {
+                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
+            }
+
+            for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeMutedPlayers.entrySet()) {
+                if(e.getValue().equals(initiator)) {
+                    muteDeletedCount = muteDeletedCount + 1;
+                    unsafeMutedPlayers.remove(e.getKey());
+                    // TODO: 14.12.2022 Unmute
+                }
+            }
+            if(muteDeletedCount != 0) {
+                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
+            }
+
+            if(bansDeletedCount == 0 && muteDeletedCount == 0) {
+                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.nothing-to-undo")));
+                return;
+            }
+            bansDeletedCount = 0;
+            muteDeletedCount = 0;
+
+        });
+    }
+
+    /**
+     * Used to get a list of names of online players
+     * @return List of online player names
+     */
+    public static List<String> getOnlinePlayerNames() {
+        return onlinePlayerNames;
+    }
+
+    /**
+     * Expands the list of names of online players
+     * @param player The player whose name will be added
+     */
+    public static void setOnlinePlayerNames(Player player) {
+        TemporaryCache.onlinePlayerNames.add(player.getName());
+    }
+
+    /**
+     * Removes a specific name from the list
+     * @param player Player whose name will be removed
+     */
+    public static void unsetOnlinePlayerName(Player player) {
+        TemporaryCache.onlinePlayerNames.remove(player.getName());
     }
 }

@@ -2,7 +2,7 @@ package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalbans.API.Spigot.Events.deprecated.ConsoleLogOutEvent;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;

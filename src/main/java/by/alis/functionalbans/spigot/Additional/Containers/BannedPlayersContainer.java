@@ -1,6 +1,6 @@
 package by.alis.functionalbans.spigot.Additional.Containers;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.API.Enums.BanType;
 
 import java.util.ArrayList;
 import java.util.List;

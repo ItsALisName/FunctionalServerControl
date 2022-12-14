@@ -1,7 +1,6 @@
-package by.alis.functionalbans.spigot.Managers.FilesManagers;
+package by.alis.functionalbans.spigot.Managers.Files;
 
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -13,9 +12,9 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 
 public class FileAccessor {
 
-    public FileManager fileManager = new FileManager();
+    private FileManager fileManager = new FileManager();
 
-    public FileAccessor() {}
+    public FileAccessor() { }
 
     public FileConfiguration getGeneralConfig() {
         return this.fileManager.configuration;
@@ -43,8 +42,6 @@ public class FileAccessor {
     }
 
     public void reloadGeneralConfig() throws IOError {
-        Bukkit.getConsoleSender().sendMessage("1: " + this.fileManager.configuration.getName());
-        Bukkit.getConsoleSender().sendMessage("2: " + this.fileManager.configFile.getPath());
         this.fileManager.configuration = YamlConfiguration.loadConfiguration(this.fileManager.configFile);
     }
 

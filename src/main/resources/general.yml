@@ -130,26 +130,69 @@ plugin-settings:
     ##############################################################################
     #         Settings for using commands without specifying a reason            #
     ##############################################################################
-    bans-with-out-reason:
+    bans-without-reason:
 
       ##############################################################################
       #        Is it allowed to block a player without specifying a reason?        #
       ##############################################################################
       allowed: false
 
-    kick-with-out-reason:
+    kick-without-reason:
 
       ##############################################################################
       #        Is it allowed to kick a player without specifying a reason?        #
       ##############################################################################
       allowed: false
 
-    mute-with-out-reason:
+    mute-without-reason:
 
       ##############################################################################
       #        Is it allowed to mute a player without specifying a reason?        #
       ##############################################################################
       allowed: false
+
+    unban-without-reason:
+
+      ##############################################################################
+      #             Is it allowed to unban a player for no reason?                 #
+      ##############################################################################
+      allowed: false
+
+  ##############################################################################
+  #               Here you can set server login restrictions                   #
+  ##############################################################################
+  join-settings:
+
+    ##############################################################################
+    #                         Setting banned nicknames                           #
+    ##############################################################################
+    nicks-control:
+
+      ##############################################################################
+      #           Is the mode for checking forbidden nicknames enabled?            #
+      ##############################################################################
+      enabled: true
+
+      ##############################################################################
+      #                       Nickname verification method                         #
+      # "equals" - it is understood that the player must have a nickname that is   #
+      # completely similar to one of the forbidden ones.                           #
+      # "contains" - it is assumed that the player must have a nickname that is    #
+      # similar to one of the banned nicknames                                     #
+      ##############################################################################
+      check-mode: "contains"
+
+      ##############################################################################
+      #         Whether to notify the console if a player with a banned            #
+      #                         nickname tried to log in?                          #
+      ##############################################################################
+      notify-console: true
+
+      ##############################################################################
+      #                           Blocked nicknames                                #
+      #            Compliance with the format ", " is mandatory                    #
+      ##############################################################################
+      blocked-nicks: [MCSTORM, Extreme]
 
   ##############################################################################
   #             Settings for limiting the duration of punishments              #
@@ -192,10 +235,11 @@ plugin-settings:
     # It is assumed that the timer will continue its countdown, but will not stop #
     ###############################################################################
     command:
+      #The "/ban" command is also responsible for the "/tempban" command
       ban: 120
       kick: 60
       mute: 90
-      tempban: 100
+      unban: 120
 
 
   ##############################################################################
@@ -220,7 +264,7 @@ plugin-settings:
     #        Replacing incoming messages in the console with your messages         #
     #            (It is mandatory to specify the full message here)                #
     #       Format: [Input console message -> Output your custom message]          #
-    # Compliance with the ", " format between two different messages is mandatory! #
+    # Compliance with the ", " format between two different messages is mandatory  #
     #        Compliance with the format for replacing " -> " is mandatory          #
     ################################################################################
     messages-replacer: [Some console message -> The replaced message, Another console message -> The replaced message No.2]
@@ -235,6 +279,8 @@ global-variables:
   years: "Год|Года|Лет"
 
   never: "Данная блокировка не ограничена временем!"
-  console: "Консоль"
+  console-name: "Консоль"
   unknown-time: "Could not determine the time"
   all: "Все"
+  unmuted: "размучено"
+  unbanned: "разблокировано"

@@ -1,14 +1,16 @@
 package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 
+import org.jetbrains.annotations.Contract;
+
 public class StaticSettingsAccessor {
 
-    private static final GeneralConfigSettings configSettings = new GeneralConfigSettings();
-    private static final GlobalVariables globalVariables = new GlobalVariables();
+    static GeneralConfigSettings configSettings = new GeneralConfigSettings();
+    static GlobalVariables globalVariables = new GlobalVariables();
 
+    @Contract(pure = true)
     public static GeneralConfigSettings getConfigSettings() {
         return configSettings;
     }
-
     public static GlobalVariables getGlobalVariables() {
         return globalVariables;
     }

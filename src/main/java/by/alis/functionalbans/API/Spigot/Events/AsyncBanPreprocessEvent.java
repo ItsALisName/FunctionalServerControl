@@ -1,6 +1,6 @@
 package by.alis.functionalbans.API.Spigot.Events;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.API.Enums.BanType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;

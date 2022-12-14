@@ -1,6 +1,6 @@
 package by.alis.functionalbans.spigot.Additional.Placeholders;
 
-import by.alis.functionalbans.spigot.Additional.Enums.TimeUnit;
+import by.alis.functionalbans.API.Enums.TimeUnit;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 

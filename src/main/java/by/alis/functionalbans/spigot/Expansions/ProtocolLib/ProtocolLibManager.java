@@ -1,7 +1,7 @@
 package by.alis.functionalbans.spigot.Expansions.ProtocolLib;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;

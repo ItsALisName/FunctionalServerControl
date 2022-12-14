@@ -1,4 +1,4 @@
-package by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages;
+package by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages;
 
 public class LangRussian {
 
@@ -51,5 +51,6 @@ public class LangRussian {
     public static String PROTOCOL_LIB_HOOKED = "&a[FunctionalBans -> ProtocolLib] Подключение к ProtocolLib прошло успешно.";
     public static String PROTOCOL_LIB_ERROR = "&c[FunctionalBans -> ProtocolLib] Не удалось подключться к ProtocolLib";
     public static String UNBAN_FAILED = "&4[FunctionalBans | Ошибка] Не удалось разблокировать игрока %player%";
+    public static String CONFIG_NICKNAME_UNKNOWN_CHECK_MODE = "&c[FunctionalBans | Ошибка] В general.yml неверно указан тип проверки ник неймов, использую стандартный (contains)";
 
 }

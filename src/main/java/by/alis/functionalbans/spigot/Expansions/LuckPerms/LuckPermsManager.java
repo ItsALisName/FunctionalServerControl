@@ -1,7 +1,7 @@
 package by.alis.functionalbans.spigot.Expansions.LuckPerms;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

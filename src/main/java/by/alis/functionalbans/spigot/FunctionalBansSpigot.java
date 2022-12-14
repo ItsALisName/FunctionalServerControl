@@ -3,20 +3,13 @@ package by.alis.functionalbans.spigot;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalbans.spigot.Commands.BanCommand;
-import by.alis.functionalbans.spigot.Commands.FunctionalBansCommand;
-import by.alis.functionalbans.spigot.Commands.KickCommand;
-import by.alis.functionalbans.spigot.Commands.TempbanCommand;
+import by.alis.functionalbans.spigot.Commands.*;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
-import by.alis.functionalbans.spigot.Listeners.AsyncJoinListener;
-import by.alis.functionalbans.spigot.Listeners.CommandSendListener;
-import by.alis.functionalbans.spigot.Listeners.JoinListener;
-import by.alis.functionalbans.spigot.Listeners.NullPlayerJoinListener;
-import by.alis.functionalbans.spigot.Managers.BansManagers.BanManager;
+import by.alis.functionalbans.spigot.Listeners.*;
+import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileManager;
+import by.alis.functionalbans.spigot.Managers.Files.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.StaticFileAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,7 +20,10 @@ import static by.alis.functionalbans.spigot.Additional.Containers.StaticContaine
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
-
+/**
+ * Plugin main class
+ * -> Author ALis
+ */
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final BanManager banManager = new BanManager();
@@ -68,15 +64,20 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         //Loaders
 
         //Commands registering
+        new Test(this);
         new KickCommand(this);
         new BanCommand(this);
         new FunctionalBansCommand(this);
         new TempbanCommand(this);
+        new KickAllCommand(this);
+        new UnbanCommand(this);
         //End commands registering
 
         //Events registering
         new JoinListener();
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
+        new QuitListener();
+        Bukkit.getPluginManager().registerEvents(new QuitListener(), this);
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
             new CommandSendListener();
             Bukkit.getPluginManager().registerEvents(new CommandSendListener(), this);

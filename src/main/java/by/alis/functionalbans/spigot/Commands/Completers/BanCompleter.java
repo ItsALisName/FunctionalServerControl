@@ -1,5 +1,6 @@
 package by.alis.functionalbans.spigot.Commands.Completers;
 
+import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,9 +26,7 @@ public class BanCompleter implements TabCompleter {
                 if (sender.hasPermission("functionalbans.use.silently")) {
                     a.add("-s");
                 }
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    a.add(p.getName());
-                }
+                a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
             return a;
         }
@@ -43,9 +42,7 @@ public class BanCompleter implements TabCompleter {
         if(args[0].equalsIgnoreCase("-s") && args.length == 2) {
             List<String> a = new ArrayList<>();
             if(sender.hasPermission("functionalbans.ban") && sender.hasPermission("functionalbans.use.silently")) {
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    a.add(p.getName());
-                }
+                a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
             return a;
         }

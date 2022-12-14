@@ -2,7 +2,7 @@ package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalbans.API.Spigot.Events.AsyncConsoleLogOutEvent;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -13,7 +13,6 @@ import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static org.bukkit.Bukkit.getServer;
 
 public class EventAsyncConsoleLog implements Filter {
 

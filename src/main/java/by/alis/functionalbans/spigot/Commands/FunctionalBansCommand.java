@@ -1,13 +1,11 @@
 package by.alis.functionalbans.spigot.Commands;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.GeneralConfigSettings;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.Completers.FunctionalBansCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.StaticFileAccessor;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -42,11 +40,19 @@ public class FunctionalBansCommand implements CommandExecutor {
         if(args.length == 0) {
             if(sender.hasPermission("functionalbans.help")) {
                 sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help"))));
-                return true;
             } else {
                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
-                return true;
             }
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("help")) {
+            if(sender.hasPermission("functionalbans.help")) {
+                sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help"))));
+            } else {
+                sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
+            }
+            return true;
         }
 
 
@@ -104,6 +110,17 @@ public class FunctionalBansCommand implements CommandExecutor {
             sender.sendMessage(setColors(this.accessor.getLang().getString("commands.reload.unknown-type").replace("%1$f", args[1])));
             return true;
 
+        }
+
+
+        if(args[0].equalsIgnoreCase("undo")) {
+            if(sender.hasPermission("functionalbans.undo")) {
+                TemporaryCache.preformCommandUndo(sender);
+            } else {
+                sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
+                return true;
+            }
+            return true;
         }
 
 

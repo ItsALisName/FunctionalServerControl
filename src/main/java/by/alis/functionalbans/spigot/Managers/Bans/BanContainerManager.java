@@ -1,6 +1,6 @@
-package by.alis.functionalbans.spigot.Managers.BansManagers;
+package by.alis.functionalbans.spigot.Managers.Bans;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
+import by.alis.functionalbans.API.Enums.BanType;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
 
@@ -77,9 +77,7 @@ public class BanContainerManager {
             return;
         }
         if(expression.equalsIgnoreCase("-id")) {
-            Bukkit.getConsoleSender().sendMessage("LOL2");
             if(getBannedPlayersContainer().getIdsContainer().contains(param)) {
-                Bukkit.getConsoleSender().sendMessage("LOL1");
                 int indexOf = getBannedPlayersContainer().getIdsContainer().indexOf(param);
                 getBannedPlayersContainer().getIdsContainer().remove(indexOf);
                 getBannedPlayersContainer().getIpContainer().remove(indexOf);
@@ -91,10 +89,8 @@ public class BanContainerManager {
                 getBannedPlayersContainer().getRealBanTimeContainer().remove(indexOf);
                 getBannedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getBannedPlayersContainer().getBanTimeContainer().remove(indexOf);
-                Bukkit.getConsoleSender().sendMessage("LOL3");
                 return;
             }
-            Bukkit.getConsoleSender().sendMessage("LOL4");
             return;
         }
         if(expression.equalsIgnoreCase("-u")) {

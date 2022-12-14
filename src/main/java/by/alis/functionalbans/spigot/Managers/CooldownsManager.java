@@ -2,12 +2,11 @@ package by.alis.functionalbans.spigot.Managers;
 
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,7 +23,7 @@ public class CooldownsManager {
     private static int BAN_COOLDOWN = 0;
     private static int MUTE_COOLDOWN = 0;
     private static int KICK_COOLDOWN = 0;
-    private static int TEMPBAN_COOLDOWN = 0;
+    private static int UNBAN_COOLDOWN = 0;
     public static final TreeMap<String, Long> cooldowns = new TreeMap<>();
 
     public static void setCooldown(Player player, String command) {
@@ -49,9 +48,9 @@ public class CooldownsManager {
                         }
                         break;
                     }
-                    case "tempban": {
-                        if(TEMPBAN_COOLDOWN > 0) {
-                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(TEMPBAN_COOLDOWN));
+                    case "unban": {
+                        if(UNBAN_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(UNBAN_COOLDOWN));
                         }
                         break;
                     }
@@ -124,19 +123,22 @@ public class CooldownsManager {
     }
 
     public static void setupCooldowns() {
-        if (getConfigSettings().isCooldownsEnabled()) {
-            if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.ban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.ban"))) {
-                BAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.ban"));
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+            FileAccessor accessor = new FileAccessor();
+            if (getConfigSettings().isCooldownsEnabled()) {
+                if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.ban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.ban"))) {
+                    BAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.ban"));
+                }
+                if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.kick") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.kick"))) {
+                    KICK_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.kick"));
+                }
+                if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.mute") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"))) {
+                    MUTE_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"));
+                }
+                if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.unban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unban"))) {
+                    UNBAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unban"));
+                }
             }
-            if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.kick") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.kick"))) {
-                KICK_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.kick"));
-            }
-            if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.mute") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"))) {
-                MUTE_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.mute"));
-            }
-            if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.tempban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.tempban"))) {
-                TEMPBAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.tempban"));
-            }
-        }
+        });
     }
 }

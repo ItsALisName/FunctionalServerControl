@@ -1,10 +1,10 @@
 package by.alis.functionalbans.databases.SQLite;
 
-import by.alis.functionalbans.spigot.Additional.Enums.BanType;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.API.Enums.BanType;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.FilesManagers.FileAccessor;
+import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -1482,7 +1482,9 @@ public class SQLManager extends SQLCore {
                 String insert = "INSERT INTO Cooldowns (PlayerAndCommand, Time) VALUES ('" + playerAndCommand + "', '" + String.valueOf(time) + "');";
                 sqlConnection.createStatement().executeUpdate(insert);
             }
-            sqlResultSet.close();
+            if(sqlResultSet != null){
+                sqlResultSet.close();
+            }
             return;
         } catch (SQLException ex) {
             switch (getConfigSettings().getConsoleLanguageMode()) {

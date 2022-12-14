@@ -32,18 +32,35 @@ ban-ip-message-format:
 - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
 temporary-ban-ip-message-format:
-  - "&6Ваш IP-адрес был временно заблокирован!"
-  - ""
-  - "&bID блокировки: &3%1$f"
-  - "&cПричина: &6%2$f"
-  - "&2Инициатор: &a%3$f"
-  - "&5Дата блокировки: &d%4$f"
-  - "&6Разблокировка через: &e%5$f"
-  - ""
-  - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
+- "&6Ваш IP-адрес был временно заблокирован!"
+- ""
+- "&bID блокировки: &3%1$f"
+- "&cПричина: &6%2$f"
+- "&2Инициатор: &a%3$f"
+- "&5Дата блокировки: &d%4$f"
+- "&6Разблокировка через: &e%5$f"
+- ""
+- "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
+
+kick-format:
+- "&6Вы были выкинуты с сервера"
+- ""
+- "&cПричина: &6%1$f"
+- "&2Инициатор: &a%2$f"
+- ""
+- "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
+
+blocked-nickname-kick-format:
+- "&6Вам был запрещен вход на сервер!"
+- ""
+- "&cПричина: &6Ваш ник является запрещенным(или содержит запрещенный ник)"
+- "&2Вероятно из-за содержания в нем: &a%1$f"
+- ""
+- "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
 other:
   unknown-player: "&c[FunctionalBans] &7&oИгрок &c&o%1$f &7&oникогда не заходил на сервер!"
+  target-offline: "&c[FunctionalBans] &7Игрок &c%1$f &7не найден."
   last-ban-removed: "&c[FunctionalBans] &7Предыдущая блокировка игрока &c%1$f &7снята."
   no-permissions: "&c[FunctionalBans] &7&cУ Вас недостаточно прав для выволнения данной команды."
   already-banned: "&c[FunctionalBans] &7Данный игрок уже забанен, у Вас недостаточно прав для перезаписи блокировки"
@@ -54,7 +71,8 @@ other:
   ban-over-time: "&c[FunctionalBans] &7Вы не можете блокировать более чем на &c%1$f"
   no-yourself-actions: "&c[FunctionalBans] &7Вы не можете взаимодействовать с собой"
   cooldown: "&c[FunctionalBans] &7Вы сможете использовать команду &c/%1$f &7только через &c%2$f"
-  flag-not-support: "&c[FunctionalBans] &7Флаг &c%1$f &7недоступен для данной команды"
+  flag-not-support: "&c[FunctionalBans] &7Флаг &c%1$f &7не доступен для данной команды"
+  blocked-nickname-notify: "&c[FunctionalBans] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
   unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
   notifications:
     ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
@@ -70,13 +88,14 @@ unsafe-actions:
 commands:
 
   help:
+    - "&cFunctionalBans &7от &cALis &7версии &c%1$f"
     - "&4-> &c/fb reload &7- перезагружает конфигурацию плагина"
     - "&4-> &c/fb purge <тип> &7- очищает из памяти некоторые необязательный данные"
 
   reload:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Перезагружает определенные файлы плагина"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f <тип>"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f files"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f settings"
     done: "&c[FunctionalBans] &с%1$f &7успешно перезагружено"
     unknown-type: "&c[FunctionalBans] &сНеизвестный тип &c%1$f"
     failed: "&c[FunctionalBans] &7Не удалось перезагрузить &c%1$f"
@@ -84,34 +103,38 @@ commands:
   unban:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Снимает блокировку с указанного аккаунта"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 Ошибочная блокировка"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Ошибочная блокировка"
     player-not-banned: "&c[FunctionalBans] &7Игрок &c%1$f &7и так не заблокирован"
     broadcast-message:
       with-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f &7по причине: &c%3$f"
       without-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f"
 
+  fb-undo:
+    success: "&c[FunctionalBans] &7Действие отменено, &c%1$f &7аккаунтов %2$f"
+    nothing-to-undo: "&c[FunctionalBans] &7Вам нечего отменять."
+
   ban:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует указанного игрока по указанной причине"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f {флаг} <игрок> {время} {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 Нарушение правил сервера 1.2"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал аккаунт игрока &c%2$f &7по причине: &c%3$f"
     target-bypass: "&c[FunctionalBans] &7Вы не можете заблокировать данного игрока"
 
   ban-ip:
     description: "&c[FunctionalBans] &7Описание команды &c%1$f&7: Блокирует указанный IP-адрес по указанной причине"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 Нарушение правил сервера 1.2"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7по причине: &c%3$f"
 
   tempban:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует аккаунт указаного игрока на указанное время по указанной причине"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 1day Нарушение правил сервера 1.2"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <время> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал аккаунт игрока &c%2$f &7на &c%3$f &7по причине: &c%4$f"
 
   tempban-ip:
     description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует аккаунт указанный IP-адрес на указанное время по указанной причине"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f Hacker228 1day Нарушение правил сервера 1.2"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
     usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <время> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7на &c%3$f &7по причине: &c%4$f"
 
@@ -125,4 +148,15 @@ commands:
     cache:
       cleared: "&c[FunctionalBans] &7Кэш успешно очищен."
       empty: "&c[FunctionalBans] &7Кэш уже пустой"
+
+  kick:
+    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
+    broadcast-message: "&7Администратор &c%1$f &7выкинул игрока &c%2$f &7по причине: &c%3$f"
+    target-bypass: "&c[FunctionalBans] &7Вы не можете выкинуть данного игрока"
+
+  kick-all:
+    success: "&c[FunctionalBans] &7Вы выкинули &c%1$f &7игроков с сервера"
+
 

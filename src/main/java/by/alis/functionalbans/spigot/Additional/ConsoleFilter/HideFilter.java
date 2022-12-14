@@ -1,7 +1,7 @@
 package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.Languages.LangRussian;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
+import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.apache.logging.log4j.Level;
