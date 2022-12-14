@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Listeners;
 
 import by.alis.functionalbans.API.Enums.BanType;
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
 import by.alis.functionalbans.spigot.Managers.Bans.UnbanManager;
 import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
@@ -18,6 +19,9 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 
+/**
+ * The class responsible for controlling the entry of players (Banned, with invalid IP addresses, with invalid nicknames)
+ */
 public class AsyncJoinListener implements Listener {
 
     private final FileAccessor accessor = new FileAccessor();
@@ -29,6 +33,20 @@ public class AsyncJoinListener implements Listener {
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 
+        if(getConfigSettings().isIpsControlEnabled()) {
+            if(getConfigSettings().getBlockedIps().contains(event.getAddress().getHostAddress())) {
+                event.disallow(
+                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                        setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-ip-kick-format")).replace("%1$f", event.getAddress().getHostAddress()))
+                );
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-ip-notify").replace("%1$f", event.getAddress().getHostAddress())));
+                }
+                return;
+            }
+        }
+
         if(getConfigSettings().isNicksControlEnabled()) {
             for(String name : getConfigSettings().getBlockedNickNames()) {
                 if(getConfigSettings().getNicknameCheckMode().equalsIgnoreCase("equals")) {
@@ -37,6 +55,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
                         );
+                        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                         if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
                         }
@@ -49,6 +68,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
                         );
+                        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                         if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
                         }

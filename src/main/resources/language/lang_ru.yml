@@ -58,6 +58,13 @@ blocked-nickname-kick-format:
 - ""
 - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
+blocked-ip-kick-format:
+  - "&6Вам был запрещен вход на сервер!"
+  - ""
+  - "&cПричина: &6Ваш IP-адрес является запрещенным"
+  - ""
+  - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
+
 other:
   unknown-player: "&c[FunctionalBans] &7&oИгрок &c&o%1$f &7&oникогда не заходил на сервер!"
   target-offline: "&c[FunctionalBans] &7Игрок &c%1$f &7не найден."
@@ -73,6 +80,7 @@ other:
   cooldown: "&c[FunctionalBans] &7Вы сможете использовать команду &c/%1$f &7только через &c%2$f"
   flag-not-support: "&c[FunctionalBans] &7Флаг &c%1$f &7не доступен для данной команды"
   blocked-nickname-notify: "&c[FunctionalBans] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
+  blocked-ip-notify: "&c[FunctionalBans] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
   unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
   notifications:
     ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"

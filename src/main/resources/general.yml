@@ -192,7 +192,28 @@ plugin-settings:
       #                           Blocked nicknames                                #
       #            Compliance with the format ", " is mandatory                    #
       ##############################################################################
-      blocked-nicks: [MCSTORM, Extreme]
+      blocked-nicks: [MC_STORM, Extreme]
+
+    ##############################################################################
+    #                      Setting up blocked IP addresses                       #
+    ##############################################################################
+    ips-control:
+
+      ##############################################################################
+      #                      Is IP-Address Control enabled?                        #
+      ##############################################################################
+      enabled: true
+
+      ###############################################################################
+      # Whether to notify the console if a player with a blocked IP tried to enter? #
+      ###############################################################################
+      notify-console: true
+
+      ##############################################################################
+      #                            Blocked ips                                     #
+      #            Compliance with the format ", " is mandatory                    #
+      ##############################################################################
+      blocked-ips: [127.0.0.4, 132.0.0.3]
 
   ##############################################################################
   #             Settings for limiting the duration of punishments              #
@@ -205,7 +226,7 @@ plugin-settings:
     max-possible-time: "3|months"
 
     ##############################################################################
-    # Intergroup setting the maximum penalty time (If installed LuckPerms etc.)  #
+    #  Intergroup setting the maximum punish time (If installed LuckPerms etc.)  #
     ##############################################################################
     per-groups:
       moderator:

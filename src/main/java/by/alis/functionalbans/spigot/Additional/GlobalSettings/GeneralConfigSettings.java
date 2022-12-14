@@ -51,6 +51,30 @@ public class GeneralConfigSettings {
     private boolean notifyConsoleWhenNickNameBlocked = false;
 
 
+    private boolean isIpsControlEnabled = false;
+    private List<String> blockedIps = new ArrayList<>();
+    private boolean notifyConsoleWhenIPBlocked = false;
+
+
+    public boolean isIpsControlEnabled() {
+        return isIpsControlEnabled;
+    }
+    private void setIpsControlEnabled(boolean ipsControlEnabled) {
+        isIpsControlEnabled = ipsControlEnabled;
+    }
+    public List<String> getBlockedIps() {
+        return this.blockedIps;
+    }
+    private void setBlockedIps(List<String> blockedIps) {
+        this.blockedIps.clear();
+        this.blockedIps.addAll(blockedIps);
+    }
+    private void setNotifyConsoleWhenIPBlocked(boolean notifyConsoleWhenIPBlocked) {
+        this.notifyConsoleWhenIPBlocked = notifyConsoleWhenIPBlocked;
+    }
+    public boolean notifyConsoleWhenIPBlocked() {
+        return this.notifyConsoleWhenIPBlocked;
+    }
 
     public boolean isUnsafeActionsConfirmation() { return this.unsafeActionsConfirmation; }
     public boolean showDescription() { return this.showDescription; }
@@ -117,6 +141,7 @@ public class GeneralConfigSettings {
         return nicknameCheckMode;
     }
     public void setBlockedNickNames(List<String> blockedNickName) {
+        this.blockedNickNames.clear();
         this.blockedNickNames.addAll(blockedNickName);
     }
     public void setNotifyConsoleWhenNickNameBlocked(boolean notifyConsoleWhenNickNameBlocked) {
@@ -226,6 +251,13 @@ public class GeneralConfigSettings {
 
         setNicksControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
         setNotifyConsoleWhenNickNameBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+
+        setIpsControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
+        if(isIpsControlEnabled()) {
+            setNotifyConsoleWhenIPBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
+            setBlockedIps(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
+        }
+
         if(isNicksControlEnabled()) {
             switch (fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
                 case "equals": {
@@ -444,6 +476,13 @@ public class GeneralConfigSettings {
 
             setNicksControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+
+            setIpsControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
+            if(isIpsControlEnabled()) {
+                setNotifyConsoleWhenIPBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
+                setBlockedIps(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
+            }
+
             if(isNicksControlEnabled()) {
                 switch (fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
                     case "equals": {
@@ -473,7 +512,6 @@ public class GeneralConfigSettings {
                         break;
                     }
                 }
-                getBlockedNickNames().clear();
                 setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
 
             }
