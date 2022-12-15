@@ -22,5 +22,10 @@ commands:
     description: Kicks all players from the server
   unban:
     description: Command to unban an account
+  unbanall:
+    description: Unbans all banned accounts
+  crazykick:
+    description: Throws a player with hieroglyphs to full screen
+    aliases: [ckick]
   test:
     description: test

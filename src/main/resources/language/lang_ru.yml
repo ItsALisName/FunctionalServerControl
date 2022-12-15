@@ -90,7 +90,8 @@ other:
 unsafe-actions:
   unsafe-flag-no-perms: "&c[FunctionalBans] &7У Вас недостатоно прав использовать флаг &4%1$f"
   unsafe-ban-success: "&c[FunctionalBans] &eВы заблокировали &6%1$f &eаккаунтов!"
-  unsafe-action-confirm: "&c[FunctionalBans] &7Подтвердите Ваше дейтвие введя команду еще раз."
+  unsafe-action-confirm: "&c[FunctionalBans] &7Подтвердите Ваше дейтвие введя команду &c/%1$f"
+  unsafe-action-confirm-1: "&c[FunctionalBans] &7Подтвердите Ваше дейтвие введя команду еще раз"
   unsafe-ban-cached-notify: "&c[FunctionalBans] &7Игроки, заблокированные таким способ были захешированы, у Вас есть возможно отменить это действие - &c/fb undo"
 
 commands:
@@ -164,7 +165,17 @@ commands:
     broadcast-message: "&7Администратор &c%1$f &7выкинул игрока &c%2$f &7по причине: &c%3$f"
     target-bypass: "&c[FunctionalBans] &7Вы не можете выкинуть данного игрока"
 
+  unbanall:
+    success: "&c[FunctionalBans] &7Вы разблокировали &c%1$f &7аккаунтов"
+    broadcast-message: "&7Администратор &c%1$f &7разблокировал все аккаунты"
+
   kick-all:
     success: "&c[FunctionalBans] &7Вы выкинули &c%1$f &7игроков с сервера"
+
+  crazykick:
+    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера с неадекватной причиной"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <цвет>"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis dark_red"
+    unknown-color: "&c[FunctionalBans] &7Неизвестный цвет &c%1$f"
 
 

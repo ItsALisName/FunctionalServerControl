@@ -2,12 +2,11 @@ package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 
 import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
 
 public class L4JFilter implements ConsoleFilterCore {
 
     @Override
-    public synchronized void eventLog() {
+    public void eventLog() {
         ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addFilter(new EventAsyncConsoleLog());
         ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addFilter(new EventConsoleLog());
     }

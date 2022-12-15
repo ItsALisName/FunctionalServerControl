@@ -24,6 +24,9 @@ public class CooldownsManager {
     private static int MUTE_COOLDOWN = 0;
     private static int KICK_COOLDOWN = 0;
     private static int UNBAN_COOLDOWN = 0;
+    private static int UNBANALL_COOLDOWN = 0;
+
+    private static int CRAZYKICK_COOLDOWN = 0;
     public static final TreeMap<String, Long> cooldowns = new TreeMap<>();
 
     public static void setCooldown(Player player, String command) {
@@ -53,6 +56,16 @@ public class CooldownsManager {
                             cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(UNBAN_COOLDOWN));
                         }
                         break;
+                    }
+                    case "unbanall": {
+                        if(UNBANALL_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(UNBANALL_COOLDOWN));
+                        }
+                    }
+                    case "crazykick": {
+                        if(CRAZYKICK_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(CRAZYKICK_COOLDOWN));
+                        }
                     }
                 }
             }
@@ -137,6 +150,12 @@ public class CooldownsManager {
                 }
                 if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.unban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unban"))) {
                     UNBAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unban"));
+                }
+                if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.unbanall") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unbanall"))) {
+                    UNBAN_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.unbanall"));
+                }
+                if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.crazykick") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.crazykick"))) {
+                    CRAZYKICK_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.crazykick"));
                 }
             }
         });

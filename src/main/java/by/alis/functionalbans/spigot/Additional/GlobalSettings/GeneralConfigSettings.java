@@ -4,6 +4,7 @@ import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalbans.API.Enums.StorageType;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
+import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
@@ -17,7 +18,7 @@ import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors
 public class GeneralConfigSettings {
 
 
-
+    private boolean isOldServerVersion = false;
     private String consoleLanguageMode = "en_US";
     private String globalLanguage = "ru_RU";
     private boolean isAnnounceWhenLogHided = true;
@@ -42,6 +43,8 @@ public class GeneralConfigSettings {
     private StorageType storageType = StorageType.SQLITE;
     private boolean isAllowedUnbanWithoutReason = true;
     private String defaultUnbanReason = "The Ban time has expired";
+    private boolean isAutoPurgerEnabled = false;
+    private int autoPurgerDelay = 600;
 
 
 
@@ -76,56 +79,146 @@ public class GeneralConfigSettings {
         return this.notifyConsoleWhenIPBlocked;
     }
 
-    public boolean isUnsafeActionsConfirmation() { return this.unsafeActionsConfirmation; }
-    public boolean showDescription() { return this.showDescription; }
-    private void setShowDescription(boolean showDescription) { this.showDescription = showDescription; }
-    private void setUnsafeActionsConfirmation(boolean unsafeActionsConfirmation) { unsafeActionsConfirmation = unsafeActionsConfirmation; }
-    private void setApiEnabled(boolean apiEnabled) { this.isApiEnabled = apiEnabled; }
-    public boolean isApiEnabled() { return this.isApiEnabled; }
-    public boolean isPurgeConfirmation() { return this.purgeConfirmation; }
-    private void setPurgeConfirmation(boolean purgeConfirmation) { this.purgeConfirmation = purgeConfirmation; }
-    public boolean isApiProtectedByPassword() { return this.isApiProtectedByPassword; }
-    private void setApiProtectedByPassword(boolean apiProtectedByPassword) { isApiProtectedByPassword = apiProtectedByPassword; }
-    public boolean isBanAllowedWithoutReason() { return isBanAllowedWithoutReason; }
-    public void setBanAllowedWithoutReason(boolean banAllowedWithoutReason) { isBanAllowedWithoutReason = banAllowedWithoutReason; }
-    public boolean isKickAllowedWithoutReason() { return isKickAllowedWithoutReason; }
-    public void setKickAllowedWithoutReason(boolean kickAllowedWithoutReason) { isKickAllowedWithoutReason = kickAllowedWithoutReason; }
-    public Set<String> getPossibleGroups() { return timeRestrictionGroups; }
+    public boolean isUnsafeActionsConfirmation() {
+        return this.unsafeActionsConfirmation;
+    }
+    public boolean showDescription() {
+        return this.showDescription;
+    }
+    private void setShowDescription(boolean showDescription) {
+        this.showDescription = showDescription;
+    }
+    private void setUnsafeActionsConfirmation(boolean unsafeActionsConfirmation) {
+        unsafeActionsConfirmation = unsafeActionsConfirmation;
+    }
+    private void setApiEnabled(boolean apiEnabled) {
+        this.isApiEnabled = apiEnabled;
+    }
+    public boolean isApiEnabled() {
+        return this.isApiEnabled;
+    }
+    public boolean isPurgeConfirmation() {
+        return this.purgeConfirmation;
+    }
+    private void setPurgeConfirmation(boolean purgeConfirmation) {
+        this.purgeConfirmation = purgeConfirmation;
+    }
+    public boolean isApiProtectedByPassword() {
+        return this.isApiProtectedByPassword;
+    }
+    private void setApiProtectedByPassword(boolean apiProtectedByPassword) {
+        isApiProtectedByPassword = apiProtectedByPassword;
+    }
+    public boolean isBanAllowedWithoutReason() {
+        return isBanAllowedWithoutReason;
+    }
+    public void setBanAllowedWithoutReason(boolean banAllowedWithoutReason) {
+        isBanAllowedWithoutReason = banAllowedWithoutReason;
+    }
+    public boolean isKickAllowedWithoutReason() {
+        return isKickAllowedWithoutReason;
+    }
+    public void setKickAllowedWithoutReason(boolean kickAllowedWithoutReason) {
+        isKickAllowedWithoutReason = kickAllowedWithoutReason;
+    }
+    public Set<String> getPossibleGroups() {
+        return timeRestrictionGroups;
+    }
     public void setPossibleGroups(Set<String> timeRestrictionGroups) {
         timeRestrictionGroups.clear();
         timeRestrictionGroups = timeRestrictionGroups;
     }
-    public boolean isMuteAllowedWithoutReason() { return isMuteAllowedWithoutReason; }
-    public void setMuteAllowedWithoutReason(boolean muteAllowedWithoutReason) { isMuteAllowedWithoutReason = muteAllowedWithoutReason; }
-    public boolean isAllowedUseRamAsContainer() { return isAllowedUseRamAsContainer; }
-    private void setAllowedUseRamAsContainer(boolean allowedUseRamAsContainer) { isAllowedUseRamAsContainer = allowedUseRamAsContainer; }
-    public boolean showExamples() { return showExamples; }
-    public void setShowExamples(boolean showExamples) { showExamples = showExamples; }
-    public StorageType getStorageType() { return storageType; }
-    private void setStorageType(StorageType storageType) { storageType = storageType; }
-    public String getConsoleLanguageMode() { return consoleLanguageMode; }
-    private void setConsoleLanguageMode(String mode) { consoleLanguageMode = mode; }
-    public boolean isAnnounceWhenLogHided() { return isAnnounceWhenLogHided; }
-    private void setAnnounceWhenLogHided(boolean status) { isAnnounceWhenLogHided = status; }
-    public boolean hideMainCommand() { return hideMainCommand; }
-    private void setHideMainCommand(boolean hideMainCommand) { hideMainCommand = hideMainCommand; }
-    public boolean isLessInformation() { return isLessInformation; }
-    private void setLessInformation(boolean lessInformation) { isLessInformation = lessInformation; }
-    public boolean isProhibitYourselfInteraction() { return isProhibitYourselfInteraction; }
+    public boolean isMuteAllowedWithoutReason() {
+        return isMuteAllowedWithoutReason;
+    }
+    public void setMuteAllowedWithoutReason(boolean muteAllowedWithoutReason) {
+        isMuteAllowedWithoutReason = muteAllowedWithoutReason;
+    }
+    public boolean isAllowedUseRamAsContainer() {
+        return isAllowedUseRamAsContainer;
+    }
+    private void setAllowedUseRamAsContainer(boolean allowedUseRamAsContainer) {
+        isAllowedUseRamAsContainer = allowedUseRamAsContainer;
+    }
+    public boolean showExamples() {
+        return showExamples;
+    }
+    public void setShowExamples(boolean showExamples) {
+        showExamples = showExamples;
+    }
+    public StorageType getStorageType() {
+        return storageType;
+    }
+    private void setStorageType(StorageType storageType) {
+        storageType = storageType;
+    }
+    public String getConsoleLanguageMode() {
+        return consoleLanguageMode;
+    }
+    private void setConsoleLanguageMode(String mode) {
+        consoleLanguageMode = mode;
+    }
+    public boolean isAnnounceWhenLogHided() {
+        return isAnnounceWhenLogHided;
+    }
+    private void setAnnounceWhenLogHided(boolean status) {
+        isAnnounceWhenLogHided = status;
+    }
+    public boolean hideMainCommand() {
+        return hideMainCommand;
+    }
+    private void setHideMainCommand(boolean hideMainCommand) {
+        hideMainCommand = hideMainCommand;
+    }
+    public boolean isLessInformation() {
+        return isLessInformation;
+    }
+    private void setLessInformation(boolean lessInformation) {
+        isLessInformation = lessInformation;
+    }
+    public boolean isProhibitYourselfInteraction() {
+        return isProhibitYourselfInteraction;
+    }
     private void setProhibitYourselfInteraction(boolean prohibitYourselfInteraction) { isProhibitYourselfInteraction = prohibitYourselfInteraction; }
-    public boolean isPlayersNotification() { return isPlayersNotification; }
-    public boolean isConsoleNotification() { return isConsoleNotification; }
-    private void setPlayersNotification(boolean playersNotification) { isPlayersNotification = playersNotification; }
-    private void setConsoleNotification(boolean consoleNotification) { isConsoleNotification = consoleNotification; }
-    private void setCooldownsEnabled(boolean cooldownsEnabled) { isCooldownsEnabled = cooldownsEnabled; }
-    public boolean isCooldownsEnabled() { return isCooldownsEnabled; }
-    public boolean isSaveCooldowns() { return isSaveCooldowns; }
-    private void setSaveCooldowns(boolean saveCooldowns) { isSaveCooldowns = saveCooldowns; }
-    public String getGlobalLanguage() { return globalLanguage; }
-    public void setGlobalLanguage(String globalLanguage) { globalLanguage = globalLanguage; }
-    public boolean isAllowedUnbanWithoutReason() { return isAllowedUnbanWithoutReason; }
-    private void setAllowedUnbanWithoutReason(boolean allowedUnbanWithoutReason) { isAllowedUnbanWithoutReason = allowedUnbanWithoutReason; }
-    public String getDefaultUnbanReason() { return defaultUnbanReason; }
+    public boolean isPlayersNotification() {
+        return isPlayersNotification;
+    }
+    public boolean isConsoleNotification() {
+        return isConsoleNotification;
+    }
+    private void setPlayersNotification(boolean playersNotification) {
+        isPlayersNotification = playersNotification;
+    }
+    private void setConsoleNotification(boolean consoleNotification) {
+        isConsoleNotification = consoleNotification;
+    }
+    private void setCooldownsEnabled(boolean cooldownsEnabled) {
+        isCooldownsEnabled = cooldownsEnabled;
+    }
+    public boolean isCooldownsEnabled() {
+        return isCooldownsEnabled;
+    }
+    public boolean isSaveCooldowns() {
+        return isSaveCooldowns;
+    }
+    private void setSaveCooldowns(boolean saveCooldowns) {
+        isSaveCooldowns = saveCooldowns;
+    }
+    public String getGlobalLanguage() {
+        return globalLanguage;
+    }
+    public void setGlobalLanguage(String globalLanguage) {
+        globalLanguage = globalLanguage;
+    }
+    public boolean isAllowedUnbanWithoutReason() {
+        return isAllowedUnbanWithoutReason;
+    }
+    private void setAllowedUnbanWithoutReason(boolean allowedUnbanWithoutReason) {
+        isAllowedUnbanWithoutReason = allowedUnbanWithoutReason;
+    }
+    public String getDefaultUnbanReason() {
+        return defaultUnbanReason;
+    }
 
 
     public boolean isNicksControlEnabled() {
@@ -152,6 +245,25 @@ public class GeneralConfigSettings {
     }
     public List<String> getBlockedNickNames() {
         return this.blockedNickNames;
+    }
+
+    public boolean isOldServerVersion() {
+        return this.isOldServerVersion;
+    }
+    private void setOldServerVersion(boolean oldServerVersion) {
+        this.isOldServerVersion = oldServerVersion;
+    }
+    public boolean isAutoPurgerEnabled() {
+        return this.isAutoPurgerEnabled;
+    }
+    private void setAutoPurgerEnabled(boolean autoPurgerEnabled) {
+        this.isAutoPurgerEnabled = autoPurgerEnabled;
+    }
+    public int getAutoPurgerDelay() {
+        return this.autoPurgerDelay;
+    }
+    private void setAutoPurgerDelay(int autoPurgerDelay) {
+        this.autoPurgerDelay = autoPurgerDelay;
     }
 
     public void loadConfigSettings() {
@@ -292,6 +404,7 @@ public class GeneralConfigSettings {
 
         }
 
+        setOldServerVersion(OtherUtils.isOldServerVersion());
         setLessInformation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
         setProhibitYourselfInteraction(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
         setBanAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
@@ -307,6 +420,11 @@ public class GeneralConfigSettings {
         setPlayersNotification(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
         timeRestrictionGroups.clear();
         setPossibleGroups(fileAccessor.getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
+
+        setAutoPurgerEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
+        if(isAutoPurgerEnabled()) {
+            setAutoPurgerDelay(fileAccessor.getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+        }
 
         setAllowedUseRamAsContainer(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
         if(isAllowedUseRamAsContainer()) {
@@ -476,6 +594,11 @@ public class GeneralConfigSettings {
 
             setNicksControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+
+            setAutoPurgerEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
+            if(isAutoPurgerEnabled()) {
+                setAutoPurgerDelay(fileAccessor.getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+            }
 
             setIpsControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
             if(isIpsControlEnabled()) {

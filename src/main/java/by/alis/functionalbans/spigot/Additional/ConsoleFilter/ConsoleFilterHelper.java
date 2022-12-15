@@ -20,7 +20,7 @@ public class ConsoleFilterHelper {
     private final List<String> functionalBansCommands = new ArrayList<>();
     private static final String ISSUED_COMMAND_TEXT = "issued server command: ";
     private static final String[] commands = {"/ban", "/tempban", "/kick", "/kickall", "/unban", "/mute", "/unmute", "/check", "/fb", "/functionalbans", "/fbans", "/funcbans", "/temporaryban", "/crazykick", "/permanentban", "/banip", "/tempbanip",
-    "/temporarybanip", "/permanentbanip"};
+    "/temporarybanip", "/permanentbanip", "/unbanall", "/crazykick", "/ckick"};
 
     protected boolean isFunctionalBansCommand(String consoleMessage) {
         if(!this.functionalBansCommands.isEmpty()) {

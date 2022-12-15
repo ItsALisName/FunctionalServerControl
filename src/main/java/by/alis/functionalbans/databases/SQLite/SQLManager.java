@@ -1518,6 +1518,30 @@ public class SQLManager extends SQLCore {
         }
     }
 
+    public void clearBans() {
+        sqlConnection = getSQLConnection();
+        try {
+            String a = "DELETE FROM bannedPlayers;";
+            String b = "DELETE FROM nullBannedPlayers;";
+            sqlConnection.createStatement().executeUpdate(a);
+            sqlConnection.createStatement().executeUpdate(b);
+            sqlConnection.close();
+        } catch (SQLException ex) {
+            switch (getConfigSettings().getConsoleLanguageMode()) {
+                case "ru_RU": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); throw new RuntimeException(ex);
+                }
+                case "en_US": {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
+                }
+                default: {
+                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
+                }
+            }
+            return;
+        }
+    }
+
     //Combining nullBannedPlayers and bannedPlayers list
 
     public List<String> getBannedIds() {

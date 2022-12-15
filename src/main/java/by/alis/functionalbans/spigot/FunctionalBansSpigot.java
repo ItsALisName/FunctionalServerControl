@@ -3,6 +3,7 @@ package by.alis.functionalbans.spigot;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalbans.spigot.Additional.TimerTasks.TimerSetuper;
 import by.alis.functionalbans.spigot.Commands.*;
 import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
 import by.alis.functionalbans.spigot.Listeners.*;
@@ -27,6 +28,7 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final BanManager banManager = new BanManager();
+    private final TimerSetuper timerSetuper = new TimerSetuper();
     ConsoleFilterCore consoleFilterCore;
 
     @Override
@@ -43,6 +45,7 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
         //Bases functions
         getSQLiteManager().setupTables();
+
         CooldownsManager.loadCooldowns();
         getSQLiteManager().clearCooldowns();
         //Bases functions
@@ -71,6 +74,8 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         new TempbanCommand(this);
         new KickAllCommand(this);
         new UnbanCommand(this);
+        new UnbanallCommand(this);
+        new CrazykickCommand(this);
         //End commands registering
 
         //Events registering
@@ -90,11 +95,15 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
         //Console filters
         getConsoleFilterHelper().loadFunctionalBansCommands();
-        consoleFilterCore = new L4JFilter();
+        this.consoleFilterCore = new L4JFilter();
         getConsoleFilterCore().eventLog();
         getConsoleFilterCore().replaceMessage();
         getConsoleFilterCore().hideMessage();
         //Console filters
+
+        //Timers
+        this.timerSetuper.setupTimers();
+        //Timers
 
     }
 

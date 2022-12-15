@@ -7,10 +7,15 @@ import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
@@ -53,7 +58,7 @@ public class UnbanManager {
                 asyncUnbanPreprocessEvent.setCancelled(true);
                 return;
             } else {
-                CooldownsManager.setCooldown(((Player) unbanInitiator).getPlayer(), "ban");
+                CooldownsManager.setCooldown(((Player) unbanInitiator).getPlayer(), "unban");
             }
         }
 
@@ -228,7 +233,7 @@ public class UnbanManager {
                 asyncUnbanPreprocessEvent.setCancelled(true);
                 return;
             } else {
-                CooldownsManager.setCooldown(((Player) unbanInitiator).getPlayer(), "ban");
+                CooldownsManager.setCooldown(((Player) unbanInitiator).getPlayer(), "unban");
             }
         }
 
@@ -587,6 +592,64 @@ public class UnbanManager {
                 }
             }
         }
+    }
+
+    public void preformGlobalUnban(CommandSender initiator, boolean announceUnban) {
+
+        String initiatorName = null;
+        if(initiator instanceof Player) {
+            initiatorName = ((Player) initiator).getPlayerListName();
+            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "unbanall")) {
+                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "unbanall");
+                return;
+            } else {
+                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), "unbanall");
+            }
+        } else {
+            initiatorName = getGlobalVariables().getConsoleVariableName();
+        }
+
+        if(!announceUnban) {
+            if(!initiator.hasPermission("functionalbans.use.silently")) {
+                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
+                return;
+            }
+        }
+
+        int count = getBannedPlayersContainer().getIdsContainer().size();
+
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            getBannedPlayersContainer().getIdsContainer().clear();
+            getBannedPlayersContainer().getIpContainer().clear();
+            getBannedPlayersContainer().getUUIDContainer().clear();
+            getBannedPlayersContainer().getNameContainer().clear();
+            getBannedPlayersContainer().getBanTypesContainer().clear();
+            getBannedPlayersContainer().getBanTimeContainer().clear();
+            getBannedPlayersContainer().getRealBanDateContainer().clear();
+            getBannedPlayersContainer().getRealBanTimeContainer().clear();
+            getBannedPlayersContainer().getInitiatorNameContainer().clear();
+            getBannedPlayersContainer().getReasonContainer().clear();
+        }
+
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                getSQLiteManager().clearBans();
+                break;
+            }
+            case MYSQL: {
+                break;
+            }
+            case H2: {
+                break;
+            }
+        }
+
+        initiator.sendMessage(setColors(this.accessor.getLang().getString("commands.unbanall.success").replace("%1$f", String.valueOf(count))));
+
+        if(announceUnban) {
+            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.unbanall.broadcast-message").replace("%1$f", initiatorName)));
+        }
+
     }
 
 }

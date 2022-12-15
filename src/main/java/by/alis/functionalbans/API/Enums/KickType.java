@@ -12,6 +12,11 @@ public enum KickType {
      */
     GLOBAL,
 
+    /**
+     * Same as single but invoked with "/crazykick"
+     */
+    CRAZY_KICK,
+
     ERROR
 
 

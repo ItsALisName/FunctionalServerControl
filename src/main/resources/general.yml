@@ -246,21 +246,35 @@ plugin-settings:
     ##############################################################################
     enabled: true
 
-    ##############################################################################
-    #      Will delays persist after the server is restarted or shut down?       #
-    ##############################################################################
-    save-cooldowns: true
-
     ###############################################################################
-    #                       Command delays (In seconds)                           #
+    #      Will delays persist after the server is restarted or shut down?        #
     # It is assumed that the timer will continue its countdown, but will not stop #
     ###############################################################################
+    save-cooldowns: true
+
+    ##############################################################################
+    #                        Command delays (In seconds)                         #
+    ##############################################################################
     command:
       #The "/ban" command is also responsible for the "/tempban" command
       ban: 120
       kick: 60
       mute: 90
       unban: 120
+      unbanall: 300
+      crazykick: 90
+
+  ##############################################################################
+  #           Configuring automatic cleaning of some data from RAM             #
+  ##############################################################################
+  auto-purger:
+
+    enabled: true
+
+    ##############################################################################
+    #        Time in seconds after which the cleaning will be performed          #
+    ##############################################################################
+    delay: 600
 
 
   ##############################################################################

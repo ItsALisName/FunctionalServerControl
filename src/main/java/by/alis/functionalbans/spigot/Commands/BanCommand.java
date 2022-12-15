@@ -50,7 +50,7 @@ public class BanCommand implements CommandExecutor {
                         if(args[1].equalsIgnoreCase("-s")) {
                             if (getConfigSettings().isUnsafeActionsConfirmation()) {
                                 if (!unsafeConfirm) {
-                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm")));
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm-1")));
                                     unsafeConfirm = true;
                                     return true;
                                 }
@@ -88,14 +88,13 @@ public class BanCommand implements CommandExecutor {
                             }
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-ban-success").replace("%1$f", String.valueOf(a))));
                             if(a != 0) sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-ban-cached-notify")));
-                            a = 0;
                             unsafeConfirm = false;
                             return true;
                         }
 
                         if (getConfigSettings().isUnsafeActionsConfirmation()) {
                             if (!unsafeConfirm) {
-                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm")));
+                                sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm-1")));
                                 unsafeConfirm = true;
                                 return true;
                             }
@@ -156,7 +155,7 @@ public class BanCommand implements CommandExecutor {
 
                             if(getConfigSettings().isUnsafeActionsConfirmation()) {
                                 if (!unsafeConfirm) {
-                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm")));
+                                    sender.sendMessage(setColors(this.fileAccessor.getLang().getString("unsafe-actions.unsafe-action-confirm-1")));
                                     unsafeConfirm = true;
                                     return true;
                                 }
@@ -204,7 +203,7 @@ public class BanCommand implements CommandExecutor {
                     }
 
                     OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                    if(!OtherUtils.isNotNullPlayer(args[0])) {
+                    if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                         if(!sender.hasPermission("functionalbans.ban.offline")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                             return true;
@@ -251,7 +250,7 @@ public class BanCommand implements CommandExecutor {
                     if(args[0].equalsIgnoreCase("-s") && args.length == 2) {
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(!OtherUtils.isNotNullPlayer(args[1])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -298,7 +297,7 @@ public class BanCommand implements CommandExecutor {
                     if(args.length > 2 && args[0].equalsIgnoreCase("-s") && !this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(!OtherUtils.isNotNullPlayer(args[1])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -343,7 +342,7 @@ public class BanCommand implements CommandExecutor {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(!OtherUtils.isNotNullPlayer(args[0])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -376,7 +375,7 @@ public class BanCommand implements CommandExecutor {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(!OtherUtils.isNotNullPlayer(args[1])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -410,7 +409,7 @@ public class BanCommand implements CommandExecutor {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(!OtherUtils.isNotNullPlayer(args[0])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -443,7 +442,7 @@ public class BanCommand implements CommandExecutor {
                         long time = this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                         OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                        if(!OtherUtils.isNotNullPlayer(args[1])) {
+                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                             if(!sender.hasPermission("functionalbans.ban.offline")) {
                                 sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                                 return true;
@@ -475,7 +474,7 @@ public class BanCommand implements CommandExecutor {
                     // A Bans with time
 
                     OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                    if(!OtherUtils.isNotNullPlayer(args[0])) {
+                    if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                         if(!sender.hasPermission("functionalbans.ban.offline")) {
                             sender.sendMessage(setColors(this.fileAccessor.getLang().getString("other.offline-no-perms")));
                             return true;

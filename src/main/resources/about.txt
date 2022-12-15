@@ -65,3 +65,9 @@
 ##  -> functionalbans.undo -
 ##
 ##  -> functionalbans.unban -
+##
+##  -> functionalbans.unban-all -
+##
+##  -> functionalbans.crazy-kick -
+##
+##  -> functionalbans.crazy-kick.bypass -

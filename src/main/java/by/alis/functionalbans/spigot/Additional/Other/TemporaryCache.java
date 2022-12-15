@@ -23,7 +23,7 @@ public class TemporaryCache {
     private static final FileAccessor accessor = new FileAccessor();
 
 
-    public HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
+    public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
         return unsafeMutedPlayers;
     }
     public static void setUnsafeMutedPlayers(OfflinePlayer whoBanned, CommandSender initiator) {

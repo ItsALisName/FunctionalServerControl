@@ -2,6 +2,7 @@ package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.GlobalVariables;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
+import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.Commands.Completers.FunctionalBansCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
@@ -11,9 +12,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static org.bukkit.plugin.java.JavaPlugin.getPlugin;
 
 public class FunctionalBansCommand implements CommandExecutor {
 
@@ -27,11 +32,12 @@ public class FunctionalBansCommand implements CommandExecutor {
 
 
     private boolean purgeConfirmation = false;
+    private Map<CommandSender, Integer> confirmation = new HashMap<>();
 
 
-    FileAccessor accessor = new FileAccessor();
-    TemporaryCache cache = new TemporaryCache();
-    GlobalVariables globalVariables = new GlobalVariables();
+    private final FileAccessor accessor = new FileAccessor();
+    private final TemporaryCache cache = new TemporaryCache();
+    private final GlobalVariables globalVariables = new GlobalVariables();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -39,7 +45,7 @@ public class FunctionalBansCommand implements CommandExecutor {
 
         if(args.length == 0) {
             if(sender.hasPermission("functionalbans.help")) {
-                sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help"))));
+                sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalBansSpigot.class).getDescription().getVersion())));
             } else {
                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
             }
@@ -48,7 +54,7 @@ public class FunctionalBansCommand implements CommandExecutor {
 
         if(args[0].equalsIgnoreCase("help")) {
             if(sender.hasPermission("functionalbans.help")) {
-                sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help"))));
+                sender.sendMessage(setColors(String.join("\n", this.accessor.getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalBansSpigot.class).getDescription().getVersion())));
             } else {
                 sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
             }
@@ -127,7 +133,7 @@ public class FunctionalBansCommand implements CommandExecutor {
         if(args[0].equalsIgnoreCase("purge")) {
             if(sender.hasPermission("functionalbans.purge")) {
 
-                if(args.length != 2) {
+                if(args.length == 1 || args.length > 3) {
                     if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(this.accessor.getLang().getString("commands.purge.description").replace("%1$f",command.getName() + " purge"))); }
                     sender.sendMessage(setColors(this.accessor.getLang().getString("commands.purge.usage").replace("%1$f", command.getName() + " purge")));
                     if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(this.accessor.getLang().getString("commands.purge.example").replace("%1$f", command.getName() + " purge"))); }
@@ -140,13 +146,19 @@ public class FunctionalBansCommand implements CommandExecutor {
                         return true;
                     } else {
                         if(getConfigSettings().isPurgeConfirmation()) {
-                            if(!purgeConfirmation) {
-                                purgeConfirmation = true;
-                                sender.sendMessage(setColors(this.accessor.getLang().getString("commands.purge.confirm")));
+                            if (this.confirmation.containsKey(sender)) {
+                                if (!args[2].equalsIgnoreCase(String.valueOf(this.confirmation.get(sender)))) {
+                                    sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " cache " + this.confirmation.get(sender))));
+                                    return true;
+                                } else {
+                                    this.confirmation.remove(sender);
+                                }
+                            } else {
+                                this.confirmation.put(sender, OtherUtils.generateRandomNumber());
+                                sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " cache " + this.confirmation.get(sender))));
                                 return true;
                             }
                         }
-                        purgeConfirmation = false;
                         this.cache.getUnsafeBannedPlayers().clear();
                         this.cache.getUnsafeMutedPlayers().clear();
                         sender.sendMessage(setColors(this.accessor.getLang().getString("commands.purge.cache.cleared")));

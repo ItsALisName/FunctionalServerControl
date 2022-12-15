@@ -19,6 +19,9 @@ public class HideFilter implements Filter {
         if(message.contains("com.mojang.authlib.GameProfile")) {
             return Filter.Result.DENY;
         }
+        if(message.contains("鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵")) {
+            return Filter.Result.DENY;
+        }
         if(StaticConsoleFilterHelper.getConsoleFilterHelper().isHidedMessage(message)) {
             if(StaticSettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
                 if(StaticSettingsAccessor.getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {

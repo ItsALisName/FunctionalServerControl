@@ -29,6 +29,13 @@ public class KickPreprocessEvent extends Event implements Cancellable {
         this.kickType = kickType;
     }
 
+    public KickPreprocessEvent(Player player, CommandSender initiator, KickType type, boolean isApiEnabled) {
+        this.player = player;
+        this.kickType = type;
+        this.initiator = initiator;
+        this.isApiEnabled = isApiEnabled;
+    }
+
     public void inputApiPassword(String apiPassword) {
         this.apiPassword = apiPassword;
     }

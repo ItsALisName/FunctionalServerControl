@@ -1,13 +1,15 @@
 package by.alis.functionalbans.spigot.Additional.Other;
 
-import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static java.lang.Math.random;
 
 public class OtherUtils {
 
@@ -68,6 +70,39 @@ public class OtherUtils {
         } catch (NumberFormatException ignored) {
             return false;
         }
+    }
+
+    public static boolean isOldServerVersion() {
+        Server server = Bukkit.getServer();
+        String version = getServerPackageName(server);
+        if(version.startsWith("v1_7"))
+            return true;
+        if (version.startsWith("v1_8"))
+            return true;
+        if (version.startsWith("v1_9"))
+            return true;
+        if (version.startsWith("v1_10"))
+            return true;
+        if (version.startsWith("v1_11"))
+            return true;
+        if (version.startsWith("v1_12"))
+            return true;
+        if(version.startsWith("v1_13"))
+            return true;
+        if(version.startsWith("v1_14"))
+            return true;
+        if(version.startsWith("v1_15"))
+            return true;
+        return false;
+    }
+
+    public static String getServerPackageName(Server server) {
+        String packageName = server.getClass().getPackage().getName();
+        return packageName.substring(packageName.lastIndexOf('.') + 1);
+    }
+
+    public static int generateRandomNumber() {
+        return (int) (random() * (599 + 1));
     }
 
 }
