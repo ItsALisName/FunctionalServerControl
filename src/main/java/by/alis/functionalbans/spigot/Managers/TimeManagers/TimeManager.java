@@ -2,18 +2,18 @@ package by.alis.functionalbans.spigot.Managers.TimeManagers;
 
 import by.alis.functionalbans.API.Enums.TimeRestrictionType;
 import by.alis.functionalbans.API.Enums.TimeUnit;
-import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
+import by.alis.functionalbans.spigot.Expansions.Expansions;
 import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.entity.Player;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 
 public class TimeManager {
 
     InputTimeChecker checker = new InputTimeChecker();
-    FileAccessor fileAccessor = new FileAccessor();
 
 
     public long convertToMillis(String arg) {
@@ -162,22 +162,22 @@ public class TimeManager {
     }
 
     public long getMaxPossiblePunishTime() {
-        return convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.max-possible-time").replace("|", ""));
+        return convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.max-possible-time").replace("|", ""));
     }
 
     public long getMaxPlayerPunishTime(Player player) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
-            if (StaticExpansions.getVaultManager().isVaultSetuped()) {
-                if(this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player) + ".ban")) {
-                    long maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player) + ".ban").replace("|", ""));
+            if (Expansions.getVaultManager().isVaultSetuped()) {
+                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player) + ".ban")) {
+                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player) + ".ban").replace("|", ""));
                     return maxTime;
                 } else {
                     return getMaxPossiblePunishTime();
                 }
             }
-            if (StaticExpansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                if(this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban")) {
-                    long maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
+            if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
+                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban")) {
+                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
                     return maxTime;
                 } else {
                     return getMaxPossiblePunishTime();
@@ -192,12 +192,12 @@ public class TimeManager {
     public boolean isBanTimeBiggerThanAllowedByGroup(Player player, String argTime) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
             long maxTime = 0;
-            if (StaticExpansions.getVaultManager().isVaultSetuped()) {
-                maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player) + ".ban").replace("|", ""));
+            if (Expansions.getVaultManager().isVaultSetuped()) {
+                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player) + ".ban").replace("|", ""));
                 return this.convertToMillis(argTime) > maxTime;
             }
-            if (StaticExpansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                maxTime = this.convertToMillis(this.fileAccessor.getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
+            if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
+                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
                 return this.convertToMillis(argTime) > maxTime;
             }
         }
@@ -205,15 +205,15 @@ public class TimeManager {
     }
 
     private TimeRestrictionType playerRestrictionType(Player player) {
-        if (StaticExpansions.getVaultManager().isVaultSetuped()) {
-            if (this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getVaultManager().getPlayerGroup(player))) {
+        if (Expansions.getVaultManager().isVaultSetuped()) {
+            if (getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player))) {
                 return TimeRestrictionType.GROUP;
             } else {
                 return TimeRestrictionType.DEFAULT;
             }
         } else {
-            if (StaticExpansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                if (this.fileAccessor.getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + StaticExpansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()))) {
+            if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
+                if (getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()))) {
                     return TimeRestrictionType.GROUP;
                 } else {
                     return TimeRestrictionType.DEFAULT;

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class UnbanallCommand implements CommandExecutor {
 
@@ -26,65 +27,64 @@ public class UnbanallCommand implements CommandExecutor {
         plugin.getCommand("unbanall").setTabCompleter(new UnbanallCompleter());
     }
 
-    private Map<CommandSender, Integer> confirmation = new HashMap<>();
-
-    private final FileAccessor accessor = new FileAccessor();
-    private final UnbanManager unbanManager = new UnbanManager();
+    private final Map<CommandSender, Integer> confirmation = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
+        UnbanManager unbanManager = new UnbanManager();
+        
         if(sender.hasPermission("functionalbans.unban-all")) {
             if(args.length > 0 && args[0].equalsIgnoreCase("-s")) {
                 if (getConfigSettings().isUnsafeActionsConfirmation()) {
-                    if (this.confirmation.containsKey(sender)) {
-                        if (!args[1].equalsIgnoreCase(String.valueOf(this.confirmation.get(sender)))) {
-                            sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " -s " + this.confirmation.get(sender))));
+                    if (confirmation.containsKey(sender)) {
+                        if (!args[1].equalsIgnoreCase(String.valueOf(confirmation.get(sender)))) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " -s " + confirmation.get(sender))));
                             return true;
                         } else {
-                            this.confirmation.remove(sender);
+                            confirmation.remove(sender);
                         }
                     } else {
-                        this.confirmation.put(sender, OtherUtils.generateRandomNumber());
-                        sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " -s " + this.confirmation.get(sender))));
+                        confirmation.put(sender, OtherUtils.generateRandomNumber());
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " -s " + confirmation.get(sender))));
                         return true;
                     }
                 }
 
 
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                    this.unbanManager.preformGlobalUnban(sender, false);
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    unbanManager.preformGlobalUnban(sender, false);
                 });
 
 
             }
             if(getConfigSettings().isUnsafeActionsConfirmation()) {
-                if(this.confirmation.containsKey(sender)) {
+                if(confirmation.containsKey(sender)) {
                     if(args.length == 0) {
-                        sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + this.confirmation.get(sender))));
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + confirmation.get(sender))));
                         return true;
                     }
-                    if(!args[0].equalsIgnoreCase(String.valueOf(this.confirmation.get(sender)))) {
-                        sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + this.confirmation.get(sender))));
+                    if(!args[0].equalsIgnoreCase(String.valueOf(confirmation.get(sender)))) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + confirmation.get(sender))));
                         return true;
                     } else {
-                        this.confirmation.remove(sender);
+                        confirmation.remove(sender);
                     }
                 } else {
-                    this.confirmation.put(sender, OtherUtils.generateRandomNumber());
-                    sender.sendMessage(setColors(this.accessor.getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + this.confirmation.get(sender))));
+                    confirmation.put(sender, OtherUtils.generateRandomNumber());
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-action-confirm").replace("%1$f", label + " " + confirmation.get(sender))));
                     return true;
                 }
             }
 
 
-            Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                this.unbanManager.preformGlobalUnban(sender, true);
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                unbanManager.preformGlobalUnban(sender, true);
             });
 
 
         } else {
-            sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
+            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             return true;
         }
 

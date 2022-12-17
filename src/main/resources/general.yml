@@ -11,13 +11,6 @@ plugin-settings:
   global-language: "ru_RU"
 
   ##############################################################################
-  #      The language in which messages will be displayed in the console       #
-  #                      "en_US" - English language                            #
-  #                      "ru_RU" - Russian language                            #
-  ##############################################################################
-  console-language: "ru_RU"
-
-  ##############################################################################
   #       Will the plugin require the player to re-enter the command if        #
   #                     it performs an unsafe action?                          #
   ##############################################################################
@@ -116,6 +109,10 @@ plugin-settings:
         enabled: false
         password: "VelocityAPICustomPassword"
 
+  logger:
+    enabled: true
+    log-format: "[FunctionalBans <-> %1$f] %2$f"
+    messages-to-log: [Your messages from console to log, FunctionalBans]
 
   ##############################################################################
   #                       Settings using reasons                               #
@@ -126,6 +123,11 @@ plugin-settings:
     #    The reason that will be used if the player did not specify a reason     #
     ##############################################################################
     default-reason: "&cThe reason is not specified, please contact the administrator"
+
+    ##############################################################################
+    #                       Message when ban time is up                          #
+    ##############################################################################
+    ban-time-left: "The ban time expired"
 
     ##############################################################################
     #         Settings for using commands without specifying a reason            #
@@ -214,6 +216,35 @@ plugin-settings:
       #            Compliance with the format ", " is mandatory                    #
       ##############################################################################
       blocked-ips: [127.0.0.4, 132.0.0.3]
+
+      ##############################################################################
+      #          Checking the same IPs currently playing on the server             #
+      ##############################################################################
+      dupe-ip:
+        enabled: true
+
+        ##############################################################################
+        #                   Maximum similar IP addresses per session                 #
+        ##############################################################################
+        max-similar-ips-per-session: 3
+
+        ##############################################################################
+        #                                Check method                                #
+        # "join" - checked when the player enters the server                         #
+        # "timer" - checks every N seconds for a similar IP                          #
+        ##############################################################################
+        check-mode: "timer"
+
+        ##############################################################################
+        #       Time between two checks for similar IP addresses (in seconds)        #
+        #                   (Used if the check method is "timer")                    #
+        ##############################################################################
+        timer-delay: 30
+
+        ##############################################################################
+        #             Action to be applied (where %1$f is the player)                #
+        ##############################################################################
+        action: "banip %1$f 1hour На Вашем IP-адресе слишком много аккаунтов"
 
   ##############################################################################
   #             Settings for limiting the duration of punishments              #

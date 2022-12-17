@@ -8,7 +8,6 @@ public class TimeSettingsAccessor {
     public InputTimeChecker getTimeChecker() {
         return timeChecker;
     }
-
     public TimeManager getTimeManager() {
         return timeManager;
     }

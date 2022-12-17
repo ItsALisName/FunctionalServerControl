@@ -1,9 +1,6 @@
 package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -20,7 +17,7 @@ public class ConsoleFilterHelper {
     private final List<String> functionalBansCommands = new ArrayList<>();
     private static final String ISSUED_COMMAND_TEXT = "issued server command: ";
     private static final String[] commands = {"/ban", "/tempban", "/kick", "/kickall", "/unban", "/mute", "/unmute", "/check", "/fb", "/functionalbans", "/fbans", "/funcbans", "/temporaryban", "/crazykick", "/permanentban", "/banip", "/tempbanip",
-    "/temporarybanip", "/permanentbanip", "/unbanall", "/crazykick", "/ckick"};
+    "/temporarybanip", "/permanentbanip", "/unbanall", "/crazykick", "/ckick", "/dupeip"};
 
     protected boolean isFunctionalBansCommand(String consoleMessage) {
         if(!this.functionalBansCommands.isEmpty()) {
@@ -42,7 +39,7 @@ public class ConsoleFilterHelper {
     }
 
     protected String getUsedFunctionalBansCommand(String consoleMessage) {
-        if(consoleMessage == null) return StaticSettingsAccessor.getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU") ? LangRussian.FILTERED_COMMAND_ERROR : LangEnglish.FILTERED_COMMAND_ERROR;
+        if(consoleMessage == null) return "Could not identify the command";;
         return consoleMessage.split(ISSUED_COMMAND_TEXT)[1];
     }
 
@@ -50,31 +47,11 @@ public class ConsoleFilterHelper {
         this.functionalBansCommands.clear();
         try {
             Collections.addAll(this.functionalBansCommands, commands);
-            if(getConfigSettings().isLessInformation()) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOADED.replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
-                        break;
-                }
+            if(!getConfigSettings().isLessInformation()) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Console filtering commands have been successfully loaded into RAM (Total: %count%) ✔".replace("%count%", String.valueOf(this.functionalBansCommands.size()))));
             }
         } catch (Exception ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_FILTERED_COMMANDS_LOAD_ERROR));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOAD_ERROR));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_FILTERED_COMMANDS_LOAD_ERROR));
-                    break;
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Failed to load filtering commands into RAM &4✘"));
         }
     }
 

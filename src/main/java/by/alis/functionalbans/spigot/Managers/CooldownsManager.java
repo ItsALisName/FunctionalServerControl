@@ -10,13 +10,12 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class CooldownsManager {
-
-    private static final FileAccessor accessor = new FileAccessor();
     private static final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     public CooldownsManager() {}
 
@@ -96,7 +95,7 @@ public class CooldownsManager {
         for(Map.Entry<String, Long> e : cooldowns.entrySet()) {
             if(e.getKey().equalsIgnoreCase(player.getName() + ":" + command)) {
                 currentTime = e.getValue() - System.currentTimeMillis();
-                player.sendMessage(setColors(accessor.getLang().getString("other.cooldown").replace("%1$f", command).replace("%2$f", timeSettingsAccessor.getTimeManager().convertFromMillis(currentTime))));
+                player.sendMessage(setColors(getFileAccessor().getLang().getString("other.cooldown").replace("%1$f", command).replace("%2$f", timeSettingsAccessor.getTimeManager().convertFromMillis(currentTime))));
                 break;
             }
         }
@@ -113,10 +112,6 @@ public class CooldownsManager {
                     break;
                 }
                 case H2: {
-                    break;
-                }
-                default: {
-                    getSQLiteManager().saveCooldowns(cooldowns);
                     break;
                 }
             }

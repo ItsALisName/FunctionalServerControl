@@ -71,3 +71,11 @@
 ##  -> functionalbans.crazy-kick -
 ##
 ##  -> functionalbans.crazy-kick.bypass -
+##
+##  -> functionalbans.dupeip -
+##
+##  -> functionalbans.dupeip.bypass -
+##
+##  -> functionalbans.dupeip.create-report -
+##
+##  -> functionalbans.dupeip.delete-report -

@@ -1,7 +1,5 @@
 package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.apache.logging.log4j.Level;
@@ -24,15 +22,7 @@ public class HideFilter implements Filter {
         }
         if(StaticConsoleFilterHelper.getConsoleFilterHelper().isHidedMessage(message)) {
             if(StaticSettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
-                if(StaticSettingsAccessor.getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                    Bukkit.getConsoleSender().sendMessage(TextUtils.setColors(LangRussian.FILTER_LOG_HIDDEN));
-                    return Filter.Result.DENY;
-                }
-                if(StaticSettingsAccessor.getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                    Bukkit.getConsoleSender().sendMessage(TextUtils.setColors(LangEnglish.FILTER_LOG_HIDDEN));
-                    return Filter.Result.DENY;
-                }
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors(LangEnglish.FILTER_LOG_HIDDEN));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalBans | Log] The incoming message to the console is safely hidden"));
             }
             return Filter.Result.DENY;
         }

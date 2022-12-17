@@ -1,8 +1,5 @@
 package by.alis.functionalbans.spigot.Expansions.ProtocolLib;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
-
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
@@ -24,44 +21,18 @@ public class ProtocolLibManager {
 
     public void setupProtocolLib() {
         if(isProtocolLibInstalled()) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.PROTOCOL_LIB_FINDED));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_FINDED));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_FINDED));
-                    break;
+            if(!getConfigSettings().isLessInformation()){
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans -> ProtocolLib] ProtocolLib detected, connecting..."));
             }
             protocolManager = ProtocolLibrary.getProtocolManager();
             if(protocolManager != null) {
                 protocolLibSetuped = true;
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.PROTOCOL_LIB_HOOKED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_HOOKED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_HOOKED));
-                        break;
+                if(!getConfigSettings().isLessInformation()){
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans -> ProtocolLib] Connection to ProtocolLib was successful."));
                 }
             } else {
                 protocolLibSetuped = false;
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.PROTOCOL_LIB_ERROR));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_ERROR));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.PROTOCOL_LIB_ERROR));
-                        break;
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalBans -> ProtocolLib] Failed to connect to ProtocolLib"));
             }
         }
     }

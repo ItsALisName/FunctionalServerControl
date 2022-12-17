@@ -1,8 +1,5 @@
 package by.alis.functionalbans.spigot.Expansions.Vault;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
-
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -23,44 +20,18 @@ public class VaultManager {
     public void setupVaultPermissions() {
         if(vaultInstalled()) {
             if(permissionsProviderInstalled()) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.VAULT_FINDED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_FINDED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_FINDED));
-                        break;
+                if(!getConfigSettings().isLessInformation()){
+                    Bukkit.getConsoleSender().sendMessage(setColors("&e[Functionalbans -> Vault] Vault detected, connecting..."));
                 }
                 permission = getPermissionRegisteredServiceProvider().getProvider();
                 if(permission != null) {
                     this.vaultSetuped = true;
-                    switch (getConfigSettings().getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.VAULT_HOOKED));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_HOOKED));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_HOOKED));
-                            break;
+                    if(!getConfigSettings().isLessInformation()){
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans -> Vault] Connection to Vault was successful"));
                     }
                 } else {
                     this.vaultSetuped = false;
-                    switch (getConfigSettings().getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.VAULT_ERROR));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_ERROR));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.VAULT_ERROR));
-                            break;
-                    }
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalBans -> Vault] Failed to connect to Vault"));
                 }
             }
         }

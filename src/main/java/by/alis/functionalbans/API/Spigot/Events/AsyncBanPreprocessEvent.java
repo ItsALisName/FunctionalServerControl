@@ -85,7 +85,7 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
      */
     public String getNullPlayer() {
         if(this.player != null) {
-            return getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU") ? "Нет необходимости использовать это сейчас" : "There is no need to use it now";
+            return "There is no need to use it now";
         }
         return nullPlayer;
     }

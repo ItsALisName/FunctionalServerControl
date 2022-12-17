@@ -9,7 +9,9 @@ import java.io.File;
 public class FileManager {
 
 
-    public FileManager() {this.initializeFiles();}
+    public FileManager() {
+        this.initializeFiles();
+    }
 
     public File configFile;
     public FileConfiguration configuration;
@@ -53,6 +55,10 @@ public class FileManager {
         if(!this.helpFile.exists()) {
             FunctionalBansSpigot.getPlugin(FunctionalBansSpigot.class).saveResource("about.txt", false);
         }
+
+    }
+
+    protected void reloadFiles() {
 
     }
 

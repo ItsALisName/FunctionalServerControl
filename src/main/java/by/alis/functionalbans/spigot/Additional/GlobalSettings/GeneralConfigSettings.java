@@ -2,24 +2,21 @@ package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalbans.API.Enums.StorageType;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 import java.util.*;
 
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class GeneralConfigSettings {
 
 
     private boolean isOldServerVersion = false;
-    private String consoleLanguageMode = "en_US";
     private String globalLanguage = "ru_RU";
     private boolean isAnnounceWhenLogHided = true;
     private boolean isAllowedUseRamAsContainer = false;
@@ -42,11 +39,13 @@ public class GeneralConfigSettings {
     private boolean isSaveCooldowns = false;
     private StorageType storageType = StorageType.SQLITE;
     private boolean isAllowedUnbanWithoutReason = true;
-    private String defaultUnbanReason = "The Ban time has expired";
+    private String banTimeExpired = "The Ban time has expired";
     private boolean isAutoPurgerEnabled = false;
     private int autoPurgerDelay = 600;
 
-
+    private boolean isLoggerEnabled = false;
+    private String logFormat = "[FunctionalBans <-> %1$f] %2$f";
+    private List<String> messagesToLog = new ArrayList<>();
 
     private boolean isNicksControlEnabled = false;
     private String nicknameCheckMode = "contains";
@@ -58,6 +57,42 @@ public class GeneralConfigSettings {
     private List<String> blockedIps = new ArrayList<>();
     private boolean notifyConsoleWhenIPBlocked = false;
 
+    private boolean dupeIdModeEnabled = false;
+    private int maxIpsPerSession = 1;
+    private String dupeIpCheckMode = "timer";
+    private String dupeIpAction = null;
+    private int dupeIpTimerDelay = 30;
+
+    public boolean isDupeIdModeEnabled() {
+        return this.dupeIdModeEnabled;
+    }
+    private void setDupeIdModeEnabled(boolean dupeIdModeEnabled) {
+        this.dupeIdModeEnabled = dupeIdModeEnabled;
+    }
+    public int getMaxIpsPerSession() {
+        return this.maxIpsPerSession;
+    }
+    private void setMaxIpsPerSession(int maxIpsPerSession) {
+        this.maxIpsPerSession = maxIpsPerSession;
+    }
+    public String getDupeIpCheckMode() {
+        return this.dupeIpCheckMode;
+    }
+    private void setDupeIpCheckMode(String dupeIpCheckMode) {
+        this.dupeIpCheckMode = dupeIpCheckMode;
+    }
+    public String getDupeIpAction() {
+        return this.dupeIpAction;
+    }
+    private void setDupeIpAction(String dupeIpAction) {
+        this.dupeIpAction = dupeIpAction;
+    }
+    public int getDupeIpTimerDelay() {
+        return this.dupeIpTimerDelay;
+    }
+    private void setDupeIpTimerDelay(int dupeIpTimerDelay) {
+        this.dupeIpTimerDelay = dupeIpTimerDelay;
+    }
 
     public boolean isIpsControlEnabled() {
         return isIpsControlEnabled;
@@ -89,7 +124,7 @@ public class GeneralConfigSettings {
         this.showDescription = showDescription;
     }
     private void setUnsafeActionsConfirmation(boolean unsafeActionsConfirmation) {
-        unsafeActionsConfirmation = unsafeActionsConfirmation;
+        this.unsafeActionsConfirmation = unsafeActionsConfirmation;
     }
     private void setApiEnabled(boolean apiEnabled) {
         this.isApiEnabled = apiEnabled;
@@ -125,8 +160,8 @@ public class GeneralConfigSettings {
         return timeRestrictionGroups;
     }
     public void setPossibleGroups(Set<String> timeRestrictionGroups) {
-        timeRestrictionGroups.clear();
-        timeRestrictionGroups = timeRestrictionGroups;
+        this.timeRestrictionGroups.clear();
+        this.timeRestrictionGroups = timeRestrictionGroups;
     }
     public boolean isMuteAllowedWithoutReason() {
         return isMuteAllowedWithoutReason;
@@ -144,19 +179,13 @@ public class GeneralConfigSettings {
         return showExamples;
     }
     public void setShowExamples(boolean showExamples) {
-        showExamples = showExamples;
+        this.showExamples = showExamples;
     }
     public StorageType getStorageType() {
         return storageType;
     }
     private void setStorageType(StorageType storageType) {
-        storageType = storageType;
-    }
-    public String getConsoleLanguageMode() {
-        return consoleLanguageMode;
-    }
-    private void setConsoleLanguageMode(String mode) {
-        consoleLanguageMode = mode;
+        this.storageType = storageType;
     }
     public boolean isAnnounceWhenLogHided() {
         return isAnnounceWhenLogHided;
@@ -168,7 +197,7 @@ public class GeneralConfigSettings {
         return hideMainCommand;
     }
     private void setHideMainCommand(boolean hideMainCommand) {
-        hideMainCommand = hideMainCommand;
+        this.hideMainCommand = hideMainCommand;
     }
     public boolean isLessInformation() {
         return isLessInformation;
@@ -205,21 +234,43 @@ public class GeneralConfigSettings {
         isSaveCooldowns = saveCooldowns;
     }
     public String getGlobalLanguage() {
-        return globalLanguage;
+        return this.globalLanguage;
     }
     public void setGlobalLanguage(String globalLanguage) {
-        globalLanguage = globalLanguage;
+        this.globalLanguage = globalLanguage;
     }
     public boolean isAllowedUnbanWithoutReason() {
-        return isAllowedUnbanWithoutReason;
+        return this.isAllowedUnbanWithoutReason;
     }
     private void setAllowedUnbanWithoutReason(boolean allowedUnbanWithoutReason) {
-        isAllowedUnbanWithoutReason = allowedUnbanWithoutReason;
+        this.isAllowedUnbanWithoutReason = allowedUnbanWithoutReason;
     }
-    public String getDefaultUnbanReason() {
-        return defaultUnbanReason;
+    public String getBanTimeExpired() {
+        return this.banTimeExpired;
+    }
+    public void setBanTimeExpired(String banTimeExpired) {
+        this.banTimeExpired = banTimeExpired;
     }
 
+    public boolean isLoggerEnabled() {
+        return this.isLoggerEnabled;
+    }
+    private void setLoggerEnabled(boolean loggerEnabled) {
+        this.isLoggerEnabled = loggerEnabled;
+    }
+    public String getLogFormat() {
+        return this.logFormat;
+    }
+    private void setLogFormat(String logFormat) {
+        this.logFormat = logFormat;
+    }
+    public List<String> getMessagesToLog() {
+        return messagesToLog;
+    }
+    private void setMessagesToLog(List<String> messagesToLog) {
+        this.messagesToLog.clear();
+        this.messagesToLog = messagesToLog;
+    }
 
     public boolean isNicksControlEnabled() {
         return this.isNicksControlEnabled;
@@ -267,347 +318,62 @@ public class GeneralConfigSettings {
     }
 
     public void loadConfigSettings() {
-        FileAccessor fileAccessor = new FileAccessor();
-        setConsoleLanguageMode(fileAccessor.getGeneralConfig().getString("plugin-settings.console-language"));
-        if(!isLessInformation()) {
-            if (fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] Установлен язык для консоли: ru_RU (Русский) ✔"));
-            }
-            if (fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] The language for the console is set: en_US (English) ✔"));
-            }
-        }
-        if(!fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("en_US") && !fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("ru_RU")) {
-            setConsoleLanguageMode("en_US");
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_UNKNOWN_LANGUAGE));
-        }
-
-
-        switch (Objects.requireNonNull(fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))) {
-            case "sqlite": {
-                setStorageType(StorageType.SQLITE);
-                if(!isLessInformation()) {
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                    }
-                }
-                break;
-            }
-            case "mysql": {
-                setStorageType(StorageType.MYSQL);
-                if(!isLessInformation()) {
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                    }
-                }
-                break;
-            }
-            case "h2": {
-                setStorageType(StorageType.H2);
-                if(!isLessInformation()) {
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                            break;
-                    }
-                }
-                break;
-            }
-            default: {
-                setStorageType(StorageType.SQLITE);
-                switch (getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                        break;
-                }
-                break;
-            }
-        }
-
-        setGlobalLanguage(fileAccessor.getGeneralConfig().getString("plugin-settings.global-language"));
-
-        StaticContainers.getHidedMessagesContainer().loadHidedMessages();
-        StaticContainers.getReplacedMessagesContainer().loadReplacedMessages();
-
-        setCooldownsEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
-        setSaveCooldowns(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
-        CooldownsManager.setupCooldowns();
-
-        setNicksControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
-        setNotifyConsoleWhenNickNameBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
-
-        setIpsControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
-        if(isIpsControlEnabled()) {
-            setNotifyConsoleWhenIPBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
-            setBlockedIps(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
-        }
-
-        if(isNicksControlEnabled()) {
-            switch (fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
-                case "equals": {
-                    setNicknameCheckMode("equals");
-                    break;
-                }
-                case "contains": {
-                    setNicknameCheckMode("contains");
-                    break;
-                }
-                default: {
-                    setNicknameCheckMode("contains");
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU": {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                            break;
-                        }
-                        case "en_US": {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                            break;
-                        }
-                        default: {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-
-            setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
-
-        }
-
-        setOldServerVersion(OtherUtils.isOldServerVersion());
-        setLessInformation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
-        setProhibitYourselfInteraction(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
-        setBanAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
-        setKickAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
-        setMuteAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
-        setAllowedUnbanWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
-        setUnsafeActionsConfirmation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
-        setPurgeConfirmation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
-        setShowExamples(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-examples"));
-        setShowDescription(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-description"));
-        setHideMainCommand(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.hide-main-command"));
-        setConsoleNotification(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
-        setPlayersNotification(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
-        timeRestrictionGroups.clear();
-        setPossibleGroups(fileAccessor.getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
-
-        setAutoPurgerEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
-        if(isAutoPurgerEnabled()) {
-            setAutoPurgerDelay(fileAccessor.getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
-        }
-
-        setAllowedUseRamAsContainer(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
-        if(isAllowedUseRamAsContainer()) {
-            if(isLessInformation()) {
-                switch (getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_USE_RAM_ALLOWED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_USE_RAM_ALLOWED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_USE_RAM_ALLOWED));
-                        break;
-                }
-            }
-        } else {
-            if (isLessInformation()) {
-                switch (getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_USE_RAM_DISALLOWED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_USE_RAM_DISALLOWED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_USE_RAM_DISALLOWED));
-                        break;
-                }
-            }
-        }
-
-        setAnnounceWhenLogHided(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
-
-        setApiEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.api.spigot.enabled"));
-        if(isLessInformation()) {
-            switch (getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? LangRussian.CONFIG_API_ENABLED : LangRussian.CONFIG_API_DISABLED));
-                    break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? LangEnglish.CONFIG_API_ENABLED : LangEnglish.CONFIG_API_DISABLED));
-                    break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? LangEnglish.CONFIG_API_ENABLED : LangEnglish.CONFIG_API_DISABLED));
-                    break;
-                }
-            }
-        }
-
-        setApiProtectedByPassword(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.api.spigot.password.enabled"));
-        if(isApiEnabled()) {
-            if (isLessInformation()) {
-                switch (getConsoleLanguageMode()) {
-                    case "ru_RU": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? LangRussian.CONFIG_API_NOT_PROTECTED : LangRussian.CONFIG_API_PROTECTED));
-                        break;
-                    }
-                    case "en_US": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? LangEnglish.CONFIG_API_NOT_PROTECTED : LangEnglish.CONFIG_API_PROTECTED));
-                        break;
-                    }
-                    default: {
-                        Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? LangEnglish.CONFIG_API_NOT_PROTECTED : LangEnglish.CONFIG_API_PROTECTED));
-                        break;
-                    }
-                }
-            }
-        }
-        return;
-    }
-
-    public void reloadConfig() {
+        setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-            FileAccessor fileAccessor = new FileAccessor();
-            consoleLanguageMode = fileAccessor.getGeneralConfig().getString("plugin-settings.console-language");
-            if (fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] Установлен язык для консоли: ru_RU (Русский) ✔"));
-            }
-            if (fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] The language for the console is set: en_US (English) ✔"));
-            }
-            if (!fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("en_US") && !fileAccessor.getGeneralConfig().getString("plugin-settings.console-language").equalsIgnoreCase("ru_RU")) {
-                consoleLanguageMode = "en_US";
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_UNKNOWN_LANGUAGE));
-            }
-            switch (fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method")) {
+            switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
                 case "sqlite": {
-                    storageType = StorageType.SQLITE;
-                    if (!isLessInformation()) {
-                        switch (getConsoleLanguageMode()) {
-                            case "ru_RU":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            case "en_US":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            default:
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                        }
+                    setStorageType(StorageType.SQLITE);
+                    if(!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                     }
                     break;
                 }
                 case "mysql": {
-                    storageType = StorageType.MYSQL;
-                    if (!isLessInformation()) {
-                        switch (getConsoleLanguageMode()) {
-                            case "ru_RU":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            case "en_US":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            default:
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                        }
+                    setStorageType(StorageType.MYSQL);
+                    if(!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                     }
                     break;
                 }
                 case "h2": {
-                    storageType = StorageType.H2;
-                    if (!isLessInformation()) {
-                        switch (getConsoleLanguageMode()) {
-                            case "ru_RU":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            case "en_US":
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                            default:
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_LOADED.replace("%storage_method%", String.valueOf(getStorageType()))));
-                                break;
-                        }
+                    setStorageType(StorageType.H2);
+                    if(!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                     }
                     break;
                 }
                 default: {
-                    storageType = StorageType.SQLITE;
-                    switch (getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_STORAGE_METHOD_UNKNOWN.replace("%unknown_method%", fileAccessor.getGeneralConfig().getString("plugin-settings.storage-method"))));
-                            break;
-                    }
+                    setStorageType(StorageType.SQLITE);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans | Plugin Loading] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
                     break;
                 }
             }
-            setGlobalLanguage(fileAccessor.getGeneralConfig().getString("plugin-settings.global-language"));
-            setLessInformation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.less-information"));
-            setConsoleNotification(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
-            setPlayersNotification(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
-            setProhibitYourselfInteraction(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
-            StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
-            StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
 
-            setCooldownsEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
-            setSaveCooldowns(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
+            setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
+
+            setGlobalLanguage(getFileAccessor().getGeneralConfig().getString("plugin-settings.global-language"));
+
+            setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
+            setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
             CooldownsManager.setupCooldowns();
 
-            setNicksControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
-            setNotifyConsoleWhenNickNameBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+            setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
+            setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
 
-            setAutoPurgerEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
-            if(isAutoPurgerEnabled()) {
-                setAutoPurgerDelay(fileAccessor.getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+            setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
+            if(isIpsControlEnabled()) {
+                setNotifyConsoleWhenIPBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
+                setBlockedIps(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
             }
 
-            setIpsControlEnabled(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
-            if(isIpsControlEnabled()) {
-                setNotifyConsoleWhenIPBlocked(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
-                setBlockedIps(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
+            setLoggerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.logger.enabled"));
+            if(isLoggerEnabled()) {
+                setLogFormat(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.log-format"));
+                setMessagesToLog(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.messages-to-log"), "[", "]").split(", ")));
             }
 
             if(isNicksControlEnabled()) {
-                switch (fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
+                switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
                     case "equals": {
                         setNicknameCheckMode("equals");
                         break;
@@ -618,39 +384,196 @@ public class GeneralConfigSettings {
                     }
                     default: {
                         setNicknameCheckMode("contains");
-                        switch (getConsoleLanguageMode()) {
-                            case "ru_RU": {
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                                break;
-                            }
-                            case "en_US": {
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                                break;
-                            }
-                            default: {
-                                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_NICKNAME_UNKNOWN_CHECK_MODE));
-                                break;
-                            }
-                        }
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[Functional Bans | Error] The type of verification of nicknames is incorrect in general.yml, use the standard type (contains)"));
                         break;
                     }
                 }
-                setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(fileAccessor.getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
+
+                setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
 
             }
 
-            setBanAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
-            setKickAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
-            setMuteAllowedWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
-            setAllowedUnbanWithoutReason(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
-            setUnsafeActionsConfirmation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
-            setPurgeConfirmation(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
-            setShowExamples(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-examples"));
-            setShowDescription(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.show-description"));
-            setHideMainCommand(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.hide-main-command"));
+            setDupeIdModeEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.dupe-ip.enabled"));
+            if(isDupeIdModeEnabled()) {
+                setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
+                if(getMaxIpsPerSession() < 1) {
+                    setMaxIpsPerSession(1);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
+                }
+                setDupeIpCheckMode(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.check-mode"));
+                if(!getDupeIpCheckMode().equalsIgnoreCase("join") && !getDupeIpCheckMode().equalsIgnoreCase("timer")) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
+                    setDupeIpCheckMode("timer");
+                }
+                setDupeIpTimerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.timer-delay"));
+                if(getDupeIpTimerDelay() < 30) {
+                    setDupeIpTimerDelay(30);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] The value of 'dupe-ip.timer-delay' cannot be less than 30, I use 30"));
+                }
+                setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
+            }
+
+            setOldServerVersion(OtherUtils.isOldServerVersion());
+            setProhibitYourselfInteraction(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
+            setBanAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
+            setKickAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
+            setMuteAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
+            setAllowedUnbanWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
+            setUnsafeActionsConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
+            setPurgeConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
+            setShowExamples(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.show-examples"));
+            setShowDescription(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.show-description"));
+            setHideMainCommand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.hide-main-command"));
+            setConsoleNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
+            setPlayersNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
+            setPossibleGroups(getFileAccessor().getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
+
+            setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
+            if(isAutoPurgerEnabled()) {
+                setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+            }
+
+            setAllowedUseRamAsContainer(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
+            if(isAllowedUseRamAsContainer()) {
+                if(!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin loading] Use RAM for data storage (Allowed by the configuration file)"));
+                }
+            } else {
+                if (!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalBans | Plugin loading] RAM usage is prohibited, use direct access to the database!"));
+                }
+            }
+
+            setAnnounceWhenLogHided(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
+
+            setApiEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.enabled"));
+            if(!isLessInformation()) {
+                Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalBans | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalBans | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
+            }
+
+            setApiProtectedByPassword(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.password.enabled"));
+            if(isApiEnabled()) {
+                if (!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? "&a[FunctionalBans | API Loading] Password protection is set for API" : "&c[FunctionalBans | API Loading] Password protection is not installed for the API (This is not an error)"));
+                }
+            }
+        });
+        return;
+    }
+
+    public void reloadConfig() {
+        setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+
+
+            switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
+                case "sqlite": {
+                    setStorageType(StorageType.SQLITE);
+                    if (!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    }
+                    break;
+                }
+                case "mysql": {
+                    setStorageType(StorageType.MYSQL);
+                    if (!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    }
+                    break;
+                }
+                case "h2": {
+                    setStorageType(StorageType.H2);
+                    if (!isLessInformation()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    }
+                    break;
+                }
+                default: {
+                    setStorageType(StorageType.SQLITE);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans | Plugin Loading] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
+                    break;
+                }
+            }
+
+            setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
+
+            setGlobalLanguage(getFileAccessor().getGeneralConfig().getString("plugin-settings.global-language"));
+            setConsoleNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
+            setPlayersNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
+            setProhibitYourselfInteraction(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
+            StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
+            StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
+
+            setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
+            setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
+            CooldownsManager.setupCooldowns();
+
+            setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
+            setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+
+            setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
+            if(isAutoPurgerEnabled()) {
+                setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+            }
+
+            setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
+            if(isIpsControlEnabled()) {
+                setNotifyConsoleWhenIPBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
+                setBlockedIps(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
+            }
+
+            setDupeIdModeEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.dupe-ip.enabled"));
+            if(isDupeIdModeEnabled()) {
+                setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
+                if(getMaxIpsPerSession() < 1) {
+                    setMaxIpsPerSession(1);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
+                }
+                setDupeIpCheckMode(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.check-mode"));
+                if(!getDupeIpCheckMode().equalsIgnoreCase("join") && !getDupeIpCheckMode().equalsIgnoreCase("timer")) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
+                    setDupeIpCheckMode("timer");
+                }
+                setDupeIpTimerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.timer-delay"));
+                if(getDupeIpTimerDelay() < 1) {
+                    setDupeIpTimerDelay(1);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] The value of 'dupe-ip.timer-delay' cannot be less than 1, I use 1"));
+                }
+                setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
+            }
+
+            if(isNicksControlEnabled()) {
+                switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
+                    case "equals": {
+                        setNicknameCheckMode("equals");
+                        break;
+                    }
+                    case "contains": {
+                        setNicknameCheckMode("contains");
+                        break;
+                    }
+                    default: {
+                        setNicknameCheckMode("contains");
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[Functional Bans | Error] The type of verification of nicknames is incorrect in general.yml, use the standard type (contains)"));
+                        break;
+                    }
+                }
+                setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
+
+            }
+
+            setBanAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
+            setKickAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
+            setMuteAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
+            setAllowedUnbanWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
+            setUnsafeActionsConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
+            setPurgeConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
+            setShowExamples(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.show-examples"));
+            setShowDescription(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.show-description"));
+            setHideMainCommand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.hide-main-command"));
             getPossibleGroups().clear();
-            setPossibleGroups(fileAccessor.getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
-            setAnnounceWhenLogHided(fileAccessor.getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
+            setPossibleGroups(getFileAccessor().getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
+            setAnnounceWhenLogHided(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
 
         });
     }

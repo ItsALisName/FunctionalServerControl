@@ -1,13 +1,11 @@
 package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
  * The class responsible for the global variables of the plugin, their loading, reloading and getting
@@ -84,44 +82,23 @@ public class GlobalVariables {
 
     public void reloadGlobalVariables() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-            FileAccessor accessor = new FileAccessor();
             try {
-                VAR_REPLACED_CONSOLE_NAME = accessor.getGeneralConfig().getString("global-variables.console-name");
-                VAR_TIME_NEVER = accessor.getGeneralConfig().getString("global-variables.never");
-                VAR_TIME_YEARS = accessor.getGeneralConfig().getString("global-variables.years").split("\\|");
-                VAR_TIME_MONTHS = accessor.getGeneralConfig().getString("global-variables.months").split("\\|");
-                VAR_TIME_HOURS = accessor.getGeneralConfig().getString("global-variables.hours").split("\\|");
-                VAR_TIME_DAYS = accessor.getGeneralConfig().getString("global-variables.days").split("\\|");
-                VAR_TIME_MINUTES = accessor.getGeneralConfig().getString("global-variables.minutes").split("\\|");
-                VAR_TIME_SECONDS = accessor.getGeneralConfig().getString("global-variables.seconds").split("\\|");
-                VAR_UNKNOWN_TIME = accessor.getGeneralConfig().getString("global-variables.unknown-time");
-                VAR_DEFAULT_REASON = accessor.getGeneralConfig().getString("plugin-settings.reason-settings.default-reason");
-                VAR_ALL = accessor.getGeneralConfig().getString("global-variables.all");
-                VAR_UNBANNED = accessor.getGeneralConfig().getString("global-variables.unbanned");
-                VAR_UNMUTED = accessor.getGeneralConfig().getString("global-variables.unmuted");
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOADED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                        break;
-                }
+                VAR_REPLACED_CONSOLE_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.console-name");
+                VAR_TIME_NEVER = getFileAccessor().getGeneralConfig().getString("global-variables.never");
+                VAR_TIME_YEARS = getFileAccessor().getGeneralConfig().getString("global-variables.years").split("\\|");
+                VAR_TIME_MONTHS = getFileAccessor().getGeneralConfig().getString("global-variables.months").split("\\|");
+                VAR_TIME_HOURS = getFileAccessor().getGeneralConfig().getString("global-variables.hours").split("\\|");
+                VAR_TIME_DAYS = getFileAccessor().getGeneralConfig().getString("global-variables.days").split("\\|");
+                VAR_TIME_MINUTES = getFileAccessor().getGeneralConfig().getString("global-variables.minutes").split("\\|");
+                VAR_TIME_SECONDS = getFileAccessor().getGeneralConfig().getString("global-variables.seconds").split("\\|");
+                VAR_UNKNOWN_TIME = getFileAccessor().getGeneralConfig().getString("global-variables.unknown-time");
+                VAR_DEFAULT_REASON = getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.default-reason");
+                VAR_ALL = getFileAccessor().getGeneralConfig().getString("global-variables.all");
+                VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
+                VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] Global variables successfully reloaded"));
             } catch (ExceptionInInitializerError ignored) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Failed to reload global variables"));
             }
         });
         return;
@@ -129,49 +106,27 @@ public class GlobalVariables {
 
     public void loadGlobalVariables() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-            FileAccessor accessor = new FileAccessor();
             try {
-                VAR_REPLACED_CONSOLE_NAME = accessor.getGeneralConfig().getString("global-variables.console-name");
-                VAR_TIME_NEVER = accessor.getGeneralConfig().getString("global-variables.never");
-                VAR_TIME_YEARS = accessor.getGeneralConfig().getString("global-variables.years").split("\\|");
-                VAR_TIME_MONTHS = accessor.getGeneralConfig().getString("global-variables.months").split("\\|");
-                VAR_TIME_HOURS = accessor.getGeneralConfig().getString("global-variables.hours").split("\\|");
-                VAR_TIME_DAYS = accessor.getGeneralConfig().getString("global-variables.days").split("\\|");
-                VAR_TIME_MINUTES = accessor.getGeneralConfig().getString("global-variables.minutes").split("\\|");
-                VAR_TIME_SECONDS = accessor.getGeneralConfig().getString("global-variables.seconds").split("\\|");
-                VAR_UNKNOWN_TIME = accessor.getGeneralConfig().getString("global-variables.unknown-time");
-                VAR_DEFAULT_REASON = accessor.getGeneralConfig().getString("plugin-settings.reason-settings.default-reason");
-                VAR_ALL = accessor.getGeneralConfig().getString("global-variables.all");
-                VAR_UNBANNED = accessor.getGeneralConfig().getString("global-variables.unbanned");
-                VAR_UNMUTED = accessor.getGeneralConfig().getString("global-variables.unmuted");
+                VAR_REPLACED_CONSOLE_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.console-name");
+                VAR_TIME_NEVER = getFileAccessor().getGeneralConfig().getString("global-variables.never");
+                VAR_TIME_YEARS = getFileAccessor().getGeneralConfig().getString("global-variables.years").split("\\|");
+                VAR_TIME_MONTHS = getFileAccessor().getGeneralConfig().getString("global-variables.months").split("\\|");
+                VAR_TIME_HOURS = getFileAccessor().getGeneralConfig().getString("global-variables.hours").split("\\|");
+                VAR_TIME_DAYS = getFileAccessor().getGeneralConfig().getString("global-variables.days").split("\\|");
+                VAR_TIME_MINUTES = getFileAccessor().getGeneralConfig().getString("global-variables.minutes").split("\\|");
+                VAR_TIME_SECONDS = getFileAccessor().getGeneralConfig().getString("global-variables.seconds").split("\\|");
+                VAR_UNKNOWN_TIME = getFileAccessor().getGeneralConfig().getString("global-variables.unknown-time");
+                VAR_DEFAULT_REASON = getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.default-reason");
+                VAR_ALL = getFileAccessor().getGeneralConfig().getString("global-variables.all");
+                VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
+                VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
                 if(!getConfigSettings().isLessInformation()) {
-                    switch (getConfigSettings().getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOADED));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOADED));
-                            break;
-                    }
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] Global variables successfully reloaded"));
                 }
             } catch (ExceptionInInitializerError ignored) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONFIG_VARIABLES_RELOAD_ERROR));
-                        break;
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Failed to reload global variables"));
             }
         });
-        return;
     }
 
 }

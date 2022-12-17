@@ -15,13 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
  * The class responsible for kicking the player from the server with a new method.
  */
 public class KickManager {
-
-    private final FileAccessor accessor = new FileAccessor();
 
     /**
      * Kicks a player from the server
@@ -48,7 +47,7 @@ public class KickManager {
         KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(false, player, initiator, finalReason, KickType.SINGLE, getConfigSettings().isApiEnabled());
         if(getConfigSettings().isApiEnabled()) {
             if(getConfigSettings().isApiProtectedByPassword()) {
-                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
                     Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
                 }
             } else {
@@ -60,7 +59,7 @@ public class KickManager {
 
         if(reason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
             if(!getConfigSettings().isKickAllowedWithoutReason() && !initiator.hasPermission("functionalbans.use.no-reason")) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -68,7 +67,7 @@ public class KickManager {
 
         if(!announceKick && initiator instanceof Player) {
             if(!initiator.hasPermission("functionalbans.use.silently")) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -86,7 +85,7 @@ public class KickManager {
 
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player.getName())) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -95,14 +94,14 @@ public class KickManager {
         finalReason = kickPreprocessEvent.getReason();
 
         if(player.hasPermission("functionalbans.kick.bypass") && !initiator.hasPermission("functionalbans.bypass-break")) {
-            initiator.sendMessage(setColors(this.accessor.getLang().getString("commands.kick.target-bypass")));
+            initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick.target-bypass")));
             kickPreprocessEvent.setCancelled(true);
             return;
         }
 
-        player.kickPlayer(setColors(String.join("\n", this.accessor.getLang().getStringList("kick-format")).replace("%1$f", finalReason).replace("%2$f", initiatorName)));
+        player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", finalReason).replace("%2$f", initiatorName)));
         if(announceKick) {
-            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", finalReason)));
+            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", finalReason)));
         }
 
         return;
@@ -134,7 +133,7 @@ public class KickManager {
             KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(true, player, initiator, finalReason, KickType.GLOBAL, getConfigSettings().isApiEnabled());
             if(getConfigSettings().isApiEnabled()) {
                 if(getConfigSettings().isApiProtectedByPassword()) {
-                    if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                    if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
                         Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
                     }
                 } else {
@@ -146,7 +145,7 @@ public class KickManager {
 
             if(reason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
                 if(!getConfigSettings().isKickAllowedWithoutReason() && !initiator.hasPermission("functionalbans.use.no-reason")) {
-                    initiator.sendMessage(setColors(this.accessor.getLang().getString("other.no-reason")));
+                    initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                     kickPreprocessEvent.setCancelled(true);
                     return;
                 }
@@ -154,7 +153,7 @@ public class KickManager {
 
             if(!announceKick && initiator instanceof Player) {
                 if(!initiator.hasPermission("functionalbans.use.silently")) {
-                    initiator.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
+                    initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                     kickPreprocessEvent.setCancelled(true);
                     return;
                 }
@@ -176,7 +175,7 @@ public class KickManager {
             }
 
             if(player.hasPermission("functionalbans.kick.bypass") && !initiator.hasPermission("functionalbans.bypass-break")) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("commands.kick.target-bypass")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick.target-bypass")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -186,16 +185,16 @@ public class KickManager {
             String anotherFinalReason = finalReason;
             String finalInitiatorName = initiatorName;
             Bukkit.getScheduler().runTask(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                player.kickPlayer(setColors(String.join("\n", this.accessor.getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName)));
+                player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName)));
             });
 
             if(announceKick) {
-                Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", finalReason)));
+                Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", finalReason)));
             }
 
         }
 
-        initiator.sendMessage(setColors(this.accessor.getLang().getString("commands.kick-all.success")).replace("%1$f", String.valueOf(count)));
+        initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick-all.success")).replace("%1$f", String.valueOf(count)));
         return;
     }
 
@@ -213,7 +212,7 @@ public class KickManager {
 
         if(getConfigSettings().isApiEnabled()) {
             if(getConfigSettings().isApiProtectedByPassword()) {
-                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(this.accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
+                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
                     Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
                 }
             } else {
@@ -234,7 +233,7 @@ public class KickManager {
 
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player.getName())) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.no-yourself-actions")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -242,7 +241,7 @@ public class KickManager {
 
         if(!announceKick && initiator instanceof Player) {
             if(!initiator.hasPermission("functionalbans.use.silently")) {
-                initiator.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }
@@ -251,14 +250,14 @@ public class KickManager {
 
 
         if(player.hasPermission("functionalbans.crazy-kick.bypass") && !initiator.hasPermission("functionalbans.bypass-break")) {
-            initiator.sendMessage(setColors(this.accessor.getLang().getString("commands.kick.target-bypass")));
+            initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick.target-bypass")));
             kickPreprocessEvent.setCancelled(true);
             return;
         }
 
         player.kickPlayer(color + "鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁");
         if(announceKick) {
-            Bukkit.broadcastMessage(setColors(this.accessor.getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", "Crazy")));
+            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getPlayerListName()).replace("%3$f", "Crazy")));
         }
 
     }

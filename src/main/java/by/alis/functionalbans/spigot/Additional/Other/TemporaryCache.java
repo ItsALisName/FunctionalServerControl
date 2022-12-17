@@ -12,15 +12,16 @@ import java.util.*;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class TemporaryCache {
 
-    static HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
-    static HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
-    static List<String> onlinePlayerNames = new ArrayList<>();
-    static int bansDeletedCount, muteDeletedCount;
+    private static HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
+    private static HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
+    private static List<String> onlinePlayerNames = new ArrayList<>();
+    private static Map<Player, String> onlineIps = new HashMap<>();
+    private static int bansDeletedCount, muteDeletedCount;
     private static final UnbanManager unbanManager = new UnbanManager();
-    private static final FileAccessor accessor = new FileAccessor();
 
 
     public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
@@ -46,7 +47,7 @@ public class TemporaryCache {
                 }
             }
             if(bansDeletedCount != 0) {
-                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
             }
 
             for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeMutedPlayers.entrySet()) {
@@ -57,11 +58,11 @@ public class TemporaryCache {
                 }
             }
             if(muteDeletedCount != 0) {
-                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
             }
 
             if(bansDeletedCount == 0 && muteDeletedCount == 0) {
-                initiator.sendMessage(setColors(accessor.getLang().getString("commands.fb-undo.nothing-to-undo")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.nothing-to-undo")));
                 return;
             }
             bansDeletedCount = 0;
@@ -92,5 +93,17 @@ public class TemporaryCache {
      */
     public static void unsetOnlinePlayerName(Player player) {
         TemporaryCache.onlinePlayerNames.remove(player.getName());
+    }
+
+    public static Map<Player, String> getOnlineIps() {
+        return onlineIps;
+    }
+
+    public static void setOnlineIps(Player player) {
+        TemporaryCache.onlineIps.put(player, player.getAddress().getAddress().getHostAddress());
+    }
+
+    public static void unsetOnlineIps(Player player) {
+        TemporaryCache.onlineIps.remove(player);
     }
 }

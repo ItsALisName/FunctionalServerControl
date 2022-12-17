@@ -7,7 +7,7 @@ public class StaticSettingsAccessor {
     static GeneralConfigSettings configSettings = new GeneralConfigSettings();
     static GlobalVariables globalVariables = new GlobalVariables();
 
-    @Contract(pure = true)
+
     public static GeneralConfigSettings getConfigSettings() {
         return configSettings;
     }

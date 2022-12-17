@@ -4,7 +4,7 @@ import by.alis.functionalbans.API.Enums.BanType;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
 
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 
 public class BanContainerManager {

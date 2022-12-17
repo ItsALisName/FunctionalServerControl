@@ -1,10 +1,7 @@
 package by.alis.functionalbans.databases.SQLite;
 
 import by.alis.functionalbans.API.Enums.BanType;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,10 +13,9 @@ import java.util.*;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class SQLManager extends SQLCore {
-
-    private final FileAccessor fileAccessor = new FileAccessor();
 
     public SQLManager(FunctionalBansSpigot plugin) {
         super(plugin);
@@ -27,153 +23,35 @@ public class SQLManager extends SQLCore {
 
     @Override
     protected Connection getSQLConnection() {
-        if (this.fileAccessor.getSQLiteFile().exists()) {
-            if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                try {
-                    Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
-                    return sqlConnection;
-                } catch (ClassNotFoundException | SQLException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_CONNECTION_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_UNKNOWN_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_PRE_OFF_PLUGIN));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_OFF_PLUGIN));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                    return null;
-                }
-            }
-
-            if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                try {
-                    Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
-                    return sqlConnection;
-                } catch (ClassNotFoundException | SQLException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_UNKNOWN_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                    return null;
-                }
-            }
-
+        if (getFileAccessor().getSQLiteFile().exists()) {
             try {
                 Class.forName("org.sqlite.JDBC");
-                sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
+                sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
                 return sqlConnection;
             } catch (ClassNotFoundException | SQLException ignored) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_UNKNOWN_ERROR));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to connect to the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] -> Unknown error, try reinstalling the plugin."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Disabling the plugin..."));
                 this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
                 return null;
             }
 
         } else {
-            if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("ru_RU")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_CONNECTION_ERROR));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_BASE_FILE_NOT_FOUND));
-                Bukkit.getConsoleSender().sendMessage("");
-                Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_ATTEMPT_FILE_RECREATE));
-                try {
-                    this.fileAccessor.getSQLiteFile().createNewFile();
-                } catch (IOException ignored) {
-                }
-                if (this.fileAccessor.getSQLiteFile().exists()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_FILE_RECREATED));
-                    try {
-                        Class.forName("org.sqlite.JDBC");
-                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_RECONNECTION_SUCCESS));
-                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
-                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
-                        String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
-                        sqlStatement = sqlConnection.createStatement();
-                        sqlStatement.executeUpdate(queryTableOne);
-                        sqlStatement.executeUpdate(queryTableTwo);
-                        sqlStatement.executeUpdate(queryTableThree);
-                        sqlStatement.executeUpdate(queryTableFour);
-                        sqlStatement.executeUpdate(queryTableFive);
-                        sqlStatement.close();
-                        return sqlConnection;
-                    } catch (ClassNotFoundException | SQLException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_CONNECTION_ERROR));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_UNKNOWN_ERROR));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_PRE_OFF_PLUGIN));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_OFF_PLUGIN));
-                        this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                        return null;
-                    }
-                } else {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_PRE_OFF_PLUGIN_1));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_OFF_PLUGIN));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                    return null;
-                }
-            }
-
-            if (getConfigSettings().getConsoleLanguageMode().equalsIgnoreCase("en_US")) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_BASE_FILE_NOT_FOUND));
-                Bukkit.getConsoleSender().sendMessage("");
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_ATTEMPT_FILE_RECREATE));
-                try {
-                    this.fileAccessor.getSQLiteFile().createNewFile();
-                } catch (IOException ignored) {
-                }
-                if (this.fileAccessor.getSQLiteFile().exists()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_FILE_RECREATED));
-                    try {
-                        Class.forName("org.sqlite.JDBC");
-                        sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
-                        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
-                        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
-                        String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
-                        sqlStatement = sqlConnection.createStatement();
-                        sqlStatement.executeUpdate(queryTableOne);
-                        sqlStatement.executeUpdate(queryTableTwo);
-                        sqlStatement.executeUpdate(queryTableThree);
-                        sqlStatement.executeUpdate(queryTableFour);
-                        sqlStatement.executeUpdate(queryTableFive);
-                        sqlStatement.close();
-                        return sqlConnection;
-                    } catch (ClassNotFoundException | SQLException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_UNKNOWN_ERROR));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN));
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                        this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                        return null;
-                    }
-                } else {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN_1));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
-                    return null;
-                }
-            }
-
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_BASE_FILE_NOT_FOUND));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to connect to the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] -> File &4&odatabase.db &4has not been found!"));
             Bukkit.getConsoleSender().sendMessage("");
-            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_ATTEMPT_FILE_RECREATE));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans] Attempt to create a file..."));
             try {
-                this.fileAccessor.getSQLiteFile().createNewFile();
+                getFileAccessor().getSQLiteFile().createNewFile();
             } catch (IOException ignored) {
             }
-            if (this.fileAccessor.getSQLiteFile().exists()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_FILE_RECREATED));
+            if (getFileAccessor().getSQLiteFile().exists()) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] Database file created successfully, reconnecting..."));
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + this.fileAccessor.getSQLiteFile().getPath());
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_RECONNECTION_SUCCESS));
+                    sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
+                    Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalBans] Connection to the database was successful."));
                     String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
                     String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
                     String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
@@ -188,20 +66,19 @@ public class SQLManager extends SQLCore {
                     sqlStatement.close();
                     return sqlConnection;
                 } catch (ClassNotFoundException | SQLException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_CONNECTION_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_UNKNOWN_ERROR));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN));
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to connect to the database!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] -> Unknown error, try reinstalling the plugin."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] No further work possible!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Disabling the plugin..."));
                     this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
                     return null;
                 }
             } else {
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_PRE_OFF_PLUGIN_1));
-                Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] Disabling the plugin..."));
                 this.plugin.getPluginLoader().disablePlugin(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class));
                 return null;
             }
-
         }
     }
 
@@ -222,18 +99,8 @@ public class SQLManager extends SQLCore {
             sqlStatement.executeUpdate(queryTableFive);
             sqlStatement.close();
         } catch (SQLException a) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
-
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
+            return;
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -271,17 +138,7 @@ public class SQLManager extends SQLCore {
             }
             return uuid;
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         } finally {
             try {
@@ -317,17 +174,7 @@ public class SQLManager extends SQLCore {
             }
             return ip;
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         } finally {
             try {
@@ -363,17 +210,7 @@ public class SQLManager extends SQLCore {
             sqlResultSet.close();
             return;
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return;
         } finally {
             try {
@@ -412,17 +249,7 @@ public class SQLManager extends SQLCore {
             }
             sqlConnection.close();
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -457,17 +284,7 @@ public class SQLManager extends SQLCore {
             }
             sqlConnection.close();
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -497,17 +314,7 @@ public class SQLManager extends SQLCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if(sqlConnection != null) {
@@ -534,17 +341,7 @@ public class SQLManager extends SQLCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if(sqlConnection != null) {
@@ -583,17 +380,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return unbanTimes;
@@ -617,17 +404,7 @@ public class SQLManager extends SQLCore {
             }
             return ips;
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
     }
@@ -649,17 +426,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return uuids;
@@ -682,17 +449,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banDates;
@@ -715,17 +472,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banTimes;
@@ -748,19 +495,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return ids;
@@ -783,17 +518,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return names;
@@ -816,17 +541,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return iNames;
@@ -849,19 +564,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return reasons;
@@ -884,19 +587,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banTypes;
@@ -922,19 +613,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return ids;
@@ -957,19 +636,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return ids;
@@ -992,20 +659,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return names;
@@ -1028,20 +682,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return initiators;
@@ -1064,20 +705,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return reasons;
@@ -1100,20 +728,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_OFF_PLUGIN));
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banTypes;
@@ -1136,20 +751,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banDates;
@@ -1172,20 +774,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return banTimes;
@@ -1208,20 +797,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return uuids;
@@ -1244,20 +820,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return unbanTimes;
@@ -1273,20 +836,8 @@ public class SQLManager extends SQLCore {
                 sqlConnection.close();
                 insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
             } catch (SQLException ignored) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); break;
-                        
-                    }
-                    case "en_US": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                        
-                    }
-                    default: {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                        
-                    }
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
+                return;
             } finally {
                 try {
                     if (sqlConnection != null) {
@@ -1327,20 +878,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return names;
@@ -1363,20 +901,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ignored) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); break; 
-                    
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return uuids;
@@ -1399,19 +924,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); throw new RuntimeException(ex);
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                    
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return playersAndCommands;
@@ -1424,17 +937,7 @@ public class SQLManager extends SQLCore {
             sqlConnection.createStatement().executeUpdate(a);
             sqlConnection.close();
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); throw new RuntimeException(ex);
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
             return;
         }
     }
@@ -1456,17 +959,7 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); throw new RuntimeException(ex);
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to read the database!"));
             return null;
         }
         return times;
@@ -1487,17 +980,7 @@ public class SQLManager extends SQLCore {
             }
             return;
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_READ_ERROR)); throw new RuntimeException(ex);
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_READ_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
             return;
         } finally {
             try {
@@ -1527,17 +1010,7 @@ public class SQLManager extends SQLCore {
             sqlConnection.createStatement().executeUpdate(b);
             sqlConnection.close();
         } catch (SQLException ex) {
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.SQL_EDIT_ERROR)); throw new RuntimeException(ex);
-                }
-                case "en_US": {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-                default: {
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.SQL_EDIT_ERROR)); break;
-                }
-            }
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] An error occurred while trying to edit the database!"));
             return;
         }
     }

@@ -14,8 +14,6 @@ public class FileAccessor {
 
     private FileManager fileManager = new FileManager();
 
-    public FileAccessor() { }
-
     public FileConfiguration getGeneralConfig() {
         return this.fileManager.configuration;
     }
@@ -63,6 +61,4 @@ public class FileAccessor {
         return this.fileManager.sqlFile;
     }
     //SQL_File
-
-
 }

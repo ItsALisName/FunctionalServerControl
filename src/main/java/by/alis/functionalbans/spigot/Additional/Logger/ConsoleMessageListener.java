@@ -1,4 +1,4 @@
-package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
+package by.alis.functionalbans.spigot.Additional.Logger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -7,29 +7,15 @@ import org.apache.logging.log4j.core.LifeCycle;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 
-public class ReplaceFilter implements Filter {
+public class ConsoleMessageListener implements Filter {
 
+    LogWriter logWriter = new LogWriter();
     public Filter.Result checkMessage(String message) {
-        if (StaticConsoleFilterHelper.getConsoleFilterHelper().isFunctionalBansCommand(message)) {
-            String playerName = message.split(" ")[0];
-            Player player = Bukkit.getPlayer(playerName);
-            if(player == null) {
-                playerName = getGlobalVariables().getConsoleVariableName();
-            } else {
-                playerName = player.getPlayerListName();
-            }
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", StaticConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalBansCommand(message))));
-            return Filter.Result.DENY;
-        } else if(StaticConsoleFilterHelper.getConsoleFilterHelper().isMessageToReplace(message)) {
-            Bukkit.getConsoleSender().sendMessage(StaticConsoleFilterHelper.getConsoleFilterHelper().replaceConsoleMessage(message));
-            return Filter.Result.DENY;
+        if(getConfigSettings().isLoggerEnabled()) {
+            this.logWriter.writeLog(message);
         }
         return Filter.Result.NEUTRAL;
     }
@@ -119,4 +105,5 @@ public class ReplaceFilter implements Filter {
     public Filter.Result getOnMismatch() {
         return Filter.Result.NEUTRAL;
     }
+
 }

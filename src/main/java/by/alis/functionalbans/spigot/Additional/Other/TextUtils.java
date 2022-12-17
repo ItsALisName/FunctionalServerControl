@@ -1,5 +1,7 @@
 package by.alis.functionalbans.spigot.Additional.Other;
 
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +77,12 @@ public class TextUtils {
         } else {
             return inputText;
         }
+    }
+
+    public static void sendSyncConsoleMessage(String message) {
+        Bukkit.getScheduler().runTask(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
+            Bukkit.getConsoleSender().sendMessage(setColors(message));
+        });
     }
 
 }

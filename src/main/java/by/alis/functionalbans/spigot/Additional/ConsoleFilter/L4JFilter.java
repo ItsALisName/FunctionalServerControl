@@ -1,6 +1,8 @@
 package by.alis.functionalbans.spigot.Additional.ConsoleFilter;
 
 
+import by.alis.functionalbans.spigot.Additional.Logger.ConsoleMessageListener;
+import by.alis.functionalbans.spigot.Additional.Logger.LogWriter;
 import org.apache.logging.log4j.LogManager;
 
 public class L4JFilter implements ConsoleFilterCore {
@@ -9,6 +11,7 @@ public class L4JFilter implements ConsoleFilterCore {
     public void eventLog() {
         ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addFilter(new EventAsyncConsoleLog());
         ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addFilter(new EventConsoleLog());
+        ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addFilter(new ConsoleMessageListener());
     }
 
     @Override

@@ -2,12 +2,12 @@ package by.alis.functionalbans.spigot;
 
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
+import by.alis.functionalbans.spigot.Additional.Logger.LogWriter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Additional.TimerTasks.TimerSetuper;
 import by.alis.functionalbans.spigot.Commands.*;
-import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
+import by.alis.functionalbans.spigot.Expansions.Expansions;
 import by.alis.functionalbans.spigot.Listeners.*;
-import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.Files.FileManager;
 import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
@@ -16,9 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 
 import static by.alis.functionalbans.spigot.Additional.ConsoleFilter.StaticConsoleFilterHelper.getConsoleFilterHelper;
-import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getHidedMessagesContainer;
-import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getReplacedMessagesContainer;
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
+import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
 /**
@@ -27,8 +26,8 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
  */
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
-    private final BanManager banManager = new BanManager();
     private final TimerSetuper timerSetuper = new TimerSetuper();
+    private final LogWriter writer = new LogWriter();
     ConsoleFilterCore consoleFilterCore;
 
     @Override
@@ -53,16 +52,16 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
 
         //Expansions
-        StaticExpansions.getVaultManager().setupVaultPermissions();
-        StaticExpansions.getLuckPermsManager().setupLuckPerms();
-        StaticExpansions.getProtocolLibManager().setupProtocolLib();
+        Expansions.getVaultManager().setupVaultPermissions();
+        Expansions.getLuckPermsManager().setupLuckPerms();
+        Expansions.getProtocolLibManager().setupProtocolLib();
         //Expansions
 
         //Loaders
         getHidedMessagesContainer().loadHidedMessages();
         getReplacedMessagesContainer().loadReplacedMessages();
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            this.banManager.getBanContainerManager().loadBansIntoRAM();
+            getBanContainerManager().loadBansIntoRAM();
         }
         //Loaders
 
@@ -76,15 +75,16 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         new UnbanCommand(this);
         new UnbanallCommand(this);
         new CrazykickCommand(this);
-        //End commands registering
+        new DupeIpCommand(this);
+        //Commands registering
 
         //Events registering
         new JoinListener();
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         new QuitListener();
         Bukkit.getPluginManager().registerEvents(new QuitListener(), this);
+        new CommandSendListener();
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
-            new CommandSendListener();
             Bukkit.getPluginManager().registerEvents(new CommandSendListener(), this);
         }
         new NullPlayerJoinListener();
@@ -94,11 +94,13 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         //Events registering
 
         //Console filters
+        this.writer.createLogFile();
         getConsoleFilterHelper().loadFunctionalBansCommands();
         this.consoleFilterCore = new L4JFilter();
         getConsoleFilterCore().eventLog();
         getConsoleFilterCore().replaceMessage();
         getConsoleFilterCore().hideMessage();
+
         //Console filters
 
         //Timers

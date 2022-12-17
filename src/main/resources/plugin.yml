@@ -27,5 +27,7 @@ commands:
   crazykick:
     description: Throws a player with hieroglyphs to full screen
     aliases: [ckick]
+  dupeip:
+    description: dupeip
   test:
     description: test

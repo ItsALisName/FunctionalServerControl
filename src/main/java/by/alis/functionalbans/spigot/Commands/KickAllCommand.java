@@ -13,13 +13,12 @@ import org.jetbrains.annotations.NotNull;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.getReason;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
  * The class responsible for executing the "/kickall" command
  */
 public class KickAllCommand implements CommandExecutor {
-    private final FileAccessor accessor = new FileAccessor();
-    private final KickManager kickManager = new KickManager();
 
     FunctionalBansSpigot plugin;
     public KickAllCommand(FunctionalBansSpigot plugin) {
@@ -31,23 +30,25 @@ public class KickAllCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
+        KickManager kickManager = new KickManager();
+        
         if(sender.hasPermission("functionalbans.kick-all")) {
 
             if(args.length == 0) {
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                    this.kickManager.preformGlobalKick(sender, getGlobalVariables().getDefaultReason(), true);
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    kickManager.preformGlobalKick(sender, getGlobalVariables().getDefaultReason(), true);
                 });
                 return true;
             }
 
             if(args[0].equalsIgnoreCase("-s")) {
                 if(args.length == 1) {
-                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                        this.kickManager.preformGlobalKick(sender, getGlobalVariables().getDefaultReason(), false);
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        kickManager.preformGlobalKick(sender, getGlobalVariables().getDefaultReason(), false);
                     });
                 } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                        this.kickManager.preformGlobalKick(sender, getReason(args, 1), false);
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        kickManager.preformGlobalKick(sender, getReason(args, 1), false);
                     });
                 }
                 return true;
@@ -55,22 +56,22 @@ public class KickAllCommand implements CommandExecutor {
 
             if(args[0].equalsIgnoreCase("-a")) {
                 if(sender.hasPermission("functionalbans.use.unsafe-flags")) {
-                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.flag-not-support").replace("%1$f", args[0])));
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-not-support").replace("%1$f", args[0])));
                 } else {
-                    sender.sendMessage(setColors(this.accessor.getLang().getString("other.flag-no-perms").replace("%1$f", label)));
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", label)));
                 }
                 return true;
             }
 
             if(args.length > 0) {
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-                    this.kickManager.preformGlobalKick(sender, getReason(args, 0), true);
+                Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    kickManager.preformGlobalKick(sender, getReason(args, 0), true);
                 });
             }
 
 
         } else {
-            sender.sendMessage(setColors(this.accessor.getLang().getString("other.no-permissions")));
+            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             return true;
         }
 

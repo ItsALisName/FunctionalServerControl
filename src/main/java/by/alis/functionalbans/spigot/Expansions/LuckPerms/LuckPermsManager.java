@@ -1,8 +1,6 @@
 package by.alis.functionalbans.spigot.Expansions.LuckPerms;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
-import by.alis.functionalbans.spigot.Expansions.StaticExpansions;
+import by.alis.functionalbans.spigot.Expansions.Expansions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,45 +23,19 @@ public class LuckPermsManager {
     }
 
     public void setupLuckPerms() {
-        if (isLuckPermsInstalled() && !StaticExpansions.getVaultManager().isVaultSetuped()) {
+        if (isLuckPermsInstalled() && !Expansions.getVaultManager().isVaultSetuped()) {
             luckPermsProvider = LuckPermsProvider.get();
-            switch (getConfigSettings().getConsoleLanguageMode()) {
-                case "ru_RU":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.LUCK_PERMS_FINDED));
-                    break;
-                case "en_US":
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_FINDED));
-                    break;
-                default:
-                    Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_FINDED));
-                    break;
+            if(!getConfigSettings().isLessInformation()){
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans -> LuckPerms] LuckPerms detected, connecting..."));
             }
             if (luckPermsProvider != null) {
                 this.isLuckPermsSetuped = true;
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.LUCK_PERMS_HOOKED));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_HOOKED));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_HOOKED));
-                        break;
+                if(!getConfigSettings().isLessInformation()){
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans -> LuckPerms] Connection to LuckPerms was successful."));
                 }
             } else {
                 this.isLuckPermsSetuped = false;
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.LUCK_PERMS_ERROR));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_ERROR));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.LUCK_PERMS_ERROR));
-                        break;
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalBans -> LuckPerms] Failed to connect to LuckPerms"));
             }
         }
     }

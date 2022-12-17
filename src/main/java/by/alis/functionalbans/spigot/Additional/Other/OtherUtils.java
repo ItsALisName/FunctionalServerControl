@@ -3,13 +3,11 @@ package by.alis.functionalbans.spigot.Additional.Other;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static java.lang.Math.random;
 
 public class OtherUtils {
 
@@ -35,15 +33,13 @@ public class OtherUtils {
                 return getSQLiteManager().getNamesFromAllPlayers().contains(name);
             }
             case MYSQL: {
-                return true;
+                return false;
             }
             case H2: {
-                return true;
-            }
-            default: {
-                return getSQLiteManager().getNamesFromAllPlayers().contains(name);
+                return false;
             }
         }
+        return false;
     }
 
     public static boolean isNotNullPlayer(UUID uuid) {
@@ -57,10 +53,8 @@ public class OtherUtils {
             case H2: {
                 return true;
             }
-            default: {
-                return getSQLiteManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
-            }
         }
+        return false;
     }
 
     public static boolean isNumber(String arg) {
@@ -102,7 +96,7 @@ public class OtherUtils {
     }
 
     public static int generateRandomNumber() {
-        return (int) (random() * (599 + 1));
+        return (int) (Math.random() * (599 + 1));
     }
 
 }

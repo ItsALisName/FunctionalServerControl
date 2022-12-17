@@ -1,10 +1,8 @@
 package by.alis.functionalbans.spigot.Listeners;
 
 import by.alis.functionalbans.API.Enums.BanType;
-import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
 import by.alis.functionalbans.spigot.Managers.Bans.UnbanManager;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,18 +11,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
+import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
  * The class responsible for controlling the entry of players (Banned, with invalid IP addresses, with invalid nicknames)
  */
 public class AsyncJoinListener implements Listener {
-
-    private final FileAccessor accessor = new FileAccessor();
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     private final BanManager banManager = new BanManager();
     private final UnbanManager unbanManager = new UnbanManager();
@@ -37,11 +35,11 @@ public class AsyncJoinListener implements Listener {
             if(getConfigSettings().getBlockedIps().contains(event.getAddress().getHostAddress())) {
                 event.disallow(
                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                        setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-ip-kick-format")).replace("%1$f", event.getAddress().getHostAddress()))
+                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("blocked-ip-kick-format")).replace("%1$f", event.getAddress().getHostAddress()))
                 );
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-ip-notify").replace("%1$f", event.getAddress().getHostAddress())));
+                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.blocked-ip-notify").replace("%1$f", event.getAddress().getHostAddress())));
                 }
                 return;
             }
@@ -53,11 +51,11 @@ public class AsyncJoinListener implements Listener {
                     if(event.getName().equalsIgnoreCase(name)) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
                         );
                         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                         if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
                         }
                         return;
                     }
@@ -66,11 +64,11 @@ public class AsyncJoinListener implements Listener {
                     if(event.getName().contains(name)) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", name))
                         );
                         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                         if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
                         }
                         return;
                     }
@@ -92,7 +90,7 @@ public class AsyncJoinListener implements Listener {
                     String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
                     String realDate = getBannedPlayersContainer().getRealBanDateContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
                     String realTime = getBannedPlayersContainer().getRealBanTimeContainer().get(getBannedPlayersContainer().getNameContainer().indexOf(event.getName()));
-                    this.banManager.getBanContainerManager().removeFromBanContainer("-id", id);
+                    getBanContainerManager().removeFromBanContainer("-id", id);
                     getBannedPlayersContainer().addToBansContainer(
                             id,
                             event.getAddress().getHostAddress(),
@@ -117,24 +115,19 @@ public class AsyncJoinListener implements Listener {
                         case H2: {
                             break;
                         }
-                        default: {
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            break;
-                        }
                     }
                     if(banType == BanType.PERMANENT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                             }
                         }
@@ -152,15 +145,15 @@ public class AsyncJoinListener implements Listener {
                     if(banType == BanType.TIMED_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                             }
                         }
@@ -183,7 +176,7 @@ public class AsyncJoinListener implements Listener {
                     String initiatorName = getBannedPlayersContainer().getInitiatorNameContainer().get(indexOf);
                     String realDate = getBannedPlayersContainer().getRealBanDateContainer().get(indexOf);
                     String realTime = getBannedPlayersContainer().getRealBanTimeContainer().get(indexOf);
-                    this.banManager.getBanContainerManager().removeFromBanContainer("-id", id);
+                    getBanContainerManager().removeFromBanContainer("-id", id);
                     getBannedPlayersContainer().addToBansContainer(
                             id,
                             event.getAddress().getHostAddress(),
@@ -208,11 +201,6 @@ public class AsyncJoinListener implements Listener {
                         case H2: {
                             break;
                         }
-                        default: {
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            break;
-                        }
 
                     }
 
@@ -228,15 +216,15 @@ public class AsyncJoinListener implements Listener {
                     if(banType == BanType.PERMANENT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                             }
                         }
@@ -245,15 +233,15 @@ public class AsyncJoinListener implements Listener {
                     if(banType == BanType.TIMED_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                             }
                         }
@@ -279,16 +267,16 @@ public class AsyncJoinListener implements Listener {
                     if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
                     }
                     if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                     }
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalbans.notification.ban")) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                             }
                         }
                     }
@@ -297,15 +285,15 @@ public class AsyncJoinListener implements Listener {
                 if(banType == BanType.PERMANENT_IP) {
                     event.disallow(
                             AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                            setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                            setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                     );
                     if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                     }
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalbans.notification.ban")) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                             }
                         }
                     }
@@ -315,16 +303,16 @@ public class AsyncJoinListener implements Listener {
                     if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                         );
                     }
                     if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                     }
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalbans.notification.ban")) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                             }
                         }
                     }
@@ -333,15 +321,15 @@ public class AsyncJoinListener implements Listener {
                 if(banType == BanType.TIMED_IP) {
                     event.disallow(
                             AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                            setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))
+                            setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))
                     ));
                     if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                     }
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalbans.notification.ban")) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                             }
                         }
                     }
@@ -369,15 +357,15 @@ public class AsyncJoinListener implements Listener {
                     if(banType == BanType.PERMANENT_NOT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                                 }
                             }
                         }
@@ -386,15 +374,15 @@ public class AsyncJoinListener implements Listener {
                     if(banType == BanType.TIMED_NOT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                         );
                         if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                         }
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalbans.notification.ban")) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                                 }
                             }
                         }
@@ -438,15 +426,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.PERMANENT_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                         }
                                     }
                                 }
@@ -455,15 +443,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.TIMED_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                         }
                                     }
                                 }
@@ -499,15 +487,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.PERMANENT_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                         }
                                     }
                                 }
@@ -516,15 +504,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.TIMED_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                         }
                                     }
                                 }
@@ -550,16 +538,16 @@ public class AsyncJoinListener implements Listener {
                             if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
                             }
                             if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                             }
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                                     }
                                 }
                             }
@@ -568,15 +556,15 @@ public class AsyncJoinListener implements Listener {
                         if(banType == BanType.PERMANENT_IP) {
                             event.disallow(
                                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                    setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                             );
                             if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                             }
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
+                                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
                                     }
                                 }
                             }
@@ -586,16 +574,16 @@ public class AsyncJoinListener implements Listener {
                             if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                                 );
                             }
                             if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                             }
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                                     }
                                 }
                             }
@@ -604,15 +592,15 @@ public class AsyncJoinListener implements Listener {
                         if(banType == BanType.TIMED_IP) {
                             event.disallow(
                                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))
+                                    setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))
                                     ));
                             if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                             }
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
+                                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
                                     }
                                 }
                             }
@@ -640,15 +628,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.PERMANENT_NOT_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                                         }
                                     }
                                 }
@@ -657,15 +645,15 @@ public class AsyncJoinListener implements Listener {
                             if(banType == BanType.TIMED_NOT_IP) {
                                 event.disallow(
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
+                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
                                 );
                                 if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                                 }
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
+                                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
                                         }
                                     }
                                 }
@@ -674,7 +662,6 @@ public class AsyncJoinListener implements Listener {
                         }
                     }
                 }
-
 
                 case MYSQL: {
                     break;
@@ -683,271 +670,6 @@ public class AsyncJoinListener implements Listener {
 
                 case H2: {
                     break;
-                }
-
-
-                default: {
-                    if(getSQLiteManager().getBannedPlayersNames().contains(event.getName()) && getSQLiteManager().getBannedUUIDs().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(String.valueOf(event.getUniqueId()))) {
-                        if((getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.TIMED_IP
-                                || getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.PERMANENT_IP)
-                                && !getSQLiteManager().getBannedIps().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(event.getAddress().getHostAddress())) {
-                            int indexOf = getSQLiteManager().getBannedPlayersNames().indexOf(event.getName());
-                            long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                            BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                            if(banType != BanType.PERMANENT_IP){
-                                if (System.currentTimeMillis() >= currentTime) {
-                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
-                                    this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                    event.allow();
-                                    return;
-                                }
-                            }
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            String realDate = getSQLiteManager().getBansDates().get(indexOf);
-                            String realTime = getSQLiteManager().getBansTimes().get(indexOf);
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            if(banType == BanType.PERMANENT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(banType == BanType.TIMED_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                        }
-                    }
-
-                    if(getSQLiteManager().getBannedIps().contains(event.getAddress().getHostAddress())) {
-
-                        if((getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.PERMANENT_IP
-                                || getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.TIMED_IP)
-                                && !getSQLiteManager().getBannedPlayersNames().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())).equalsIgnoreCase(event.getName())) {
-                            int indexOf = getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
-                            long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                            BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                            if(banType != BanType.PERMANENT_IP){
-                                if (System.currentTimeMillis() >= currentTime) {
-                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
-                                    this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                    event.allow();
-                                    return;
-                                }
-                            }
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            String realDate = getSQLiteManager().getBansDates().get(indexOf);
-                            String realTime = getSQLiteManager().getBansTimes().get(indexOf);
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            if(banType == BanType.PERMANENT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(banType == BanType.TIMED_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                        }
-                        int indexOf = getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
-                        long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                        BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                        if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
-                            if (System.currentTimeMillis() >= currentTime) {
-                                OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
-                                this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                event.allow();
-                                return;
-                            }
-                        }
-                        String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                        String id = getSQLiteManager().getBannedIds().get(indexOf);
-                        String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                        String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                        if(banType == BanType.PERMANENT_NOT_IP) {
-                            if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                            }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                    }
-                                }
-                            }
-                            return;
-                        }
-                        if(banType == BanType.PERMANENT_IP) {
-                            event.disallow(
-                                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", this.accessor.getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                            );
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                    }
-                                }
-                            }
-                            return;
-                        }
-                        if(banType == BanType.TIMED_NOT_IP) {
-                            if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
-                                );
-                            }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
-                                    }
-                                }
-                            }
-                            return;
-                        }
-                        if(banType == BanType.TIMED_IP) {
-                            event.disallow(
-                                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))
-                                    ));
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalbans.notification.ban")) {
-                                        Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                    }
-                                }
-                            }
-                            return;
-                        }
-                        return;
-                    }
-
-
-                    if(getSQLiteManager().getBannedUUIDs().contains(String.valueOf(event.getUniqueId()))) {
-                        int indexOf = getSQLiteManager().getBannedUUIDs().indexOf(String.valueOf(event.getUniqueId()));
-                        BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                        long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                        if (System.currentTimeMillis() >= currentTime) {
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
-                            this.unbanManager.preformUnban(player, "The Ban time has expired");
-                            event.allow();
-                            return;
-                        }
-                        if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            if(banType == BanType.PERMANENT_NOT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(banType == BanType.TIMED_NOT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", this.accessor.getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime))))
-                                );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalbans.notification.ban")) {
-                                            Bukkit.getConsoleSender().sendMessage(setColors(this.accessor.getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getBanTime(currentTime)))));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                        }
-                    }
                 }
             }
         }

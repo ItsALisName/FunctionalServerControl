@@ -2,7 +2,7 @@ package by.alis.functionalbans.spigot.Managers.Bans;
 
 import org.bukkit.OfflinePlayer;
 
-import static by.alis.functionalbans.databases.StaticBases.getSQLiteManager;
+import static by.alis.functionalbans.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
@@ -27,11 +27,9 @@ public class BanChecker {
                 case H2: {
                     return false;
                 }
-                default: {
-                    return getSQLiteManager().getBannedPlayersNames().contains(nullPlayerName);
-                }
             }
         }
+        return false;
     }
 
     /**
@@ -53,11 +51,9 @@ public class BanChecker {
                 case H2: {
                     return false;
                 }
-                default: {
-                    return getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId())) && getSQLiteManager().getBannedPlayersNames().contains(player.getName());
-                }
             }
         }
+        return false;
     }
 
     /**
@@ -80,9 +76,6 @@ public class BanChecker {
                 }
                 case H2: {
                     break;
-                }
-                default: {
-                    return getSQLiteManager().getBannedIps().contains(ipAddress);
                 }
             }
         }
@@ -109,11 +102,9 @@ public class BanChecker {
                 case H2: {
                     return false;
                 }
-                default: {
-                    return getSQLiteManager().getBannedIps().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId())) && getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
-                }
             }
         }
+        return false;
     }
 
 }

@@ -1,9 +1,6 @@
 package by.alis.functionalbans.spigot.Additional.Containers;
 
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangEnglish;
-import by.alis.functionalbans.spigot.Additional.GlobalSettings.ConsoleLanguages.LangRussian;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
@@ -12,6 +9,7 @@ import java.util.Map;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class ReplacedMessagesContainer {
 
@@ -23,11 +21,11 @@ public class ReplacedMessagesContainer {
     }
 
     public void loadReplacedMessages() {
+
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-            FileAccessor accessor = new FileAccessor();
             this.replacedMessages.clear();
             try {
-                a = StringUtils.substringBetween(accessor.getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
+                a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
                 for (String s : a) {
                     if (s != null) {
                         this.replacedMessages.put(s.split(" -> ")[0].replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
@@ -35,79 +33,30 @@ public class ReplacedMessagesContainer {
                 }
                 int size = this.replacedMessages.size();
                 if(!getConfigSettings().isLessInformation()){
-                    switch (getConfigSettings().getConsoleLanguageMode()) {
-                        case "ru_RU": {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_REPLACED_MESSAGES_LOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                        }
-                        case "en_US": {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_LOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                        }
-                        default: {
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_LOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                        }
-                    }
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans | Plugin loading] Message list for replacement in console successfully loaded into RAM (Total: %count%) ✔ ".replace("%count%", String.valueOf(size))));
                 }
             } catch (RuntimeException ignored) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_REPLACED_MESSAGES_LOAD_ERROR));
-                        break;
-                    }
-                    case "en_US": {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_LOAD_ERROR));
-                        break;
-                    }
-                    default: {
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_LOAD_ERROR));
-                        break;
-                    }
-                }
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans | Error] The list of replacement messages in the console could not be loaded into RAM"));
             }
         });
     }
 
     public void reloadReplacedMessages() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
-            FileAccessor accessor = new FileAccessor();
-            this.replacedMessages.clear();
-            try {
-                a = StringUtils.substringBetween(accessor.getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
-                for (String s : a) {
-                    if (s != null) {
-                        this.replacedMessages.put(s.split(" -> ")[0].replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
-                    }
-                }
-                int size = this.replacedMessages.size();
-                if(!getConfigSettings().isLessInformation()){
-                    switch (getConfigSettings().getConsoleLanguageMode()) {
-                        case "ru_RU":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_REPLACED_MESSAGES_RELOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                        case "en_US":
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_RELOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                        default:
-                            Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_RELOADED.replace("%count%", String.valueOf(size))));
-                            break;
-                    }
-                }
-            } catch (RuntimeException ignored) {
-                switch (getConfigSettings().getConsoleLanguageMode()) {
-                    case "ru_RU":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangRussian.CONTAINER_REPLACED_MESSAGES_RELOAD_ERROR));
-                        break;
-                    case "en_US":
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_RELOAD_ERROR));
-                        break;
-                    default:
-                        Bukkit.getConsoleSender().sendMessage(setColors(LangEnglish.CONTAINER_REPLACED_MESSAGES_RELOAD_ERROR));
-                        break;
+        this.replacedMessages.clear();
+        try {
+            a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
+            for (String s : a) {
+                if (s != null) {
+                    this.replacedMessages.put(s.split(" -> ")[0].replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
                 }
             }
-        });
+            int size = this.replacedMessages.size();
+            if(!getConfigSettings().isLessInformation()){
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans] The replacement message list in the console has been successfully reloaded (Total: %count%)".replace("%count%", String.valueOf(size))));
+            }
+        } catch (RuntimeException ignored) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalBans] Failed to reload the list of commands to replace in the console"));
+        }
     }
 
 }

@@ -178,4 +178,23 @@ commands:
     example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis dark_red"
     unknown-color: "&c[FunctionalBans] &7Неизвестный цвет &c%1$f"
 
+  dupeip:
+    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Контроль одинаковых IP-адресов на сервере"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <действие>"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f report"
+    reports:
+      create-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав создавать репорты"
+      delete-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав удалять репорты"
+      report-preparing: "&c[FunctionalBans] &7Репорт готовится, это может занять время в зависимости от кол-ва онлайн игроков"
+      report-created: "&c[FunctionalBans] &7Репорт готов, вы можете просмотреть его &c/dupeip info"
+      report-not-found: "&c[FunctionalBans] &7Для начала создайте репорт, используя команду: &c/dupeip createreport"
+      nothing-to-delete: "&c[FunctionalBans] &7Не найдено репортов для удаления"
+      report-deleted: "&c[FunctionalBans] &7Предыдущий репорт удален"
+      similar-ips-not-found: "&c[FunctionalBans] &7Похожих IP-адресов не найдено, удаляю репорт."
+      exists: "&c[FunctionalBans] &7Чтобы создать новый репорт, для начала удалите старый: &c/dupeip deletereport"
+      report-format:
+      - "&eРепорт создан в &c%1$f &eадминистратором &c%2$f"
+      - "&eИнформация:"
+      - "%3$f"
+
 

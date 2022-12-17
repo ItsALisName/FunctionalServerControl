@@ -6,68 +6,73 @@ import by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAcc
 
 public class TimeLangGlobal {
 
-    TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
-
     public String getTimeLang(String arg) {
-        if(String.valueOf(this.timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("1")) {
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.SECONDS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[0];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MINUTES) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[0];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.HOURS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[0];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.DAYS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[0];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MONTHS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[0];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.YEARS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[0];
-            }
-        }
-
-        if(String.valueOf(this.timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("2") || String.valueOf(this.timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("3") || String.valueOf(this.timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("4")) {
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.SECONDS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[1];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MINUTES) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[1];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.HOURS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[1];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.DAYS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[1];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MONTHS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[1];
-            }
-            if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.YEARS) {
-                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[1];
+        TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
+        if(String.valueOf(timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("1")) {
+            switch (timeSettingsAccessor.getTimeChecker().getTimeUnit(arg)) {
+                case SECONDS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[0];
+                }
+                case MINUTES: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[0];
+                }
+                case HOURS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[0];
+                }
+                case DAYS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[0];
+                }
+                case MONTHS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[0];
+                }
+                case YEARS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[0];
+                }
             }
         }
 
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.SECONDS) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[2];
+        if(String.valueOf(timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("2") || String.valueOf(timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("3") || String.valueOf(timeSettingsAccessor.getTimeChecker().getArgNumber(arg)).endsWith("4")) {
+            switch (timeSettingsAccessor.getTimeChecker().getTimeUnit(arg)) {
+                case SECONDS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[1];
+                }
+                case MINUTES: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[1];
+                }
+                case HOURS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[1];
+                }
+                case DAYS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[1];
+                }
+                case MONTHS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[1];
+                }
+                case YEARS: {
+                    return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[1];
+                }
+            }
         }
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MINUTES) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[2];
-        }
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.HOURS) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[2];
-        }
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.DAYS) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[2];
-        }
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.MONTHS) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[2];
-        }
-        if(this.timeSettingsAccessor.getTimeChecker().getTimeUnit(arg) == TimeUnit.YEARS) {
-            return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[2];
+
+        switch (timeSettingsAccessor.getTimeChecker().getTimeUnit(arg)) {
+            case SECONDS: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableSecond()[2];
+            }
+            case MINUTES: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMinutes()[2];
+            }
+            case HOURS: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableHours()[2];
+            }
+            case DAYS: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableDays()[2];
+            }
+            case MONTHS: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableMonths()[2];
+            }
+            case YEARS: {
+                return StaticSettingsAccessor.getGlobalVariables().getMultiVariableYears()[2];
+            }
         }
 
         return null;

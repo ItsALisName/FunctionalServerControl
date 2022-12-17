@@ -4,7 +4,7 @@ import by.alis.functionalbans.spigot.Expansions.LuckPerms.LuckPermsManager;
 import by.alis.functionalbans.spigot.Expansions.ProtocolLib.ProtocolLibManager;
 import by.alis.functionalbans.spigot.Expansions.Vault.VaultManager;
 
-public class StaticExpansions {
+public class Expansions {
 
     private static final VaultManager vaultManager = new VaultManager();
     private static final LuckPermsManager luckPermsManager = new LuckPermsManager();
