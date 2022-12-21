@@ -1,6 +1,6 @@
 package by.alis.functionalbans.spigot.Commands;
 
-import by.alis.functionalbans.spigot.Additional.Containers.DupeIpReports;
+import by.alis.functionalbans.spigot.Commands.Completers.DupeIpCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.DupeIpManager;
 import org.bukkit.Bukkit;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.getReason;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -20,6 +21,7 @@ public class DupeIpCommand implements CommandExecutor {
     public DupeIpCommand(FunctionalBansSpigot plugin) {
         this.plugin = plugin;
         plugin.getCommand("dupeip").setExecutor(this);
+        plugin.getCommand("dupeip").setTabCompleter(new DupeIpCompleter());
     }
 
     @Override
@@ -87,7 +89,37 @@ public class DupeIpCommand implements CommandExecutor {
                 }
             }
 
-            // TODO: 17.12.2022 команды для /dupeip 
+            if(args[0].equalsIgnoreCase("kick")) {
+                if(!sender.hasPermission("functionalbans.dupeip.kick")) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+                    return true;
+                }
+                if(getDupeIpReports().isReportExists()) {
+                    if(args.length == 2 && args[1].equalsIgnoreCase("-s")) {
+                        getDupeIpReports().preformKickDupeip(sender, null, false);
+                        getDupeIpReports().deleteReport();
+                        return true;
+                    }
+
+                    if(args.length > 2 && args[1].equalsIgnoreCase("-s")) {
+                        getDupeIpReports().preformKickDupeip(sender, getReason(args, 2), false);
+                        getDupeIpReports().deleteReport();
+                        return true;
+                    }
+
+                    if(args.length == 1) {
+                        getDupeIpReports().preformKickDupeip(sender, null, true);
+                        getDupeIpReports().deleteReport();
+                        return true;
+                    }
+
+                    getDupeIpReports().preformKickDupeip(sender, getReason(args, 1), true);
+                    getDupeIpReports().deleteReport();
+                } else {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-not-found")));
+                }
+                return true;
+            }
 
         } else {
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));

@@ -2,8 +2,6 @@ package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Commands.Completers.KickCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
-import by.alis.functionalbans.spigot.Managers.CooldownsManager;
-import by.alis.functionalbans.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalbans.spigot.Managers.Kick.KickManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

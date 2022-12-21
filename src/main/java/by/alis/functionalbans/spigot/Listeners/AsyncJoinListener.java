@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Listeners;
 
 import by.alis.functionalbans.API.Enums.BanType;
+import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
 import by.alis.functionalbans.spigot.Managers.Bans.BanManager;
 import by.alis.functionalbans.spigot.Managers.Bans.UnbanManager;
 import by.alis.functionalbans.spigot.Managers.TimeManagers.TimeSettingsAccessor;
@@ -24,7 +25,6 @@ import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAcc
  */
 public class AsyncJoinListener implements Listener {
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
-    private final BanManager banManager = new BanManager();
     private final UnbanManager unbanManager = new UnbanManager();
 
 
@@ -43,6 +43,18 @@ public class AsyncJoinListener implements Listener {
                 }
                 return;
             }
+        }
+
+        if(OtherUtils.verifyNickNameFormat(event.getName())) {
+            event.disallow(
+                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                    setColors(String.join("\n", getFileAccessor().getLang().getStringList("blocked-nickname-kick-format")).replace("%1$f", getConfigSettings().getGlobalLanguage().equalsIgnoreCase("ru_RU") ? "Недопустимый формат" : "Invalid format"))
+            );
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.blocked-nickname-notify").replace("%1$f", event.getName())));
+            }
+            return;
         }
 
         if(getConfigSettings().isNicksControlEnabled()) {

@@ -57,7 +57,7 @@ public class KickManager {
 
         if(kickPreprocessEvent.isCancelled()) return;
 
-        if(reason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
+        if(finalReason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
             if(!getConfigSettings().isKickAllowedWithoutReason() && !initiator.hasPermission("functionalbans.use.no-reason")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                 kickPreprocessEvent.setCancelled(true);

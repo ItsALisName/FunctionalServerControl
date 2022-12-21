@@ -1,7 +1,11 @@
 package by.alis.functionalbans.spigot.Additional.Containers;
 
+import by.alis.functionalbans.spigot.Managers.Kick.KickManager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class DupeIpReports {
 
@@ -109,6 +115,19 @@ public class DupeIpReports {
         this.dupeIps.clear();
         this.dupePlayers.clear();
         this.time = null;
+    }
+
+    public void preformKickDupeip(@NotNull CommandSender initiator, @Nullable String reason, boolean announceKick) {
+        KickManager kickManager = new KickManager();
+        int count = 0;
+        boolean a = initiator instanceof Player;
+        for(Map.Entry<Player, String> e : getDupePlayers().entrySet()) {
+            if(a)
+                if(e.getKey().equals((Player) initiator)) continue;
+            count = count + 1;
+            kickManager.preformKick(e.getKey(), initiator, reason, announceKick);
+        }
+        initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.dupeips-kicked").replace("%1$f", String.valueOf(count))));
     }
 
 }

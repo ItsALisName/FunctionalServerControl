@@ -79,3 +79,5 @@
 ##  -> functionalbans.dupeip.create-report -
 ##
 ##  -> functionalbans.dupeip.delete-report -
+##
+##  -> functionalbans.dupeip.kick -

@@ -1,5 +1,6 @@
 package by.alis.functionalbans.spigot.Additional.Other;
 
+import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
@@ -97,6 +98,19 @@ public class OtherUtils {
 
     public static int generateRandomNumber() {
         return (int) (Math.random() * (599 + 1));
+    }
+
+    public static boolean verifyNickNameFormat(String nickname) {
+        if(!getConfigSettings().isNickFormatControlEnabled()) return false;
+        boolean a = false;
+        for(String blockedFormat : getConfigSettings().getBlockedNickFormats()) {
+            String pattern = "(" + blockedFormat.replace("<num>", "[0-9]").replace("<let>", "[a-zA-Z]") + ")";
+            if(Pattern.compile(pattern).matcher(nickname).find()) {
+                a = true;
+                break;
+            }
+        }
+        return a;
     }
 
 }

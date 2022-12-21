@@ -50,7 +50,7 @@ plugin-settings:
   ##############################################################################
   #     Hide some non-mandatory information in the console on startup?         #
   ##############################################################################
-  less-information: true
+  less-information: false
 
   ##############################################################################
   #                           Notification Settings                            #
@@ -195,6 +195,26 @@ plugin-settings:
       #            Compliance with the format ", " is mandatory                    #
       ##############################################################################
       blocked-nicks: [MC_STORM, Extreme]
+
+      ##############################################################################
+      #                          Nickname format control                           #
+      ##############################################################################
+      nick-format-control:
+
+        enabled: true
+
+        ################################################################################
+        #                               Blocked formats                                #
+        #  <num> - it means that it can be any number;                                 #
+        #  <let> - meaning it can be any letter;                                       #
+        #          The use of regular letters and numbers is not prohibited.           #
+        #      All other characters that are not numbers or letters are used in        #
+        #                          their original form.                                #
+        #  Explanation:    Let's look at the example <num><num><num><let><num><let>    #
+        # If a player with the nickname "325v1q" or "532l9a" tries to enter the server #
+        #                               he will be kicked.                             #
+        ################################################################################
+        blocked-formats: [<num><num><num><num><num><let>, <let>acker_<num>28, Exa<let>ple_12<num>]
 
     ##############################################################################
     #                      Setting up blocked IP addresses                       #

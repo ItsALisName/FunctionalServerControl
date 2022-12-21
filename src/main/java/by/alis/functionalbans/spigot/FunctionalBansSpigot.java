@@ -4,7 +4,8 @@ import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Logger.LogWriter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalbans.spigot.Additional.TimerTasks.TimerSetuper;
+import by.alis.functionalbans.spigot.Additional.TimerTasks.DupeIpTask;
+import by.alis.functionalbans.spigot.Additional.TimerTasks.PurgerTask;
 import by.alis.functionalbans.spigot.Commands.*;
 import by.alis.functionalbans.spigot.Expansions.Expansions;
 import by.alis.functionalbans.spigot.Listeners.*;
@@ -26,7 +27,6 @@ import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSett
  */
 public final class FunctionalBansSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
-    private final TimerSetuper timerSetuper = new TimerSetuper();
     private final LogWriter writer = new LogWriter();
     ConsoleFilterCore consoleFilterCore;
 
@@ -93,6 +93,7 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
         //Events registering
 
+
         //Console filters
         this.writer.createLogFile();
         getConsoleFilterHelper().loadFunctionalBansCommands();
@@ -103,9 +104,6 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
         //Console filters
 
-        //Timers
-        this.timerSetuper.setupTimers();
-        //Timers
 
     }
 

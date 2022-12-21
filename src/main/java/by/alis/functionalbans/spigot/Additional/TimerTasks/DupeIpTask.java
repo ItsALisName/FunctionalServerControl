@@ -1,4 +1,4 @@
-package by.alis.functionalbans.spigot.Additional.TimerTasks.Tasks;
+package by.alis.functionalbans.spigot.Additional.TimerTasks;
 
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
@@ -17,27 +17,24 @@ public class DupeIpTask extends BukkitRunnable {
     @Override
     public void run() {
         if(getConfigSettings().getDupeIpCheckMode().equalsIgnoreCase("timer")) {
-            int count = 0;
             List<Player> dupeIpPlayers = new ArrayList<>();
             for(Player player : Bukkit.getOnlinePlayers()) {
                 String playerIp = player.getAddress().getAddress().getHostAddress();
                 for(Map.Entry<Player, String> e : TemporaryCache.getOnlineIps().entrySet()) {
                     if(e.getValue().equalsIgnoreCase(playerIp)) {
-                        count = count + 1;
-                        dupeIpPlayers.add(e.getKey());
+                        if(!dupeIpPlayers.contains(player)) {
+                            dupeIpPlayers.add(player);
+                        }
                     }
                 }
 
-                if(count > getConfigSettings().getMaxIpsPerSession()) {
+                if(dupeIpPlayers.size() > getConfigSettings().getMaxIpsPerSession()) {
                     for(Player dupeIpPlayer : dupeIpPlayers) {
                         Bukkit.getScheduler().runTask(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), getConfigSettings().getDupeIpAction().replace("%1$f", dupeIpPlayer.getName()));
                         });
                     }
                 }
-
-                count = 0;
-                dupeIpPlayers.clear();
             }
         }
     }

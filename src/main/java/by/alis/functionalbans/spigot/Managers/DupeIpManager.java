@@ -5,6 +5,7 @@ import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,17 +37,17 @@ public class DupeIpManager {
     public static void checkDupeIpOnJoin(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
             if(getConfigSettings().isDupeIdModeEnabled() && getConfigSettings().getDupeIpCheckMode().equalsIgnoreCase("join")) {
-                int count = 0;
                 String joinedIp = player.getAddress().getAddress().getHostAddress();
                 List<Player> similarPlayers = new ArrayList<>();
                 for(Map.Entry<Player, String> e : TemporaryCache.getOnlineIps().entrySet()) {
                     if(e.getValue().equalsIgnoreCase(joinedIp)) {
-                        count = count + 1;
-                        similarPlayers.add(e.getKey());
+                        if(!similarPlayers.contains(e.getKey())){
+                            similarPlayers.add(e.getKey());
+                        }
+                        similarPlayers.add(player);
                     }
                 }
-
-                if(count > getConfigSettings().getMaxIpsPerSession()) {
+                if(similarPlayers.size() > getConfigSettings().getMaxIpsPerSession()) {
                     for(Player similarPlayer : similarPlayers) {
                         if (!similarPlayer.hasPermission("functionalbans.dupeip.bypass")) {
                             Bukkit.getScheduler().runTask(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
@@ -84,9 +85,22 @@ public class DupeIpManager {
             getDupeIpReports().setReportExists(true);
             if(initiator != null) {
                 getDupeIpReports().setReportInitiator(initiator instanceof Player ? ((Player) initiator).getPlayerListName() : getGlobalVariables().getConsoleVariableName());
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-created")));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-created").replace("%1$f", String.valueOf(120))));
             }
+            new startRemoveTimer().runTaskLaterAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), 2400L);
         });
+    }
+
+
+    static class startRemoveTimer extends BukkitRunnable {
+        @Override
+        public void run() {
+            if(getDupeIpReports().isReportExists()) {
+                getDupeIpReports().deleteReport();
+                this.cancel();
+            } else { this.cancel(); }
+        }
+
     }
 
 

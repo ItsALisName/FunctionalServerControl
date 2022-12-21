@@ -3,6 +3,8 @@ package by.alis.functionalbans.spigot.Additional.GlobalSettings;
 import by.alis.functionalbans.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalbans.API.Enums.StorageType;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalbans.spigot.Additional.TimerTasks.DupeIpTask;
+import by.alis.functionalbans.spigot.Additional.TimerTasks.PurgerTask;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
 import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +12,7 @@ import org.bukkit.Bukkit;
 
 import java.util.*;
 
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
 import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -62,6 +65,9 @@ public class GeneralConfigSettings {
     private String dupeIpCheckMode = "timer";
     private String dupeIpAction = null;
     private int dupeIpTimerDelay = 30;
+
+    private boolean nickFormatControlEnabled = false;
+    private List<String> blockedNickFormats = new ArrayList<>();
 
     public boolean isDupeIdModeEnabled() {
         return this.dupeIdModeEnabled;
@@ -317,6 +323,20 @@ public class GeneralConfigSettings {
         this.autoPurgerDelay = autoPurgerDelay;
     }
 
+    private void setNickFormatControlEnabled(boolean nickFormatControlEnabled) {
+        this.nickFormatControlEnabled = nickFormatControlEnabled;
+    }
+    public boolean isNickFormatControlEnabled() {
+        return nickFormatControlEnabled;
+    }
+    private void setBlockedNickFormats(List<String> blockedNickFormats) {
+        this.blockedNickFormats.clear();
+        this.blockedNickFormats = blockedNickFormats;
+    }
+    public List<String> getBlockedNickFormats() {
+        return blockedNickFormats;
+    }
+
     public void loadConfigSettings() {
         setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
@@ -428,6 +448,11 @@ public class GeneralConfigSettings {
             setPlayersNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
             setPossibleGroups(getFileAccessor().getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
 
+            setNickFormatControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.nick-format-control.enabled"));
+            if(isNickFormatControlEnabled()) {
+                setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
+            }
+
             setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
             if(isAutoPurgerEnabled()) {
                 setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
@@ -456,6 +481,15 @@ public class GeneralConfigSettings {
                 if (!isLessInformation()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? "&a[FunctionalBans | API Loading] Password protection is set for API" : "&c[FunctionalBans | API Loading] Password protection is not installed for the API (This is not an error)"));
                 }
+            }
+            if (getConfigSettings().isAutoPurgerEnabled()) {
+                if (getConfigSettings().getAutoPurgerDelay() > 5) {
+                    new PurgerTask().runTaskTimerAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), 0, getConfigSettings().getAutoPurgerDelay() * 20L);
+                }
+            }
+
+            if(getConfigSettings().isDupeIdModeEnabled()) {
+                new DupeIpTask().runTaskTimerAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), 0, getConfigSettings().getDupeIpTimerDelay() * 20L);        //Timers
             }
         });
         return;
@@ -510,6 +544,11 @@ public class GeneralConfigSettings {
 
             setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
+
+            setNickFormatControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.nick-format-control.enabled"));
+            if(isNickFormatControlEnabled()) {
+                setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
+            }
 
             setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
             if(isAutoPurgerEnabled()) {
