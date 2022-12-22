@@ -81,3 +81,9 @@
 ##  -> functionalbans.dupeip.delete-report -
 ##
 ##  -> functionalbans.dupeip.kick -
+##
+##  -> functionalbans.cheatcheck -
+##
+##  -> functionalbans.cheat-check.bypass -
+##
+##  -> functionalbans.cheat-check.other - Allows you to stop checking a player, even if another administrator checks him

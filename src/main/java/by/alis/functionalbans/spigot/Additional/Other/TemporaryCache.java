@@ -22,6 +22,7 @@ public class TemporaryCache {
     private static Map<Player, String> onlineIps = new HashMap<>();
     private static int bansDeletedCount, muteDeletedCount;
     private static final UnbanManager unbanManager = new UnbanManager();
+    private static final List<String> checkingPlayersNames = new ArrayList<>();
 
 
     public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
@@ -105,5 +106,15 @@ public class TemporaryCache {
 
     public static void unsetOnlineIps(Player player) {
         TemporaryCache.onlineIps.remove(player);
+    }
+
+    public static List<String> getCheckingPlayersNames() {
+        return checkingPlayersNames;
+    }
+    public static void setCheckingPlayersNames(String name) {
+        checkingPlayersNames.add(name);
+    }
+    public static void unsetCheckingPlayersNames(String name) {
+        checkingPlayersNames.remove(name);
     }
 }

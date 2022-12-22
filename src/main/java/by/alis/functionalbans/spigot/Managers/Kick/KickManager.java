@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalbans.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalbans.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalbans.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
@@ -92,6 +93,14 @@ public class KickManager {
         }
 
         finalReason = kickPreprocessEvent.getReason();
+
+        if(getConfigSettings().isCheatCheckFunctionEnabled()) {
+            if(getCheatCheckerManager().isPlayerChecking(player)) {
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-on-check")));
+                kickPreprocessEvent.setCancelled(true);
+                return;
+            }
+        }
 
         if(player.hasPermission("functionalbans.kick.bypass") && !initiator.hasPermission("functionalbans.bypass-break")) {
             initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick.target-bypass")));

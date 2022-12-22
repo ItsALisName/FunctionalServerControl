@@ -29,5 +29,7 @@ commands:
     aliases: [ckick]
   dupeip:
     description: dupeip
+  cheatcheck:
+    aliases: [ccheck]
   test:
     description: test

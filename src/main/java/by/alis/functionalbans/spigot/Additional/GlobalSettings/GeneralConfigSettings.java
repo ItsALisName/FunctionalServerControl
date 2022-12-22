@@ -26,6 +26,7 @@ public class GeneralConfigSettings {
     private boolean unsafeActionsConfirmation = true;
     private boolean isBanAllowedWithoutReason = true;
     private boolean isKickAllowedWithoutReason = true;
+    private boolean isCheatsCheckAllowedWithoutReason = true;
     private boolean showDescription = true;
     private boolean purgeConfirmation = true;
     private boolean isMuteAllowedWithoutReason = true;
@@ -46,28 +47,163 @@ public class GeneralConfigSettings {
     private boolean isAutoPurgerEnabled = false;
     private int autoPurgerDelay = 600;
 
+    private boolean isCheatCheckFunctionEnabled = true;
+    private boolean isPreventBlockPlaceDuringCheck;
+    private boolean isPreventBlockBreakDuringCheck;
+    private boolean isPreventIflictDamageDuringCheck;
+    private boolean isPreventTakingDamageDuringCheck;
+    private boolean isPreventMoveDuringCheck;
+    private boolean isPreventCommandsDuringCheck;
+    private boolean isPreventInteractionDuringCheck;
+    private boolean isPreventDropItemDuringCheck;
+    private boolean isPreventPickupItemDuringCheck;
+    private List<String> ignoredCommandsDuruingCheck = new ArrayList<>();
+    private int defaultCheatCheckTime;
+    private List<String> actionIfQuitDuringCheck = new ArrayList<>();
+    private List<String> actionIfValidCheatCheck = new ArrayList<>();
+    private List<String> actionIfFailedCheatCheck = new ArrayList<>();
+    private List<String> actionIfTimeLeft = new ArrayList<>();
+    private boolean sendTitleOnCheck;
+    private boolean preventKickDuringCheck;
+
     private boolean isLoggerEnabled = false;
+
     private String logFormat = "[FunctionalBans <-> %1$f] %2$f";
     private List<String> messagesToLog = new ArrayList<>();
-
     private boolean isNicksControlEnabled = false;
+
     private String nicknameCheckMode = "contains";
     private List<String> blockedNickNames = new ArrayList<>();
     private boolean notifyConsoleWhenNickNameBlocked = false;
 
-
     private boolean isIpsControlEnabled = false;
+
     private List<String> blockedIps = new ArrayList<>();
     private boolean notifyConsoleWhenIPBlocked = false;
-
     private boolean dupeIdModeEnabled = false;
+
     private int maxIpsPerSession = 1;
     private String dupeIpCheckMode = "timer";
     private String dupeIpAction = null;
     private int dupeIpTimerDelay = 30;
-
     private boolean nickFormatControlEnabled = false;
+
     private List<String> blockedNickFormats = new ArrayList<>();
+
+
+    public boolean isCheatCheckFunctionEnabled() {
+        return isCheatCheckFunctionEnabled;
+    }
+    private void setCheatCheckFunctionEnabled(boolean cheatCheckFunctionEnabled) {
+        isCheatCheckFunctionEnabled = cheatCheckFunctionEnabled;
+    }
+    public boolean isPreventBlockPlaceDuringCheck() {
+        return isPreventBlockPlaceDuringCheck;
+    }
+    private void setPreventBlockPlaceDuringCheck(boolean preventBlockPlaceDuringCheck) {
+        isPreventBlockPlaceDuringCheck = preventBlockPlaceDuringCheck;
+    }
+    public boolean isPreventBlockBreakDuringCheck() {
+        return isPreventBlockBreakDuringCheck;
+    }
+    private void setPreventBlockBreakDuringCheck(boolean preventBlockBreakDuringCheck) {
+        isPreventBlockBreakDuringCheck = preventBlockBreakDuringCheck;
+    }
+    public boolean isPreventIflictDamageDuringCheck() {
+        return isPreventIflictDamageDuringCheck;
+    }
+    private void setPreventIflictDamageDuringCheck(boolean preventIflictDamageDuringCheck) {
+        isPreventIflictDamageDuringCheck = preventIflictDamageDuringCheck;
+    }
+    public boolean isPreventTakingDamageDuringCheck() {
+        return isPreventTakingDamageDuringCheck;
+    }
+    private void setPreventTakingDamageDuringCheck(boolean preventTakingDamageDuringCheck) {
+        isPreventTakingDamageDuringCheck = preventTakingDamageDuringCheck;
+    }
+    public boolean isPreventMoveDuringCheck() {
+        return isPreventMoveDuringCheck;
+    }
+    private void setPreventMoveDuringCheck(boolean preventMoveDuringCheck) {
+        isPreventMoveDuringCheck = preventMoveDuringCheck;
+    }
+    public boolean isPreventCommandsDuringCheck() {
+        return isPreventCommandsDuringCheck;
+    }
+    private void setPreventCommandsDuringCheck(boolean preventCommandsDuringCheck) {
+        isPreventCommandsDuringCheck = preventCommandsDuringCheck;
+    }
+    public boolean isPreventDropItemDuringCheck() {
+        return isPreventDropItemDuringCheck;
+    }
+    private void setPreventDropItemDuringCheck(boolean preventDropItemDuringCheck) {
+        isPreventDropItemDuringCheck = preventDropItemDuringCheck;
+    }
+    public boolean isPreventPickupItemDuringCheck() {
+        return isPreventPickupItemDuringCheck;
+    }
+    private void setPreventPickupItemDuringCheck(boolean preventPickupItemDuringCheck) {
+        isPreventPickupItemDuringCheck = preventPickupItemDuringCheck;
+    }
+    public List<String> getIgnoredCommandsDuruingCheck() {
+        return ignoredCommandsDuruingCheck;
+    }
+    private void setIgnoredCommandsDuruingCheck(List<String> ignoredCommandsDuruingCheck) {
+        this.ignoredCommandsDuruingCheck.clear();
+        this.ignoredCommandsDuruingCheck = ignoredCommandsDuruingCheck;
+    }
+    public int getDefaultCheatCheckTime() {
+        return defaultCheatCheckTime;
+    }
+    private void setDefaultCheatCheckTime(int defaultCheatCheckTime) {
+        this.defaultCheatCheckTime = defaultCheatCheckTime;
+    }
+    public List<String> getActionIfQuitDuringCheck() {
+        return actionIfQuitDuringCheck;
+    }
+    private void setActionIfQuitDuringCheck(List<String> actionIfQuitDuringCheck) {
+        this.actionIfQuitDuringCheck.clear();
+        this.actionIfQuitDuringCheck.addAll(actionIfQuitDuringCheck);
+    }
+    public List<String> getActionIfValidCheatCheck() {
+        return actionIfValidCheatCheck;
+    }
+    private void setActionIfValidCheatCheck(List<String> actionIfValidCheatCheck) {
+        this.actionIfValidCheatCheck.clear();
+        this.actionIfValidCheatCheck.addAll(actionIfValidCheatCheck);
+    }
+    public List<String> getActionIfFailedCheatCheck() {
+        return actionIfFailedCheatCheck;
+    }
+    private void setActionIfFailedCheatCheck(List<String> actionIfFailedCheatCheck) {
+        this.actionIfFailedCheatCheck.clear();
+        this.actionIfFailedCheatCheck.addAll(actionIfFailedCheatCheck);
+    }
+    private void setSendTitleOnCheck(boolean sendTitleOnCheck) {
+        this.sendTitleOnCheck = sendTitleOnCheck;
+    }
+    public boolean isSendTitleOnCheck() {
+        return sendTitleOnCheck;
+    }
+    public List<String> getActionIfTimeLeft() {
+        return actionIfTimeLeft;
+    }
+    private void setActionIfTimeLeft(List<String> actionIfTimeLeft) {
+        this.actionIfTimeLeft.clear();
+        this.actionIfTimeLeft.addAll(actionIfTimeLeft);
+    }
+    private void setPreventInteractionDuringCheck(boolean preventInteractionDuringCheck) {
+        isPreventInteractionDuringCheck = preventInteractionDuringCheck;
+    }
+    public boolean isPreventInteractionDuringCheck() {
+        return isPreventInteractionDuringCheck;
+    }
+    private void setPreventKickDuringCheck(boolean preventKickDuringCheck) {
+        this.preventKickDuringCheck = preventKickDuringCheck;
+    }
+    public boolean isPreventKickDuringCheck() {
+        return preventKickDuringCheck;
+    }
 
     public boolean isDupeIdModeEnabled() {
         return this.dupeIdModeEnabled;
@@ -123,6 +259,13 @@ public class GeneralConfigSettings {
     public boolean isUnsafeActionsConfirmation() {
         return this.unsafeActionsConfirmation;
     }
+    public boolean isCheatsCheckAllowedWithoutReason() {
+        return this.isCheatsCheckAllowedWithoutReason;
+    }
+    private void setCheatsCheckAllowedWithoutReason(boolean cheatsCheckAllowedWithoutReason) {
+        this.isCheatsCheckAllowedWithoutReason = cheatsCheckAllowedWithoutReason;
+    }
+
     public boolean showDescription() {
         return this.showDescription;
     }
@@ -438,6 +581,7 @@ public class GeneralConfigSettings {
             setBanAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
             setKickAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
             setMuteAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
+            setCheatsCheckAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.cheatcheck-without-reason.allowed"));
             setAllowedUnbanWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
             setUnsafeActionsConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
             setPurgeConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
@@ -456,6 +600,27 @@ public class GeneralConfigSettings {
             setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
             if(isAutoPurgerEnabled()) {
                 setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
+            }
+
+            setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
+            if(isCheatCheckFunctionEnabled()) {
+                setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
+                setPreventBlockBreakDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
+                setPreventIflictDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
+                setPreventTakingDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
+                setPreventMoveDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
+                setPreventInteractionDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
+                setPreventCommandsDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
+                setPreventDropItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-drop"));
+                setPreventPickupItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-pickup"));
+                setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+                setIgnoredCommandsDuruingCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
+                setDefaultCheatCheckTime(getFileAccessor().getGeneralConfig().getInt("plugin-settings.cheat-checks-settings.default-check-time"));
+                setActionIfQuitDuringCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
+                setActionIfFailedCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-fails"));
+                setActionIfValidCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-is-valid"));
+                setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
+                setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
             }
 
             setAllowedUseRamAsContainer(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
@@ -542,6 +707,25 @@ public class GeneralConfigSettings {
             setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
             CooldownsManager.setupCooldowns();
 
+            setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
+            if(isCheatCheckFunctionEnabled()) {
+                setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
+                setPreventBlockBreakDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
+                setPreventIflictDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
+                setPreventTakingDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
+                setPreventMoveDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
+                setPreventCommandsDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
+                setPreventInteractionDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
+                setIgnoredCommandsDuruingCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
+                setDefaultCheatCheckTime(getFileAccessor().getGeneralConfig().getInt("plugin-settings.cheat-checks-settings.default-check-time"));
+                setActionIfQuitDuringCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
+                setActionIfFailedCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-fails"));
+                setActionIfValidCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-is-valid"));
+                setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
+                setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
+                setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+            }
+
             setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
 
@@ -605,6 +789,7 @@ public class GeneralConfigSettings {
             setKickAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));
             setMuteAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.mute-without-reason.allowed"));
             setAllowedUnbanWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.unban-with-out-reason.allowed"));
+            setCheatsCheckAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.cheatcheck-without-reason.allowed"));
             setUnsafeActionsConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.unsafe-actions-confirmation"));
             setPurgeConfirmation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.purge-confirmation"));
             setShowExamples(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.show-examples"));

@@ -82,6 +82,7 @@ other:
   blocked-nickname-notify: "&c[FunctionalBans] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
   blocked-ip-notify: "&c[FunctionalBans] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
   unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
+  player-on-check: "&c[FunctionalBans] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
   notifications:
     ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
     ban-ip: "&c[FunctionalBans] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
@@ -197,5 +198,28 @@ commands:
       - "&eРепорт создан в &c%1$f &eадминистратором &c%2$f"
       - "&eИнформация:"
       - "%3$f"
+
+  cheatcheck:
+    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"
+    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <start/stop/confirm/refute> <игрок> {время} {причина}"
+    example: "&c[FunctionalBans] &7Пример: &c/%1$f start ALis 5min Подозрение в использовании чита KillAura"
+    unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым временным значением, попробуйте например &c10s &7или просто &c10"
+    unknown-subcommand: "&c[FunctionalBans] &7Неизвестный аргумент или не полная команда, используйте &c/cheatcheck &7для получения помощи."
+    player-already-checking: "&c[FunctionalBans] &7Данный игрок уже находится на проверке."
+    player-not-checking-now: "&c[FunctionalBans] &7Данный игрок не находится на проверке."
+    check-stopped: "&c[FunctionalBans] &7Проверка игрока &c%1$f &7завершена!"
+    not-your-player: "&c[FunctionalBans] &7Данного игрока проверяете не Вы!"
+    target-bypass: "&c[FunctionalBans] &7Вы не можете вызвать данного игрока на проверку!"
+    success: "&c[FunctionalBans] &7Вы вызвали игрока &c%1$f &7на проверку."
+    target-quit: "&c[FunctionalBans] &7Игрок, которого вы проверяли, покинул игру!"
+    chat-message-on-start: "&eАдминистратор &c%1$f &eвызвал Вас на проверку на читы \nПричина вызова: &c%2$f \nУ Вас &c%3$f секунд &eчтобы оправдаться"
+    chat-message-on-stop: "&eПроверка завершена, можете продолжить Вашу игру!"
+    actionbar-message: "&eУ Вас осталось &c%1$f&e!"
+    header-title-on-start: "&cВы были вызваны на проверку!"
+    footer-title-on-start:
+    - "&eПожалуйста, следуйте указаниям администратора."
+    header-title-on-stop: "&cПроверка завершена!"
+    footer-title-on-stop:
+      - "&eМожете продолжить Вашу игру."
 
 

@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Commands.Completers;
 
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
+import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TempbanCompleter implements TabCompleter {
@@ -26,7 +28,7 @@ public class TempbanCompleter implements TabCompleter {
                 }
                 a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
-            return a;
+            return TextUtils.sortList(a, args);
         }
 
         if(args.length == 2 && args[0].equalsIgnoreCase("-s")) {
@@ -34,7 +36,7 @@ public class TempbanCompleter implements TabCompleter {
             if(sender.hasPermission("functionalbans.temp-ban") && sender.hasPermission("functionalbans.use.silently")) {
                 b.addAll(TemporaryCache.getOnlinePlayerNames());
             }
-            return b;
+            return TextUtils.sortList(b, args);
         }
 
         if(args.length == 2 && !args[0].equalsIgnoreCase("-s")) {
@@ -42,9 +44,9 @@ public class TempbanCompleter implements TabCompleter {
             if(sender.hasPermission("functionalbans.temp-ban")) {
                 c.add("1s"); c.add("1m"); c.add("10m"); c.add("1h"); c.add("10h"); c.add("1d");
             }
-            return c;
+            return TextUtils.sortList(c, args);
         }
 
-        return null;
+        return Collections.singletonList("");
     }
 }

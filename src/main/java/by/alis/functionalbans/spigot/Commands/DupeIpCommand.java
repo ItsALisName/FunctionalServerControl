@@ -2,11 +2,13 @@ package by.alis.functionalbans.spigot.Commands;
 
 import by.alis.functionalbans.spigot.Commands.Completers.DupeIpCompleter;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import by.alis.functionalbans.spigot.Managers.CooldownsManager;
 import by.alis.functionalbans.spigot.Managers.DupeIpManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalbans.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
@@ -28,6 +30,16 @@ public class DupeIpCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if(sender.hasPermission("functionalbans.dupeip")) {
+
+            if(sender instanceof Player) {
+                Player player = ((Player) sender).getPlayer();
+                if (!CooldownsManager.playerHasCooldown(player, command.getName())) {
+                    CooldownsManager.setCooldown(player, command.getName());
+                } else {
+                    CooldownsManager.notifyAboutCooldown(player, command.getName());
+                    return true;
+                }
+            }
 
             if(args.length == 0) {
                 if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.description").replace("%1$f", label))); }

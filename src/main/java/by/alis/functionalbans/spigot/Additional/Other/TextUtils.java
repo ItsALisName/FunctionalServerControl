@@ -7,6 +7,8 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +85,13 @@ public class TextUtils {
         Bukkit.getScheduler().runTask(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
             Bukkit.getConsoleSender().sendMessage(setColors(message));
         });
+    }
+
+    public static List<String> sortList(List<String> list, String[] args){
+        String last = args[args.length - 1];
+        List<String> result = new ArrayList<>();
+        for(String s : list) if(s.startsWith(last)) result.add(s);
+        return result;
     }
 
 }

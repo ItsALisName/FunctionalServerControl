@@ -10,6 +10,7 @@ public class StaticContainers {
     private static final BannedPlayersContainer bannedPlayersContainer = new BannedPlayersContainer();
     private static final BanContainerManager banContainerManager = new BanContainerManager();
     private static final DupeIpReports dupeIpReports = new DupeIpReports();
+    private static final CheatsCheckingPlayers checkingCheatsPlayers = new CheatsCheckingPlayers();
 
     public static HidedMessagesContainer getHidedMessagesContainer() {
         return hidedMessagesContainer;
@@ -19,6 +20,9 @@ public class StaticContainers {
     }
     public static BannedPlayersContainer getBannedPlayersContainer() {
         return bannedPlayersContainer;
+    }
+    public static CheatsCheckingPlayers getCheckingCheatsPlayers() {
+        return checkingCheatsPlayers;
     }
     public static DupeIpReports getDupeIpReports() {
         return dupeIpReports;

@@ -1,5 +1,6 @@
 package by.alis.functionalbans.spigot.Commands.Completers;
 
+import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DupeIpCompleter implements TabCompleter {
@@ -27,19 +29,19 @@ public class DupeIpCompleter implements TabCompleter {
                 if(sender.hasPermission("functionalbans.dupeip.delete-report")) {
                     a.add("deletereport");
                 }
-                return a;
+                return TextUtils.sortList(a, args);
             }
-            return null;
+            return Collections.singletonList("");
         }
 
         if(args[0].equalsIgnoreCase("kick") && args.length == 2) {
             if(sender.hasPermission("functionalbans.dupeip") && sender.hasPermission("functionalbans.use.silently")) {
                 return Arrays.asList("-s");
             }
-            return null;
+            return Collections.singletonList("");
         }
 
-        return null;
+        return Collections.singletonList("");
     }
 
 }

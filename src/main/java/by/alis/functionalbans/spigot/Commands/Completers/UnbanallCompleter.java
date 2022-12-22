@@ -20,9 +20,9 @@ public class UnbanallCompleter implements TabCompleter {
             if(sender.hasPermission("functionalbans.unban-all") && sender.hasPermission("functionalbans.use.silently")) {
                 return Collections.singletonList("-s");
             }
-            return null;
+            return Collections.singletonList("");
         }
 
-        return null;
+        return Collections.singletonList("");
     }
 }

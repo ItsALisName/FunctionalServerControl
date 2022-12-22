@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Commands.Completers;
 
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
+import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class KickCompleter implements TabCompleter {
@@ -26,15 +28,15 @@ public class KickCompleter implements TabCompleter {
                 }
                 a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
-            return a;
+            return TextUtils.sortList(a, args);
         }
 
         if(args[0].equalsIgnoreCase("-s") && args.length == 2) {
             if(!sender.hasPermission("functionalbans.use.silently")) {
-                return null;
+                return Collections.singletonList("");
             }
         }
 
-        return null;
+        return Collections.singletonList("");
     }
 }

@@ -1,6 +1,7 @@
 package by.alis.functionalbans.spigot.Commands.Completers;
 
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
+import by.alis.functionalbans.spigot.Additional.Other.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class BanCompleter implements TabCompleter {
@@ -28,7 +31,7 @@ public class BanCompleter implements TabCompleter {
                 }
                 a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
-            return a;
+            return TextUtils.sortList(a, args);
         }
 
         if(args[0].equalsIgnoreCase("-a") && args.length == 2) {
@@ -36,7 +39,7 @@ public class BanCompleter implements TabCompleter {
             if(sender.hasPermission("functionalbans.ban") && sender.hasPermission("functionalbans.use.unsafe-flags")) {
                 a.add("-s");
             }
-            return a;
+            return TextUtils.sortList(a, args);
         }
 
         if(args[0].equalsIgnoreCase("-s") && args.length == 2) {
@@ -44,18 +47,18 @@ public class BanCompleter implements TabCompleter {
             if(sender.hasPermission("functionalbans.ban") && sender.hasPermission("functionalbans.use.silently")) {
                 a.addAll(TemporaryCache.getOnlinePlayerNames());
             }
-            return a;
+            return TextUtils.sortList(a, args);
         }
 
         if(args[0].equalsIgnoreCase("-s") && args.length == 3) {
             List<String> a = new ArrayList<>();
             if(sender.hasPermission("functionalbans.ban") && sender.hasPermission("functionalbans.use.silently")) {
                 a.add("1min"); a.add("1day"); a.add("1mon");
-                return a;
+                return TextUtils.sortList(a, args);
             }
-            return null;
+            return Collections.singletonList("");
         }
 
-        return null;
+        return Collections.singletonList("");
     }
 }

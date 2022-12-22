@@ -2,12 +2,16 @@ package by.alis.functionalbans.spigot.Listeners;
 
 import by.alis.functionalbans.spigot.Additional.Other.TemporaryCache;
 import by.alis.functionalbans.spigot.FunctionalBansSpigot;
+import by.alis.functionalbans.spigot.Managers.CheatCheckerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import static by.alis.functionalbans.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalbans.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 
 public class QuitListener implements Listener {
 
@@ -17,6 +21,9 @@ public class QuitListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalBansSpigot.getProvidingPlugin(FunctionalBansSpigot.class), () -> {
             TemporaryCache.unsetOnlinePlayerName(player);
             TemporaryCache.unsetOnlineIps(player);
+            if(getConfigSettings().isCheatCheckFunctionEnabled()) {
+                getCheatCheckerManager().preformActionOnQuit(player);
+            }
         });
     }
 

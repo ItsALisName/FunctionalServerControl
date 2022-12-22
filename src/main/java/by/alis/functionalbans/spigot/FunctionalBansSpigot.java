@@ -4,8 +4,6 @@ import by.alis.functionalbans.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalbans.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalbans.spigot.Additional.Logger.LogWriter;
 import by.alis.functionalbans.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalbans.spigot.Additional.TimerTasks.DupeIpTask;
-import by.alis.functionalbans.spigot.Additional.TimerTasks.PurgerTask;
 import by.alis.functionalbans.spigot.Commands.*;
 import by.alis.functionalbans.spigot.Expansions.Expansions;
 import by.alis.functionalbans.spigot.Listeners.*;
@@ -32,7 +30,6 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         //Creating files if not exists
         this.fileManager.initializeAndCreateFilesIfNotExists();
         //Creating files if not exists
@@ -44,12 +41,9 @@ public final class FunctionalBansSpigot extends JavaPlugin {
 
         //Bases functions
         getSQLiteManager().setupTables();
-
         CooldownsManager.loadCooldowns();
         getSQLiteManager().clearCooldowns();
         //Bases functions
-
-
 
         //Expansions
         Expansions.getVaultManager().setupVaultPermissions();
@@ -76,23 +70,24 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         new UnbanallCommand(this);
         new CrazykickCommand(this);
         new DupeIpCommand(this);
+        new CheatCheckCommand(this);
         //Commands registering
 
         //Events registering
-        new JoinListener();
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
-        new QuitListener();
         Bukkit.getPluginManager().registerEvents(new QuitListener(), this);
-        new CommandSendListener();
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
             Bukkit.getPluginManager().registerEvents(new CommandSendListener(), this);
         }
-        new NullPlayerJoinListener();
         Bukkit.getPluginManager().registerEvents(new NullPlayerJoinListener(), this);
-        new AsyncJoinListener();
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlaceBreakListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractionListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityDamagesListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerMovingListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerCommandsListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerItemDropPickupListener(), this);
         //Events registering
-
 
         //Console filters
         this.writer.createLogFile();
@@ -101,10 +96,7 @@ public final class FunctionalBansSpigot extends JavaPlugin {
         getConsoleFilterCore().eventLog();
         getConsoleFilterCore().replaceMessage();
         getConsoleFilterCore().hideMessage();
-
         //Console filters
-
-
     }
 
     @Override

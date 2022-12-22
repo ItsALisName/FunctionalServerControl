@@ -24,8 +24,9 @@ public class CooldownsManager {
     private static int KICK_COOLDOWN = 0;
     private static int UNBAN_COOLDOWN = 0;
     private static int UNBANALL_COOLDOWN = 0;
-
     private static int CRAZYKICK_COOLDOWN = 0;
+    private static int DUPEIP_COOLDOWN = 0;
+    private static int CHEATCHECK_COOLDOWN = 0;
     public static final TreeMap<String, Long> cooldowns = new TreeMap<>();
 
     public static void setCooldown(Player player, String command) {
@@ -64,6 +65,16 @@ public class CooldownsManager {
                     case "crazykick": {
                         if(CRAZYKICK_COOLDOWN > 0) {
                             cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(CRAZYKICK_COOLDOWN));
+                        }
+                    }
+                    case "dupeip": {
+                        if(DUPEIP_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(DUPEIP_COOLDOWN));
+                        }
+                    }
+                    case "cheatcheck": {
+                        if(CHEATCHECK_COOLDOWN > 0) {
+                            cooldowns.put(player.getName() + ":" + command, System.currentTimeMillis() + timeSettingsAccessor.getTimeManager().convertFromSecToMillis(CHEATCHECK_COOLDOWN));
                         }
                     }
                 }
@@ -151,6 +162,12 @@ public class CooldownsManager {
                 }
                 if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.crazykick") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.crazykick"))) {
                     CRAZYKICK_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.crazykick"));
+                }
+                if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.dupeip") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.dupeip"))) {
+                    DUPEIP_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.dupeip"));
+                }
+                if(accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.cheatcheck") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.cheatcheck"))) {
+                    CHEATCHECK_COOLDOWN = Integer.parseInt(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.cheatcheck"));
                 }
             }
         });
