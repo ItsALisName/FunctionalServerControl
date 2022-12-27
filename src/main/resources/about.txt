@@ -1,7 +1,7 @@
 ########################################################################################################################
 ######                                                                                                            ######
 ####                                                                                                                ####
-##                                               About FunctionalBans                                                 ##
+##                                           About FunctionalServerControl                                            ##
 ####                                                                                                                ####
 ######                                                                                                            ######
 ########################################################################################################################
@@ -15,75 +15,111 @@
 ####
 ##                                                   Permissions
 ##
-##  -> functionalbans.ban - access to use "/ban" command
+##  -> functionalservercontrol.ban - access to use "/ban" command
 ##
-##  -> functionalbans.use.re-ban - allows overwriting the ban of an already banned player
+##  -> functionalservercontrol.use.re-ban - allows overwriting the ban of an already banned player
 ##
-##  -> functionalbans.time-bypass - allows punish a player for a longer time than specified in the
+##  -> functionalservercontrol.time-bypass - allows punish a player for a longer time than specified in the
 ##  configuration file
 ##
-##  -> functionalbans.ban-ip - access to use "/banip" command
+##  -> functionalservercontrol.ban.offline - Allows use the "/ban" command on offline players
 ##
-##  -> functionalbans.ban.offline - Allows use the "/ban" command on offline players
+##  -> functionalservercontrol.use.unsafe-flags - allows the use of dangerous flags
 ##
-##  -> functionalbans.use.unsafe-flags - allows the use of dangerous flags
+##  -> functionalservercontrol.ban.bypass - gives protection against account blocking
 ##
-##  -> functionalbans.ban.bypass - gives protection against account blocking
+##  -> functionalservercontrol.purge - access to use "/fb purge" command
 ##
-##  -> functionalbans.purge - access to use "/fb purge" command
+##  -> functionalservercontrol.use.silently - allows the use of the -s flag
 ##
-##  -> functionalbans.use.silently - allows the use of the -s flag
-##
-##  -> functionalbans.use.no-reason - allows blocking accounts without specifying a reason
+##  -> functionalservercontrol.use.no-reason - allows blocking accounts without specifying a reason
 ##   (used if general.yml prohibits punishing without a reason)
 ##
-##  -> functionalbans.bypass-break - Attention! This permission gives you the opportunity to block, kick, mute
+##  -> functionalservercontrol.bypass-break - Attention! This permission gives you the opportunity to block, kick, mute
 ##  everyone and every possible online player
 ##
-##  -> functionalbans.temp-ban - access to use "/tempban" command
+##  -> functionalservercontrol.temp-ban - access to use "/tempban" command
 ##
-##  -> functionalbans.temp-ban.offline - Allows use the "/tempban" command on offline players
+##  -> functionalservercontrol.temp-ban.offline - Allows use the "/tempban" command on offline players
 ##
-##  -> functionalbans.help - Allows use "/functionalbans" command
+##  -> functionalservercontrol.help - Allows use "/functionalservercontrol" command
 ##
-##  -> functionalbans.reload - Allows use "/fb reload" command
+##  -> functionalservercontrol.reload - Allows use "/fb reload" command
 ##
-##  -> functionalbans.notification.mute - players with this permission will receive a notification when
+##  -> functionalservercontrol.notification.mute - players with this permission will receive a notification when
 ##  a muted player tries to write to the chat
 ##
-##  -> functionalbans.notification.ban - players with this permission receive a notification when
+##  -> functionalservercontrol.notification.ban - players with this permission receive a notification when
 ##  a banned player tries to join
-##  -> functionalbans.cooldowns.bypass - players with this permission do not have a delay on
+##  -> functionalservercontrol.cooldowns.bypass - players with this permission do not have a delay on
 ##  commands, even if it is enabled
 ##
-##  -> functionalbans.kick -
+##  -> functionalservercontrol.kick -
 ##
-##  -> functionalbans.kick.bypass -
+##  -> functionalservercontrol.kick.bypass -
 ##
-##  -> functionalbans.kick-all -
+##  -> functionalservercontrol.kick-all -
 ##
-##  -> functionalbans.undo -
+##  -> functionalservercontrol.undo -
 ##
-##  -> functionalbans.unban -
+##  -> functionalservercontrol.unban -
 ##
-##  -> functionalbans.unban-all -
+##  -> functionalservercontrol.unban-all -
 ##
-##  -> functionalbans.crazy-kick -
+##  -> functionalservercontrol.crazy-kick -
 ##
-##  -> functionalbans.crazy-kick.bypass -
+##  -> functionalservercontrol.crazy-kick.bypass -
 ##
-##  -> functionalbans.dupeip -
+##  -> functionalservercontrol.dupeip -
 ##
-##  -> functionalbans.dupeip.bypass -
+##  -> functionalservercontrol.dupeip.bypass -
 ##
-##  -> functionalbans.dupeip.create-report -
+##  -> functionalservercontrol.dupeip.create-report -
 ##
-##  -> functionalbans.dupeip.delete-report -
+##  -> functionalservercontrol.dupeip.delete-report -
 ##
-##  -> functionalbans.dupeip.kick -
+##  -> functionalservercontrol.dupeip.kick -
 ##
-##  -> functionalbans.cheatcheck -
+##  -> functionalservercontrol.cheatcheck -
 ##
-##  -> functionalbans.cheat-check.bypass -
+##  -> functionalservercontrol.cheat-check.bypass -
 ##
-##  -> functionalbans.cheat-check.other - Allows you to stop checking a player, even if another administrator checks him
+##  -> functionalservercontrol.cheat-check.other - Allows you to stop checking a player, even if another administrator checks him
+##
+##  -> functionalservercontrol.ban-ip - access to use "/banip" command
+##
+##  -> functionalservercontrol.ban-ip.offline -
+##
+##  -> functionalservercontrol.ban-ip.bypass -
+##
+##  -> functionalservercontrol.ban-ip.offline -
+##
+##  -> functionalservercontrol.tempban-ip -
+##
+##  -> functionalservercontrol.tempban-ip.offline -
+##
+##  -> functionalservercontrol.use.re-mute -
+##
+##  -> functionalservercontrol.mute -
+##
+##  -> functionalservercontrol.mute.bypass -
+##
+##  -> functionalservercontrol.mute.offline -
+##
+##  -> functionalservercontrol.muteip -
+##
+##  -> functionalservercontrol.muteip.bypass -
+##
+##  -> functionalservercontrol.muteip.offline -
+##
+##  -> functionalservercontrol.tempmute -
+##
+##  -> functionalservercontrol.tempmute.offline
+##
+##  -> functionalservercontrol.tempmuteip -
+##
+##  -> functionalservercontrol.tempmuteip.offline -
+##
+##  -> functionalservercontrol.unmute -
+##
+##  -> functionalservercontrol.unmuteall -

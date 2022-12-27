@@ -18,7 +18,7 @@ plugin-settings:
 
   ##############################################################################
   #       Should the plugin require repeated input for confirmation            #
-  #         when trying to use the command "/functionalbans purge"?            #
+  #    when trying to use the command "/functionalservercontrol purge"?        #
   ##############################################################################
   purge-confirmation: true
 
@@ -32,7 +32,7 @@ plugin-settings:
   storage-method: "sqlite"
 
   ##############################################################################
-  #             Hide the command "/functionalbans" from the                    #
+  #          Hide the command "/functionalservercontrol" from the              #
   #                 list when the player presses Tab?                          #
   #       (Incorrect operation is possible when using ProtocolSupport)         #
   #      (When using Minecraft version lower than 1.13 - does not work)        #
@@ -111,8 +111,8 @@ plugin-settings:
 
   logger:
     enabled: true
-    log-format: "[FunctionalBans <-> %1$f] %2$f"
-    messages-to-log: [Your messages from console to log, FunctionalBans]
+    log-format: "[FunctionalServerControl <-> %1$f] %2$f"
+    messages-to-log: [Your messages from console to log, FunctionalServerControl]
 
   ##############################################################################
   #                       Settings using reasons                               #
@@ -125,9 +125,14 @@ plugin-settings:
     default-reason: "&cThe reason is not specified, please contact the administrator"
 
     ##############################################################################
-    #                       Message when ban time is up                          #
+    #                       Reason when ban time is up                           #
     ##############################################################################
-    ban-time-left: "The ban time expired"
+    ban-time-left: "The ban time has expired"
+
+    ##############################################################################
+    #                        Reason when mute time is up                         #
+    ##############################################################################
+    mute-time-left: "The mute time has expired"
 
     ##############################################################################
     #         Settings for using commands without specifying a reason            #
@@ -166,6 +171,51 @@ plugin-settings:
       #             Is it allowed to unban a player for no reason?                 #
       ##############################################################################
       allowed: false
+
+    unmute-without-reason:
+
+      ##############################################################################
+      #                   Is unmute allowed without reason?                        #
+      ##############################################################################
+      allowed: false
+
+  title-settings:
+
+    send-when-muted: true
+
+    send-when-unmuted: true
+
+  ##############################################################################
+  #                       Setting "Actionbar" messages                         #
+  ##############################################################################
+  action-bar-settings:
+
+    ##############################################################################
+    #     Send a message to the "Actionbar" to the player while he is muted?     #
+    ##############################################################################
+    send-while-muted: true
+
+  ##############################################################################
+  #                        Chat function configuration                         #
+  ##############################################################################
+  chat-settings:
+
+    ##############################################################################
+    #                Setting the priority of a chat listener                     #
+    # "LOWEST" - Event call is of very low importance and should be ran first,   #
+    #   to allow other plugins to further customise the outcome.                 #
+    # "LOW" - Event call is of low importance                                    #
+    # "NORMAL" - Event call is neither important nor unimportant, and may be ran #
+    #   normally.                                                                #
+    # "HIGH" - Event call is of high importance.                                 #
+    # "HIGHEST" - Event call is critical and must have the final say in what     #
+    #   happens to the event.                                                    #
+    #               Not changed by the "/fsc reload" command                     #
+    ##############################################################################
+    chat-listener-priority: "NORMAL"
+
+    disabled-commands-when-muted: [/bc, /tell, /msg, /r, /reply, /m, /message]
+
 
   ##############################################################################
   #               Here you can set server login restrictions                   #
@@ -281,7 +331,8 @@ plugin-settings:
     ##############################################################################
     #                       Maximum possible blocking time                       #
     ##############################################################################
-    max-possible-time: "3|months"
+    max-possible-ban-time: "3|months"
+    max-possible-mute-time: "3|mon"
 
     ##############################################################################
     #  Intergroup setting the maximum punish time (If installed LuckPerms etc.)  #
@@ -314,15 +365,22 @@ plugin-settings:
     #                        Command delays (In seconds)                         #
     ##############################################################################
     command:
-      #The "/ban" command is also responsible for the "/tempban" command
       ban: 120
+      tempban: 100
+      tempbanip: 120
+      banip: 300
       kick: 60
       mute: 90
+      tempmute: 60
+      muteip: 300
+      tempmuteip: 150
       unban: 120
       unbanall: 300
       crazykick: 90
       dupeip: 100
       cheatcheck: 40
+      unmute: 90
+      unmuteall: 300
 
   ##############################################################################
   #           Configuring automatic cleaning of some data from RAM             #

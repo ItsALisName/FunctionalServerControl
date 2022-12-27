@@ -59,159 +59,232 @@ blocked-nickname-kick-format:
 - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
 blocked-ip-kick-format:
-  - "&6Вам был запрещен вход на сервер!"
-  - ""
-  - "&cПричина: &6Ваш IP-адрес является запрещенным"
-  - ""
-  - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
+- "&6Вам был запрещен вход на сервер!"
+- ""
+- "&cПричина: &6Ваш IP-адрес является запрещенным"
+- ""
+- "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
 other:
-  unknown-player: "&c[FunctionalBans] &7&oИгрок &c&o%1$f &7&oникогда не заходил на сервер!"
-  target-offline: "&c[FunctionalBans] &7Игрок &c%1$f &7не найден."
-  last-ban-removed: "&c[FunctionalBans] &7Предыдущая блокировка игрока &c%1$f &7снята."
-  no-permissions: "&c[FunctionalBans] &7&cУ Вас недостаточно прав для выволнения данной команды."
-  already-banned: "&c[FunctionalBans] &7Данный игрок уже забанен, у Вас недостаточно прав для перезаписи блокировки"
-  unknown-subcommand: "&c[FunctionalBans] &7Неизвестный аргумент &c%1$f&7, используйте &c/fb help &7для помощи"
-  no-reason: "&c[FunctionalBans] &7Вы не указали причину, это обязательно."
-  flag-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав использовать флаг &c&o%1$f"
-  offline-no-perms: "&c[FunctionalBans] &7Вы не можете взаимодействовать с оффлайн игроками"
-  ban-over-time: "&c[FunctionalBans] &7Вы не можете блокировать более чем на &c%1$f"
-  no-yourself-actions: "&c[FunctionalBans] &7Вы не можете взаимодействовать с собой"
-  cooldown: "&c[FunctionalBans] &7Вы сможете использовать команду &c/%1$f &7только через &c%2$f"
-  flag-not-support: "&c[FunctionalBans] &7Флаг &c%1$f &7не доступен для данной команды"
-  blocked-nickname-notify: "&c[FunctionalBans] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
-  blocked-ip-notify: "&c[FunctionalBans] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
-  unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
-  player-on-check: "&c[FunctionalBans] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
+  unknown-player: "&c[FunctionalServerControl] &7&oИгрок &c&o%1$f &7&oникогда не заходил на сервер!"
+  unknown-ip: "&c[FunctionalServerControl] &7&oНа сервере никогда не было игрока с IP-адресом &c&o%1$f"
+  missing-argument: "&c[FunctionalServerControl] &7Недостаточно агрументов &c%1$f"
+  too-many-arguments: "&c[FunctionalServerControl] &7Слишком много аргументов, &c%1$f &7лишнее"
+  target-offline: "&c[FunctionalServerControl] &7Игрок &c%1$f &7не найден."
+  last-ban-removed: "&c[FunctionalServerControl] &7Предыдущая блокировка игрока &c%1$f &7снята."
+  last-ip-ban-removed: "&c[FunctionalServerControl] &7Предыдущая блокировка IP-адреса &c%1$f &7удалена."
+  last-ip-mute-removed: "&c[FunctionalServerControl] &7Предыдущая блокировка IP-адреса &c%1$f &7удалена"
+  last-mute-removed: "&c[FunctionalServerControl] &7Предыдущий мут игрока &c%1$f &7удален"
+  no-permissions: "&c[FunctionalServerControl] &7&cУ Вас недостаточно прав для выволнения данной команды."
+  already-banned: "&c[FunctionalServerControl] &7Данный игрок уже забанен, у Вас недостаточно прав для перезаписи блокировки"
+  already-muted: "&c[FunctionalServerControl] &7Данный игрок уже заткнут, у Вас недостаточно прав для перезаписи мута"
+  unknown-subcommand: "&c[FunctionalServerControl] &7Неизвестный аргумент &c%1$f&7, используйте &c/fb help &7для помощи"
+  no-reason: "&c[FunctionalServerControl] &7Вы не указали причину, это обязательно."
+  flag-no-perms: "&c[FunctionalServerControl] &7У Вас недостаточно прав использовать флаг &c&o%1$f"
+  offline-no-perms: "&c[FunctionalServerControl] &7Вы не можете взаимодействовать с оффлайн игроками"
+  ban-over-time: "&c[FunctionalServerControl] &7Вы не можете блокировать более чем на &c%1$f"
+  mute-over-time: "&c[FunctionalServerControl] &7Вы не можете затыкать более чем на &c%1$f"
+  no-yourself-actions: "&c[FunctionalServerControl] &7Вы не можете взаимодействовать с собой"
+  cooldown: "&c[FunctionalServerControl] &7Вы сможете использовать команду &c/%1$f &7только через &c%2$f"
+  flag-not-support: "&c[FunctionalServerControl] &7Флаг &c%1$f &7не доступен для данной команды"
+  blocked-nickname-notify: "&c[FunctionalServerControl] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
+  blocked-ip-notify: "&c[FunctionalServerControl] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
+  unknown-time: "&c[FunctionalServerControl] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
+  player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
+  player-notifying:
+    when-muted:
+      expired: "&aВы снова можете писать в чат!"
+      chat:
+        text: "&c[FunctionalServerControl] &7Вы не можете отправлять сообщения! \n&7Еще: &c%1$f &9(Наведите для информации)"
+        hover-text: "&c%1$f &7заткнул Вас. \n&7Когда: &c%2$f &7в &c%3$f &7\nПричина: &c%4$f &7\nАйди: &c%5$f"
+      command:
+        text: "&c[FunctionalServerControl] &7Вы не можете использовать данную команду пока заткнуты! \n&7Еще: &c%1$f &9(Наведите для информации)"
+        hover-text: "&c%1$f &7заткнул Вас. \n&7Когда: &c%2$f &7в &c%3$f &7\nПричина: &c%4$f &7\nАйди: &c%5$f"
+  title:
+    when-muted:
+      text: "&cВам был заблокирован доступ к чату!|&7ID блокировки: &c%1$f"
+    when-unmuted:
+      text: "&aВам был разблокирован доступ к чату!|&7Причина: &a%1$f"
+  actionbar:
+    mute-format: "&7Вы не можете писать в чат! Осталось: &c%1$f"
+  join:
+    muted:
+      text: "&c[FunctionalServerControl] &7Вы все еще не можете писать в чат \n&7Осталось: &c%1$f &9(Наведи на текст для подробностей)"
+      hover-text: "&c%1$f &7заткнул Вас. \n&7Когда: &c%2$f &7в &c%3$f &7\nПричина: &c%4$f &7\nАйди: &c%5$f"
   notifications:
-    ban: "&c[FunctionalBans] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
-    ban-ip: "&c[FunctionalBans] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
-    mute: "&c[FunctionalBans] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
+    ban: "&c[FunctionalServerControl] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
+    ban-ip: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
+    mute: "&c[FunctionalServerControl] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
 
 unsafe-actions:
-  unsafe-flag-no-perms: "&c[FunctionalBans] &7У Вас недостатоно прав использовать флаг &4%1$f"
-  unsafe-ban-success: "&c[FunctionalBans] &eВы заблокировали &6%1$f &eаккаунтов!"
-  unsafe-action-confirm: "&c[FunctionalBans] &7Подтвердите Ваше дейтвие введя команду &c/%1$f"
-  unsafe-action-confirm-1: "&c[FunctionalBans] &7Подтвердите Ваше дейтвие введя команду еще раз"
-  unsafe-ban-cached-notify: "&c[FunctionalBans] &7Игроки, заблокированные таким способ были захешированы, у Вас есть возможно отменить это действие - &c/fb undo"
+  unsafe-flag-no-perms: "&c[FunctionalServerControl] &7У Вас недостатоно прав использовать флаг &4%1$f"
+  unsafe-ban-success: "&c[FunctionalServerControl] &eВы заблокировали &6%1$f &eаккаунтов!"
+  unsafe-action-confirm: "&c[FunctionalServerControl] &7Подтвердите Ваше дейтвие введя команду &c/%1$f"
+  unsafe-action-confirm-1: "&c[FunctionalServerControl] &7Подтвердите Ваше дейтвие введя команду еще раз"
+  unsafe-ban-cached-notify: "&c[FunctionalServerControl] &7Игроки, заблокированные таким способ были захешированы, у Вас есть возможно отменить это действие - &c/fb undo"
 
 commands:
 
   help:
-    - "&cFunctionalBans &7от &cALis &7версии &c%1$f"
+    - "&cFunctionalServerControl &7от &cALis &7версии &c%1$f"
     - "&4-> &c/fb reload &7- перезагружает конфигурацию плагина"
     - "&4-> &c/fb purge <тип> &7- очищает из памяти некоторые необязательный данные"
 
   reload:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Перезагружает определенные файлы плагина"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <тип>"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f settings"
-    done: "&c[FunctionalBans] &с%1$f &7успешно перезагружено"
-    unknown-type: "&c[FunctionalBans] &сНеизвестный тип &c%1$f"
-    failed: "&c[FunctionalBans] &7Не удалось перезагрузить &c%1$f"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Перезагружает определенные файлы плагина"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <тип>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f settings"
+    done: "&c[FunctionalServerControl] &с%1$f &7успешно перезагружено (потребовалось &c%2$f&7)"
+    unknown-type: "&c[FunctionalServerControl] &сНеизвестный тип &c%1$f"
+    failed: "&c[FunctionalServerControl] &7Не удалось перезагрузить &c%1$f"
 
   unban:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Снимает блокировку с указанного аккаунта"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Ошибочная блокировка"
-    player-not-banned: "&c[FunctionalBans] &7Игрок &c%1$f &7и так не заблокирован"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Снимает блокировку с указанного аккаунта"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Ошибочная блокировка"
+    player-not-banned: "&c[FunctionalServerControl] &7Игрок &c%1$f &7и так не заблокирован"
     broadcast-message:
       with-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f &7по причине: &c%3$f"
       without-reason: "Администратор &c%1$f &7снял блокировку с &c%2$f"
 
   fb-undo:
-    success: "&c[FunctionalBans] &7Действие отменено, &c%1$f &7аккаунтов %2$f"
-    nothing-to-undo: "&c[FunctionalBans] &7Вам нечего отменять."
+    success: "&c[FunctionalServerControl] &7Действие отменено, &c%1$f &7аккаунтов %2$f"
+    nothing-to-undo: "&c[FunctionalServerControl] &7Вам нечего отменять."
 
   ban:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует указанного игрока по указанной причине"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f {флаг} <игрок> {время} {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Блокирует указанного игрока по указанной причине"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f {флаг} <игрок> {время} {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нарушение правил сервера"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал аккаунт игрока &c%2$f &7по причине: &c%3$f"
-    target-bypass: "&c[FunctionalBans] &7Вы не можете заблокировать данного игрока"
+    ip-broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7по причине: &c%3$f"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете заблокировать данного игрока"
 
   ban-ip:
-    description: "&c[FunctionalBans] &7Описание команды &c%1$f&7: Блокирует указанный IP-адрес по указанной причине"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
+    description: "&c[FunctionalServerControl] &7Описание команды &c%1$f&7: Блокирует указанный IP-адрес по указанной причине"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нарушение правил сервера"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7по причине: &c%3$f"
 
   tempban:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует аккаунт указаного игрока на указанное время по указанной причине"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <время> {причина}"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Блокирует аккаунт указаного игрока на указанное время по указанной причине"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <время> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал аккаунт игрока &c%2$f &7на &c%3$f &7по причине: &c%4$f"
+    ip-broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7на &c%3$f &7по причине: &c%4$f"
 
   tempban-ip:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Блокирует аккаунт указанный IP-адрес на указанное время по указанной причине"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <время> {причина}"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Блокирует аккаунт указанный IP-адрес на указанное время по указанной причине"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <время> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7на &c%3$f &7по причине: &c%4$f"
 
 
   purge:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Очищает некоторые типы данных в плагине"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f cache"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <цель>"
-    confirm: "&c[FunctionalBans] &7Пожалуйста, подтвердите очистку введя команду еще раз."
-    unknown-type: "&c[FunctionalBans] &7Неизвестный тип очистки, доступные: &c%1$f"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Очищает некоторые типы данных в плагине"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f cache"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <цель>"
+    confirm: "&c[FunctionalServerControl] &7Пожалуйста, подтвердите очистку введя команду еще раз."
+    unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип очистки, доступные: &c%1$f"
     cache:
-      cleared: "&c[FunctionalBans] &7Кэш успешно очищен."
-      empty: "&c[FunctionalBans] &7Кэш уже пустой"
+      cleared: "&c[FunctionalServerControl] &7Кэш успешно очищен."
+      empty: "&c[FunctionalServerControl] &7Кэш уже пустой"
 
   kick:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis Нарушение правил сервера"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> {причина}"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нарушение правил сервера"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7выкинул игрока &c%2$f &7по причине: &c%3$f"
-    target-bypass: "&c[FunctionalBans] &7Вы не можете выкинуть данного игрока"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете выкинуть данного игрока"
 
   unbanall:
-    success: "&c[FunctionalBans] &7Вы разблокировали &c%1$f &7аккаунтов"
+    success: "&c[FunctionalServerControl] &7Вы разблокировали &c%1$f &7аккаунтов"
     broadcast-message: "&7Администратор &c%1$f &7разблокировал все аккаунты"
 
   kick-all:
-    success: "&c[FunctionalBans] &7Вы выкинули &c%1$f &7игроков с сервера"
+    success: "&c[FunctionalServerControl] &7Вы выкинули &c%1$f &7игроков с сервера"
 
   crazykick:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера с неадекватной причиной"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <игрок> <цвет>"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f ALis dark_red"
-    unknown-color: "&c[FunctionalBans] &7Неизвестный цвет &c%1$f"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера с неадекватной причиной"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <цвет>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis dark_red"
+    unknown-color: "&c[FunctionalServerControl] &7Неизвестный цвет &c%1$f"
 
   dupeip:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Контроль одинаковых IP-адресов на сервере"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <действие>"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f report"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Контроль одинаковых IP-адресов на сервере"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <действие>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f report"
     reports:
-      create-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав создавать репорты"
-      delete-no-perms: "&c[FunctionalBans] &7У Вас недостаточно прав удалять репорты"
-      report-preparing: "&c[FunctionalBans] &7Репорт готовится, это может занять время в зависимости от кол-ва онлайн игроков"
-      report-created: "&c[FunctionalBans] &7Репорт готов, вы можете просмотреть его &c/dupeip info &7(Через &c%1$f &7секунд он будет автоматичсески удален)"
-      report-not-found: "&c[FunctionalBans] &7Для начала создайте репорт, используя команду: &c/dupeip createreport"
-      nothing-to-delete: "&c[FunctionalBans] &7Не найдено репортов для удаления"
-      report-deleted: "&c[FunctionalBans] &7Предыдущий репорт удален"
-      similar-ips-not-found: "&c[FunctionalBans] &7Похожих IP-адресов не найдено, удаляю репорт."
-      exists: "&c[FunctionalBans] &7Чтобы создать новый репорт, для начала удалите старый: &c/dupeip deletereport"
-      dupeips-kicked: "&c[FunctionalBans] &7Аккаунты с совпадающими IP-адресами были кикнуты(Всего: %1$f)"
+      create-no-perms: "&c[FunctionalServerControl] &7У Вас недостаточно прав создавать репорты"
+      delete-no-perms: "&c[FunctionalServerControl] &7У Вас недостаточно прав удалять репорты"
+      report-preparing: "&c[FunctionalServerControl] &7Репорт готовится, это может занять время в зависимости от кол-ва онлайн игроков"
+      report-created: "&c[FunctionalServerControl] &7Репорт готов, вы можете просмотреть его &c/dupeip info &7(Через &c%1$f &7секунд он будет автоматичсески удален)"
+      report-not-found: "&c[FunctionalServerControl] &7Для начала создайте репорт, используя команду: &c/dupeip createreport"
+      nothing-to-delete: "&c[FunctionalServerControl] &7Не найдено репортов для удаления"
+      report-deleted: "&c[FunctionalServerControl] &7Предыдущий репорт удален"
+      similar-ips-not-found: "&c[FunctionalServerControl] &7Похожих IP-адресов не найдено, удаляю репорт."
+      exists: "&c[FunctionalServerControl] &7Чтобы создать новый репорт, для начала удалите старый: &c/dupeip deletereport"
+      dupeips-kicked: "&c[FunctionalServerControl] &7Аккаунты с совпадающими IP-адресами были кикнуты(Всего: %1$f)"
       report-format:
       - "&eРепорт создан в &c%1$f &eадминистратором &c%2$f"
       - "&eИнформация:"
       - "%3$f"
 
+  mute:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Блокирует доступ к чату указанному игроку"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {время} {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нецензурная лексика"
+    broadcast-message: "&7Администратор &c%1$f &7заткнул игрока &c%2$f &7по причине: &c%3$f"
+    ip-broadcast-message: "&7Администратор &c%1$f &7заткнул IP-адрес &c%2$f &7по причине: &c%3$f"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете заткнуть данного игрока"
+
+  muteip:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Блокирует доступ к чату игрокам с указанным IP-адресом"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {время} {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нецензурная лексика"
+    broadcast-message: "&7Администратор &c%1$f &7заткнул IP &c%2$f &7по причине: &c%3$f"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете заткнуть данного игрока"
+
+  tempmute:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Временно блокирует доступ к чату указанному игроку"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <время> {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нецензурная лексика"
+    broadcast-message: "&7Администратор &c%1$f &7временно заткнул игрока &c%2$f &7на &c%3$f &7по причине: &c%4$f"
+    ip-broadcast-message: "&7Администратор &c%1$f &7временно заткнул IP-адрес &c%2$f &7на &c%3$f &7по причине: &c%4$f"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете заткнуть данного игрока"
+
+  tempmuteip:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Временно блокирует доступ к чату игрокам с указанным IP-адресом"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <время> {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Нецензурная лексика"
+    broadcast-message: "&7Администратор &c%1$f &7временно заткнул игрока &c%2$f &7на &c%3$f &7по причине: &c%4$f"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете заткнуть данного игрока"
+
+  unmute:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Снимает мут с указанного аккаунта"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis Ошибочный мут"
+    player-not-muted: "&c[FunctionalServerControl] &7Игрок &c%1$f &7и так не заблокирован"
+    broadcast-message:
+      with-reason: "Администратор &c%1$f &7снял мут с &c%2$f &7по причине: &c%3$f"
+      without-reason: "Администратор &c%1$f &7снял мут с &c%2$f"
+
+  unmuteall:
+    success: "&c[FunctionalServerControl] &7Вы размутили &c%1$f &7аккаунтов"
+    broadcast-message: "&7Администратор &c%1$f &7размутил все аккаунты"
+
   cheatcheck:
-    description: "&c[FunctionalBans] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"
-    usage: "&c[FunctionalBans] &7Использование: &c/%1$f <start/stop/confirm/refute> <игрок> {время} {причина}"
-    example: "&c[FunctionalBans] &7Пример: &c/%1$f start ALis 5min Подозрение в использовании чита KillAura"
-    unknown-time: "&c[FunctionalBans] &7Похоже &c%1$f &7не является допустимым временным значением, попробуйте например &c10s &7или просто &c10"
-    unknown-subcommand: "&c[FunctionalBans] &7Неизвестный аргумент или не полная команда, используйте &c/cheatcheck &7для получения помощи."
-    player-already-checking: "&c[FunctionalBans] &7Данный игрок уже находится на проверке."
-    player-not-checking-now: "&c[FunctionalBans] &7Данный игрок не находится на проверке."
-    check-stopped: "&c[FunctionalBans] &7Проверка игрока &c%1$f &7завершена!"
-    not-your-player: "&c[FunctionalBans] &7Данного игрока проверяете не Вы!"
-    target-bypass: "&c[FunctionalBans] &7Вы не можете вызвать данного игрока на проверку!"
-    success: "&c[FunctionalBans] &7Вы вызвали игрока &c%1$f &7на проверку."
-    target-quit: "&c[FunctionalBans] &7Игрок, которого вы проверяли, покинул игру!"
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <start/stop/confirm/refute> <игрок> {время} {причина}"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f start ALis 5min Подозрение в использовании чита KillAura"
+    unknown-time: "&c[FunctionalServerControl] &7Похоже &c%1$f &7не является допустимым временным значением, попробуйте например &c10s &7или просто &c10"
+    unknown-subcommand: "&c[FunctionalServerControl] &7Неизвестный аргумент &c%1$f&7, используйте &c/cheatcheck &7для получения помощи."
+    player-already-checking: "&c[FunctionalServerControl] &7Данный игрок уже находится на проверке."
+    player-not-checking-now: "&c[FunctionalServerControl] &7Данный игрок не находится на проверке."
+    check-stopped: "&c[FunctionalServerControl] &7Проверка игрока &c%1$f &7завершена!"
+    not-your-player: "&c[FunctionalServerControl] &7Данного игрока проверяете не Вы!"
+    target-bypass: "&c[FunctionalServerControl] &7Вы не можете вызвать данного игрока на проверку!"
+    success: "&c[FunctionalServerControl] &7Вы вызвали игрока &c%1$f &7на проверку."
+    target-quit: "&c[FunctionalServerControl] &7Игрок, которого вы проверяли, покинул игру!"
     chat-message-on-start: "&eАдминистратор &c%1$f &eвызвал Вас на проверку на читы \nПричина вызова: &c%2$f \nУ Вас &c%3$f секунд &eчтобы оправдаться"
     chat-message-on-stop: "&eПроверка завершена, можете продолжить Вашу игру!"
     actionbar-message: "&eУ Вас осталось &c%1$f&e!"

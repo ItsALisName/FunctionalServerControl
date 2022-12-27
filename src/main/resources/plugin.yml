@@ -1,6 +1,6 @@
-name: FunctionalBans
+name: FunctionalServerControl
 version: '${project.version}'
-main: by.alis.functionalbans.spigot.FunctionalBansSpigot
+main: by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot
 api-version: 1.13
 authors: [ ALis ]
 description: Система блокировок аккаунтов
@@ -8,28 +8,26 @@ website: https://vk.com/alphatwo
 softdepend: [Vault, LuckPerms, ProtocolLib]
 commands:
   kick:
-    description: The main command for kicking the specified players
-  functionalbans:
-    aliases: [fb, fbans, funcbans]
-    description: The main command of the plugin
+  functionalservercontrol:
+    aliases: [fsc, fscontrol]
   ban:
-    aliases: [permanentban]
-    description: The main command for blocking the specified players
   tempban:
     aliases: [temporaryban]
-    description: Basic command for temporarily blocking accounts
   kickall:
-    description: Kicks all players from the server
   unban:
-    description: Command to unban an account
   unbanall:
-    description: Unbans all banned accounts
   crazykick:
-    description: Throws a player with hieroglyphs to full screen
     aliases: [ckick]
   dupeip:
-    description: dupeip
   cheatcheck:
     aliases: [ccheck]
-  test:
-    description: test
+  tempbanip:
+    aliases: [temporarybanip]
+  banip:
+  mute:
+  tempmute:
+    aliases: [temporarymute]
+  unmute:
+  muteip:
+  tempmuteip:
+  unmuteall:
