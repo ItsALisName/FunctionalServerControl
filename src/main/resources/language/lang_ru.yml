@@ -116,7 +116,7 @@ other:
     ban-ip: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
     mute: "&c[FunctionalServerControl] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
     client:
-      player-brand-notify: "&c[FunctionalServerControl] &7Игрок &c%1$f &7зашел на сервер используя клиент: &c%2$f"
+      player-brand-notify: "&c[FunctionalServerControl] &7Игрок &c%1$f &7зашел на сервер используя клиент: &c%2$f&7, (Версия: &c%3$f&7)"
       world-downloader: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался зайти используя &cWorldDownloader"
 
 unsafe-actions:

@@ -88,7 +88,7 @@ public class CheatCheckerManager {
             initiatorName = initiator.getName();
         }
 
-        if(player.hasPermission("functionalservercontrol.cheat-check.bypass") && !initiator.hasPermission("functionalservercontrol.bypass-break")) {
+        if(player.hasPermission("functionalservercontrol.cheatcheck.bypass") && !initiator.hasPermission("functionalservercontrol.bypass-break")) {
             initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.target-bypass")));
             return;
         }
@@ -121,7 +121,7 @@ public class CheatCheckerManager {
                 TemporaryCache.unsetCheckingPlayersNames(player.getName());
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.check-stopped").replace("%1$f", player.getPlayerListName())));
             } else {
-                if(!initiator.hasPermission("functionalservercontrol.cheat-check.other")) {
+                if(!initiator.hasPermission("functionalservercontrol.cheatcheck.other")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.not-your-player")));
                     return;
                 }
@@ -163,7 +163,7 @@ public class CheatCheckerManager {
         if(isPlayerChecking(player)) {
 
             if(getCheckingCheatsPlayers().getInitiatorsAndHisPlayers().get(player) != initiator) {
-                if(!initiator.hasPermission("functionalservercontrol.cheat-check.other")) {
+                if(!initiator.hasPermission("functionalservercontrol.cheatcheck.other")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.not-your-player")));
                     return;
                 }
@@ -187,7 +187,7 @@ public class CheatCheckerManager {
         if(isPlayerChecking(player)) {
 
             if(getCheckingCheatsPlayers().getInitiatorsAndHisPlayers().get(player) != initiator) {
-                if(!initiator.hasPermission("functionalservercontrol.cheat-check.other")) {
+                if(!initiator.hasPermission("functionalservercontrol.cheatcheck.other")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.not-your-player")));
                     return;
                 }

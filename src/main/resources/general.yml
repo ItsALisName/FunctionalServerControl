@@ -54,7 +54,7 @@ plugin-settings:
   ##############################################################################
   #                           Action Storage Settings                          #
   ##############################################################################
-  history-settings:
+  history-settings: #Not work now
 
     ##############################################################################
     #                         Is action recording enabled?                       #
@@ -62,7 +62,7 @@ plugin-settings:
     enabled: true
 
     ##############################################################################
-    #                 Do save the history after server reboot?                   #
+    #                 Do save the history after server reload?                   #
     ##############################################################################
     force-save: false
 

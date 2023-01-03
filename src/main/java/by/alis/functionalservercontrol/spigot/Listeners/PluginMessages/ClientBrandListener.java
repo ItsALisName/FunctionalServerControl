@@ -40,9 +40,14 @@ public class ClientBrandListener implements PluginMessageListener {
                     return;
                 }
             }
+            PlayerManager playerManager = new PlayerManager();
             if(getConfigSettings().isAnnounceConsoleAboutBrand()) {
-                PlayerManager playerManager = new PlayerManager();
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", playerManager.getPlayerMinecraftVersion(player).toString));
+            }
+            for(Player admin : Bukkit.getOnlinePlayers()) {
+                if(admin.hasPermission("functionalservercontrol.notification.clients")) {
+                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", playerManager.getPlayerMinecraftVersion(player).toString));
+                }
             }
             TemporaryCache.setClientBrands(player, clientName);
         } catch (IOException ignored) {

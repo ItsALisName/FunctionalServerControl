@@ -23,7 +23,6 @@ public class FileManager {
     protected File langFileEN;
     protected FileConfiguration langEN;
     protected File sqlFile;
-    protected File helpFile;
     protected File commandLimiterFile;
     protected FileConfiguration commandLimiterConfig;
 
@@ -37,7 +36,6 @@ public class FileManager {
         this.langFileRU = new File("plugins/FunctionalServerControl/language/", "lang_ru.yml");
         this.langRU = YamlConfiguration.loadConfiguration(this.langFileRU);
         this.sqlFile = new File("plugins/FunctionalServerControl/", "sqlite.db");
-        this.helpFile = new File("plugins/FunctionalServerControl/", "about.txt");
         this.langFileEN = new File("plugins/FunctionalServerControl/language/", "lang_en.yml");
         this.langEN = YamlConfiguration.loadConfiguration(this.langFileEN);
         this.commandLimiterFile = new File("plugins/FunctionalServerControl/", "commands-limiter.yml");
@@ -61,10 +59,6 @@ public class FileManager {
 
         if(!this.sqlFile.exists()) {
             FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("sqlite.db", false);
-        }
-
-        if(!this.helpFile.exists()) {
-            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("about.txt", false);
         }
 
         if(!this.commandLimiterFile.exists()) {
