@@ -65,10 +65,10 @@ public enum ProtocolVersions {
     V19_3("1.19.3"),
     UNKNOWN("Unknown");
 
-    public final String v;
+    public final String toString;
 
     ProtocolVersions(String name) {
-        this.v = name;
+        this.toString = name;
     }
 
 }

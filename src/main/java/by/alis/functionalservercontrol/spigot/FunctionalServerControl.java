@@ -15,7 +15,6 @@ import by.alis.functionalservercontrol.spigot.Listeners.Old.TabCompleteListener;
 import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.ClientBrandListener;
 import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.WorldDownloaderChannelListener;
 import by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners.PacketCommandsListener;
-import by.alis.functionalservercontrol.spigot.Managers.CommandsRegistrationManager;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileManager;
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
@@ -45,9 +44,9 @@ public final class FunctionalServerControl extends JavaPlugin {
     @Override
     public void onEnable() {
         if(OtherUtils.isSuppotedVersion(getServer())) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).v + " server version &a(Supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).toString + " server version &a(Supported)"));
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).v + " server version &c(Not supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).toString + " server version &c(Not supported)"));
             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Disabling..."));
             Bukkit.getPluginManager().disablePlugin(this);
             return;

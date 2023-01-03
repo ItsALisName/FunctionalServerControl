@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners.PluginMessages;
 
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -40,7 +41,8 @@ public class ClientBrandListener implements PluginMessageListener {
                 }
             }
             if(getConfigSettings().isAnnounceConsoleAboutBrand()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName));
+                PlayerManager playerManager = new PlayerManager();
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", playerManager.getPlayerMinecraftVersion(player).toString));
             }
             TemporaryCache.setClientBrands(player, clientName);
         } catch (IOException ignored) {

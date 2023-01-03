@@ -48,7 +48,7 @@ public class GetVersionCommand implements CommandExecutor {
                 sender.sendMessage(setColors(
                         getFileAccessor().getLang().getString("commands.getversion.success")
                                 .replace("%1$f", target.getPlayerListName())
-                                .replace("%2$f", playerManager.getPlayerMinecraftVersion(target).v)
+                                .replace("%2$f", playerManager.getPlayerMinecraftVersion(target).toString)
                 ));
             });
         } else {
