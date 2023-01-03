@@ -1,18 +1,25 @@
 package by.alis.functionalservercontrol.spigot;
 
+import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.L4JFilter;
-import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.Language;
 import by.alis.functionalservercontrol.spigot.Additional.Logger.LogWriter;
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Metrics;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.*;
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
 import by.alis.functionalservercontrol.spigot.Listeners.*;
-import by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners.PacketTabCompleteListener;
+import by.alis.functionalservercontrol.spigot.Listeners.Old.OldAsyncChatListener;
+import by.alis.functionalservercontrol.spigot.Listeners.Old.PlayerItemPickupEvent;
+import by.alis.functionalservercontrol.spigot.Listeners.Old.TabCompleteListener;
+import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.ClientBrandListener;
+import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.WorldDownloaderChannelListener;
+import by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners.PacketCommandsListener;
 import by.alis.functionalservercontrol.spigot.Managers.CommandsRegistrationManager;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileManager;
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +29,7 @@ import static by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.St
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.getProtocolLibManager;
 
 /**
@@ -30,7 +37,7 @@ import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.getPr
  * <p>
  * Author ALis
  */
-public final class FunctionalServerControlSpigot extends JavaPlugin {
+public final class FunctionalServerControl extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final LogWriter writer = new LogWriter();
     ConsoleFilterCore consoleFilterCore;
@@ -38,13 +45,17 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
     @Override
     public void onEnable() {
         if(OtherUtils.isSuppotedVersion(getServer())) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerPackageName(getServer()) + " server version &a(Supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).v + " server version &a(Supported)"));
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerPackageName(getServer()) + " server version &c(Not supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).v + " server version &c(Not supported)"));
             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Disabling..."));
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+
+        //Plugin Metrics
+        new Metrics(this, 17278);
+        //Plugin Metrics
 
         //Creating files if not exists
         this.fileManager.initializeAndCreateFilesIfNotExists();
@@ -54,6 +65,7 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
         StaticSettingsAccessor.getConfigSettings().loadConfigSettings();
         StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
         StaticSettingsAccessor.getLanguage().loadLanguage();
+        StaticSettingsAccessor.getCommandLimiterSettings().loadCommandLimiterSettings();
         //Settings initializer
 
         //Bases functions
@@ -66,12 +78,11 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
         Expansions.getVaultManager().setupVaultPermissions();
         Expansions.getLuckPermsManager().setupLuckPerms();
         Expansions.getProtocolLibManager().setupProtocolLib();
+        Expansions.getViaVersionManager().setupViaVersion();
         //Expansions
 
 
         //Commands registering
-        CommandsRegistrationManager.registerCommand(this, new Test(this), new String[]{"test"}, "", "");
-        //new Test(this);
         new KickCommand(this);
         new BanCommand(this);
         new FunctionalServerControlCommand(this);
@@ -90,6 +101,8 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
         new TempMuteIpCommand(this);
         new UnmuteCommand(this);
         new UnmuteallCommand(this);
+        new GetVersionCommand(this);
+        new GetClientCommand(this);
         //Commands registering
 
         //Loaders
@@ -98,11 +111,15 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
         //Loaders
 
 
-        //Events registering
+        //Listeners registering
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new QuitListener(), this);
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
-            Bukkit.getPluginManager().registerEvents(new CommandSendListener(), this);
+            Bukkit.getPluginManager().registerEvents(new ServerSendCommandsListener(), this);
+        } else {
+            if(getProtocolLibManager().isProtocolLibSetuped()) {
+                new PacketCommandsListener(this).onTabComplete();
+            }
         }
         Bukkit.getPluginManager().registerEvents(new NullPlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new AsyncJoinListener(), this);
@@ -111,18 +128,29 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntityDamagesListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerMovingListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerCommandsListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerItemDropPickupListener(), this);
+        if(OtherUtils.isClassExists("org.bukkit.event.entity.EntityPickupItemEvent")) {
+            Bukkit.getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
+        } else {
+            Bukkit.getPluginManager().registerEvents(new PlayerItemPickupEvent(), this);
+        }
+        Bukkit.getPluginManager().registerEvents(new PlayerDropItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new ConsoleSendCommandListener(), this);
         Bukkit.getPluginManager().registerEvents(new RemoteCommandsListener(), this);
-        AsyncChatListener chatListener = new AsyncChatListener();
-        Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, getConfigSettings().getChatListenerPriority(), chatListener, this, true);
-        //Events registering
-
-        //Packet events registering
-        if(getProtocolLibManager().isProtocolLibSetuped()) {
-            new PacketTabCompleteListener(this).onTabComplete();
+        if(OtherUtils.isClassExists("org.bukkit.event.player.AsyncPlayerChatEvent")) {
+            OldAsyncChatListener chatListener = new OldAsyncChatListener();
+            Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, getConfigSettings().getChatListenerPriority(), chatListener, this, true);
+        } else {
+            AsyncChatListener asyncChatListener = new AsyncChatListener();
+            Bukkit.getPluginManager().registerEvent(AsyncChatEvent.class, asyncChatListener, getConfigSettings().getChatListenerPriority(), asyncChatListener, this, true);
         }
-        //Packet events registering
+        if(OtherUtils.isClassExists("com.destroystokyo.paper.event.server.AsyncTabCompleteEvent")) {
+            Bukkit.getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
+        } else {
+            Bukkit.getPluginManager().registerEvents(new TabCompleteListener(), this);
+        }
+        //Listeners registering
+
+        this.registerPluginChannels();
 
         //Console filters
         this.writer.createLogFile();
@@ -136,11 +164,36 @@ public final class FunctionalServerControlSpigot extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.unregisterPluginChannels();
         CooldownsManager.saveCooldowns();
     }
 
     private ConsoleFilterCore getConsoleFilterCore() {
         return consoleFilterCore;
+    }
+
+    private void registerPluginChannels() {
+        if (OtherUtils.getServerVersion(this.getServer()).ordinal() < ProtocolVersions.V13.ordinal()) {
+            getServer().getMessenger().registerIncomingPluginChannel(this, "MC|Brand", new ClientBrandListener());
+            getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new WorldDownloaderChannelListener());
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
+        } else {
+            getServer().getMessenger().registerIncomingPluginChannel(this, "minecraft:brand", new ClientBrandListener());
+            getServer().getMessenger().registerIncomingPluginChannel(this, "wdl:init", new WorldDownloaderChannelListener());
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "wdl:control");
+        }
+    }
+
+    private void unregisterPluginChannels() {
+        if (OtherUtils.getServerVersion(this.getServer()).ordinal() < ProtocolVersions.V13.ordinal()) {
+            getServer().getMessenger().unregisterIncomingPluginChannel(this, "WDL|INIT");
+            getServer().getMessenger().unregisterOutgoingPluginChannel(this, "WDL|CONTROL");
+            getServer().getMessenger().unregisterIncomingPluginChannel(this, "MC|Brand");
+        } else {
+            getServer().getMessenger().unregisterIncomingPluginChannel(this, "wdl:init");
+            getServer().getMessenger().unregisterOutgoingPluginChannel(this, "wdl:control");
+            getServer().getMessenger().unregisterOutgoingPluginChannel(this, "minecraft:brand");
+        }
     }
 
 }

@@ -8,14 +8,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
@@ -375,7 +373,7 @@ public class UnmuteManager {
         }
     }
 
-    public void preformGlobalUnmute(CommandSender initiator, boolean announceUnmute) {
+    public void preformGlobalUnmute(@Nullable CommandSender initiator, @Nullable boolean announceUnmute) {
 
         String initiatorName = null;
         if(initiator instanceof Player) {

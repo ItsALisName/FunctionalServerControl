@@ -2,11 +2,11 @@ package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.API.Enums.StorageType;
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.DupeIpTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.MuteGlobalTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.PurgerTask;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -15,7 +15,7 @@ import org.bukkit.event.EventPriority;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
 
@@ -37,14 +37,31 @@ public class GeneralConfigSettings {
     private boolean isLessInformation = false;
     private boolean hideMainCommand = false;
     private boolean showExamples = true;
+    private boolean announceConsoleAboutBrand = false;
     private Set<String> timeRestrictionGroups = new HashSet<>();
+
+    //History settings start
+    private boolean isHistoryRecordingEnabled;
+    private boolean isHistoryForceSave;
+    private int maxHistorySize;
+    //History settings end
+
+    //API settings start
     private boolean isApiEnabled = true;
     private boolean isApiProtectedByPassword = false;
+    //API settings end
     private boolean isProhibitYourselfInteraction = false;
+
+    //Notification settings start
     private boolean isConsoleNotification = true;
     private boolean isPlayersNotification = true;
+    //Notification settings end
+
+    //Cooldowns settings start
     private boolean isCooldownsEnabled = false;
     private boolean isSaveCooldowns = false;
+    //Cooldowns settings end
+
     private StorageType storageType = StorageType.SQLITE;
     private boolean isAllowedUnbanWithoutReason = true;
     private String banTimeExpired = "The Ban time has expired";
@@ -62,6 +79,8 @@ public class GeneralConfigSettings {
 
     private List<String> disabledCommandsWhenMuted = new ArrayList<>();
     private boolean sendActionbarWhileMuted = true;
+    private boolean blockWorldDownloader = true;
+    private List<String> actionsOnWDL = new ArrayList<>();
 
     private boolean isCheatCheckFunctionEnabled = true;
     private boolean isPreventBlockPlaceDuringCheck;
@@ -104,7 +123,80 @@ public class GeneralConfigSettings {
     private int dupeIpTimerDelay = 30;
     private boolean nickFormatControlEnabled = false;
 
-    private List<String> blockedNickFormats = new ArrayList<>();
+    private boolean blockVanilla = false;
+    private final List<String> vanillaActions = new ArrayList<>();
+    private boolean blockForge = false;
+    private List<String> forgeActions = new ArrayList<>();
+
+    private final List<String> blockedNickFormats = new ArrayList<>();
+
+
+    public boolean isAnnounceConsoleAboutBrand() {
+        return announceConsoleAboutBrand;
+    }
+    private void setAnnounceConsoleAboutBrand(boolean announceConsoleAboutBrand) {
+        this.announceConsoleAboutBrand = announceConsoleAboutBrand;
+    }
+
+    public boolean isBlockVanilla() {
+        return blockVanilla;
+    }
+    public List<String> getVanillaActions() {
+        return vanillaActions;
+    }
+    private void setBlockVanilla(boolean blockVanilla) {
+        this.blockVanilla = blockVanilla;
+    }
+    private void setVanillaActions(List<String> vanillaActions) {
+        this.vanillaActions.clear();
+        this.vanillaActions.addAll(vanillaActions);
+    }
+    public boolean isBlockForge() {
+        return blockForge;
+    }
+    private void setBlockForge(boolean blockForge) {
+        this.blockForge = blockForge;
+    }
+    public List<String> getForgeActions() {
+        return forgeActions;
+    }
+    private void setForgeActions(List<String> forgeActions) {
+        this.forgeActions.clear();
+        this.forgeActions.addAll(forgeActions);
+    }
+
+    public boolean isBlockWorldDownloader() {
+        return blockWorldDownloader;
+    }
+    private void setBlockWorldDownloader(boolean blockWorldDownloader) {
+        this.blockWorldDownloader = blockWorldDownloader;
+    }
+    public List<String> getActionsOnWDL() {
+        return actionsOnWDL;
+    }
+    private void setActionsOnWDL(List<String> actionsOnWDL) {
+        this.actionsOnWDL.clear();
+        this.actionsOnWDL.addAll(actionsOnWDL);
+    }
+
+    public boolean isHistoryRecordingEnabled() {
+        return isHistoryRecordingEnabled;
+    }
+    public boolean isHistoryForceSave() {
+        return isHistoryForceSave;
+    }
+    public int getMaxHistorySize() {
+        return maxHistorySize;
+    }
+    private void setHistoryRecordingEnabled(boolean historyRecordingEnabled) {
+        isHistoryRecordingEnabled = historyRecordingEnabled;
+    }
+    private void setHistoryForceSave(boolean historyForceSave) {
+        isHistoryForceSave = historyForceSave;
+    }
+    private void setMaxHistorySize(int maxHistorySize) {
+        this.maxHistorySize = maxHistorySize;
+    }
 
     public boolean isServerSupportsHoverEvents() {
         return serverSupportsHoverEvents;
@@ -558,6 +650,7 @@ public class GeneralConfigSettings {
         return supportedHoverEvents;
     }
 
+
     public void loadConfigSettings() {
         setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
 
@@ -603,7 +696,7 @@ public class GeneralConfigSettings {
             setSupportedHoverEvents("ADVENTURE");
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
                 case "sqlite": {
                     setStorageType(StorageType.SQLITE);
@@ -633,35 +726,44 @@ public class GeneralConfigSettings {
                 }
             }
 
+            setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
+            if(isBlockWorldDownloader()) {
+                setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
+            }
             setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
             setMuteTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.mute-time-left"));
-
+            setHistoryRecordingEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.enabled"));
+            if(isHistoryRecordingEnabled()) {
+                setHistoryForceSave(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.force-save"));
+                setMaxHistorySize(getFileAccessor().getGeneralConfig().getInt("plugin-settings.history-settings.maximum-records"));
+            }
             setGlobalLanguage(getFileAccessor().getGeneralConfig().getString("plugin-settings.global-language"));
-
             setDisabledCommandsWhenMuted(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.disabled-commands-when-muted"), "[", "]").split(", ")));
-
             setSendTitleWhenMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-muted"));
             setSendTitleWhenUnmuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-unmuted"));
-
             setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
             setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
             CooldownsManager.setupCooldowns();
-
             setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
-
             setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
             if(isIpsControlEnabled()) {
                 setNotifyConsoleWhenIPBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
                 setBlockedIps(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
             }
-
             setLoggerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.logger.enabled"));
             if(isLoggerEnabled()) {
                 setLogFormat(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.log-format"));
                 setMessagesToLog(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.messages-to-log"), "[", "]").split(", ")));
             }
-
+            setBlockVanilla(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
+            if(isBlockVanilla()) {
+                setVanillaActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
+            }
+            setBlockForge(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
+            if(isBlockForge()) {
+                setForgeActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+            }
             if(isNicksControlEnabled()) {
                 switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
                     case "equals": {
@@ -684,7 +786,6 @@ public class GeneralConfigSettings {
             }
 
             setSendActionbarWhileMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.action-bar-settings.send-while-muted"));
-            
             setDupeIdModeEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.dupe-ip.enabled"));
             if(isDupeIdModeEnabled()) {
                 setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
@@ -704,7 +805,6 @@ public class GeneralConfigSettings {
                 }
                 setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
             }
-
             setOldServerVersion(OtherUtils.isOldServerVersion());
             setProhibitYourselfInteraction(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
             setBanAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
@@ -721,17 +821,15 @@ public class GeneralConfigSettings {
             setConsoleNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
             setPlayersNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
             setPossibleGroups(getFileAccessor().getGeneralConfig().getConfigurationSection("plugin-settings.time-settings.per-groups").getKeys(false));
-
+            setAnnounceConsoleAboutBrand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.announce-console-about-brand"));
             setNickFormatControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.nick-format-control.enabled"));
             if(isNickFormatControlEnabled()) {
                 setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
             }
-
             setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
             if(isAutoPurgerEnabled()) {
                 setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
             }
-
             setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
             if(isCheatCheckFunctionEnabled()) {
                 setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
@@ -752,7 +850,6 @@ public class GeneralConfigSettings {
                 setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
                 setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
             }
-
             setAllowedUseRamAsContainer(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
             if(isAllowedUseRamAsContainer()) {
                 if(!isLessInformation()) {
@@ -765,34 +862,27 @@ public class GeneralConfigSettings {
                     Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl | Plugin loading] RAM usage is prohibited, use direct access to the database!"));
                 }
             }
-
-
-
             setAnnounceWhenLogHided(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
-
             setApiEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.enabled"));
             if(!isLessInformation()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalServerControl | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalServerControl | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
             }
-
             setApiProtectedByPassword(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.password.enabled"));
             if(isApiEnabled()) {
                 if (!isLessInformation()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? "&a[FunctionalServerControl | API Loading] Password protection is set for API" : "&c[FunctionalServerControl | API Loading] Password protection is not installed for the API (This is not an error)"));
                 }
             }
-
             //Tasks
             if (isAutoPurgerEnabled()) {
                 if (getAutoPurgerDelay() > 5) {
-                    new PurgerTask().runTaskTimerAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), 0, getAutoPurgerDelay() * 20L);
+                    new PurgerTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getAutoPurgerDelay() * 20L);
                 }
             }
-
             if(isDupeIdModeEnabled()) {
-                new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), 0, getDupeIpTimerDelay() * 20L);        //Timers
+                new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getDupeIpTimerDelay() * 20L);        //Timers
             }
-            new MuteGlobalTask().runTaskTimerAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), 0, 20L);
+            new MuteGlobalTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             //Tasks
         });
         return;
@@ -830,23 +920,35 @@ public class GeneralConfigSettings {
         }
         setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
         setMuteTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.mute-time-left"));
-
+        setHistoryRecordingEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.enabled"));
+        if(isHistoryRecordingEnabled()) {
+            setHistoryForceSave(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.force-save"));
+            setMaxHistorySize(getFileAccessor().getGeneralConfig().getInt("plugin-settings.history-settings.maximum-records"));
+        }
+        setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
+        if(isBlockWorldDownloader()) {
+            setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
+        }
+        setBlockVanilla(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
+        if(isBlockVanilla()) {
+            setVanillaActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
+        }
+        setBlockForge(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
+        if(isBlockForge()) {
+            setForgeActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+        }
         setDisabledCommandsWhenMuted(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.disabled-commands-when-muted"), "[", "]").split(", ")));
-
         setSendTitleWhenMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-muted"));
         setSendTitleWhenUnmuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-unmuted"));
-
         setGlobalLanguage(getFileAccessor().getGeneralConfig().getString("plugin-settings.global-language"));
         setConsoleNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.console"));
         setPlayersNotification(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.players"));
         setProhibitYourselfInteraction(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
         StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
         StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
-
         setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
         setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
         CooldownsManager.setupCooldowns();
-
         setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
         if(isCheatCheckFunctionEnabled()) {
             setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
@@ -865,26 +967,21 @@ public class GeneralConfigSettings {
             setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
             setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
         }
-
         setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
         setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
-
         setNickFormatControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.nick-format-control.enabled"));
         if(isNickFormatControlEnabled()) {
             setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
         }
-
         setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
         if(isAutoPurgerEnabled()) {
             setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
         }
-
         setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
         if(isIpsControlEnabled()) {
             setNotifyConsoleWhenIPBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.notify-console"));
             setBlockedIps(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.blocked-ips"), "[", "]").split(", ")));
         }
-
         setDupeIdModeEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.dupe-ip.enabled"));
         if(isDupeIdModeEnabled()) {
             setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
@@ -904,7 +1001,6 @@ public class GeneralConfigSettings {
             }
             setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
         }
-
         if(isNicksControlEnabled()) {
             switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
                 case "equals": {
@@ -922,8 +1018,8 @@ public class GeneralConfigSettings {
                 }
             }
             setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
-
         }
+        setAnnounceConsoleAboutBrand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.announce-console-about-brand"));
         setSendActionbarWhileMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.action-bar-settings.send-while-muted"));
         setBanAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.bans-without-reason.allowed"));
         setKickAllowedWithoutReason(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.reason-settings.kick-without-reason.allowed"));

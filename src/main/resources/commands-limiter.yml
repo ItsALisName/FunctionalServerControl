@@ -1,0 +1,80 @@
+settings:
+  enabled: true
+  use-groups: false
+  modify-tab-completions: true
+
+  ##############################################################################
+  #       Settings for checking the command entered by the players             #
+  # "first_arg" - meaning that the command will be checked only by the         #
+  #   first argument                                                           #
+  # "all_args" - meaning that the fully entered command will be checked        #
+  ##############################################################################
+  commands-check-mode: "first_arg"
+
+blocked-commands:
+  syntax-commands:
+    block: true
+    deny-message: "&cСинтаксисные команды запрещено использовать"
+    whitelisted-syntax-commands:
+    - /your:commands
+
+  global:
+    deny-message: "&cДанная команда заблокирована"
+    use-as-whitelist: false
+    group:
+      default:
+      - /commands
+      - /to
+      moder:
+      - /be
+      - /blocked
+
+    ##############################################################################
+    #      Used if a plugin that supports groups is not installed on the         #
+    #       server (LuckPerms, etc.) or if "use-groups" is set to "false"        #
+    ##############################################################################
+    global:
+    - /command1
+    - /command2
+
+  per-world:
+    deny-message: "&cДанная команда запрещена в данном мире!"
+    use-as-whitelist: false
+    world1:
+      group:
+        default:
+        - /commands
+        - /to
+        moder:
+        - /be
+        - /blocked
+
+      ##############################################################################
+      #      Used if a plugin that supports groups is not installed on the         #
+      #       server (LuckPerms, etc.) or if "use-groups" is set to "false"        #
+      ##############################################################################
+      global:
+      - /command1
+      - /command2
+
+tab-completions:
+  ##############################################################################
+  #      If "true" then commands will be removed from the list of commands     #
+  #             displayed on the server commands for this player               #
+  #    On versions below 1.13, the plugin "ProtocolLib" is required to work    #
+  ##############################################################################
+  hide-fully: true
+  per-command:
+    group:
+      default:
+        some_command: [your, custom, completions]
+      moder:
+        another_command: [another, completions]
+
+    ##############################################################################
+    #      Used if a plugin that supports groups is not installed on the         #
+    #       server (LuckPerms, etc.) or if "use-groups" is set to "false"        #
+    ##############################################################################
+    global:
+      some_command: [your, custom, completions]
+

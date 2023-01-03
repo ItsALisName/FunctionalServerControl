@@ -179,8 +179,8 @@ public class TimeManager {
                 }
             }
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban")) {
-                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
+                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".ban")) {
+                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".ban").replace("|", ""));
                     return maxTime;
                 } else {
                     return getMaxPossibleBanPunishTime();
@@ -203,8 +203,8 @@ public class TimeManager {
                 }
             }
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".mute")) {
-                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".mute").replace("|", ""));
+                if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".mute")) {
+                    long maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".mute").replace("|", ""));
                     return maxTime;
                 } else {
                     return getMaxPossibleMutePunishTime();
@@ -224,7 +224,7 @@ public class TimeManager {
                 return this.convertToMillis(argTime) > maxTime;
             }
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".ban").replace("|", ""));
+                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".ban").replace("|", ""));
                 return this.convertToMillis(argTime) > maxTime;
             }
         }
@@ -239,7 +239,7 @@ public class TimeManager {
                 return convertToMillis(argTime) > maxTime;
             }
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()) + ".mute").replace("|", ""));
+                maxTime = this.convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player) + ".mute").replace("|", ""));
                 return convertToMillis(argTime) > maxTime;
             }
         }
@@ -255,7 +255,7 @@ public class TimeManager {
             }
         } else {
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
-                if (getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player, getConfigSettings().getPossibleGroups()))) {
+                if (getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getLuckPermsManager().getPlayerGroup(player))) {
                     return TimeRestrictionType.GROUP;
                 } else {
                     return TimeRestrictionType.DEFAULT;

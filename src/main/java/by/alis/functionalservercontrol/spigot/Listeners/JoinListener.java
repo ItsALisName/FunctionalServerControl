@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.TemporaryCache;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.DupeIpManager;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
 import org.bukkit.Bukkit;
@@ -18,7 +18,7 @@ public class JoinListener implements Listener {
     public void onPlayerJoinToServer(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         DupeIpManager.checkDupeIpOnJoin(player);
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
             getSQLiteManager().updateAllPlayers(player);
             TemporaryCache.setOnlinePlayerNames(player);

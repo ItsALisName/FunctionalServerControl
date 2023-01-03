@@ -1,12 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Managers.Bans;
 
 import by.alis.functionalservercontrol.API.Enums.BanType;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class BanContainerManager {
 

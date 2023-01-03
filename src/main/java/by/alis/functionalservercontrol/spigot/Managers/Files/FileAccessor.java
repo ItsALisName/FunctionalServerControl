@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Managers.Files;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -12,7 +12,7 @@ import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.S
 
 public class FileAccessor {
 
-    private FileManager fileManager = new FileManager();
+    private final FileManager fileManager = new FileManager();
 
     public FileConfiguration getGeneralConfig() {
         return this.fileManager.configuration;
@@ -35,8 +35,7 @@ public class FileAccessor {
 
     public void saveLang() throws IOException {
         this.fileManager.langRU.save(this.fileManager.langFileRU);
-        this.fileManager.langRU.save(this.fileManager.langFileEN);
-        this.fileManager.langRU.save(this.fileManager.langFileEN);
+        this.fileManager.langEN.save(this.fileManager.langFileEN);
     }
 
     public void reloadGeneralConfig() throws IOError {
@@ -45,12 +44,12 @@ public class FileAccessor {
 
     public void reloadLang() throws IOError {
         if(!this.fileManager.langFileRU.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_ru.yml", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_ru.yml", false);
             this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
         }
         this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
         if (!this.fileManager.langFileEN.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_en.yml", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_en.yml", false);
             this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
         }
         this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
@@ -61,4 +60,19 @@ public class FileAccessor {
         return this.fileManager.sqlFile;
     }
     //SQL_File
+
+    public FileConfiguration getCommandsLimiterConfig() {
+        return this.fileManager.commandLimiterConfig;
+    }
+
+    public void reloadCommandLimiterFile() {
+        this.fileManager.commandLimiterConfig = YamlConfiguration.loadConfiguration(this.fileManager.commandLimiterFile);
+    }
+
+    public void saveCommandLimiterFile() {
+        try {
+            this.fileManager.commandLimiterConfig.save(this.fileManager.commandLimiterFile);
+        } catch (IOException ignored) {}
+    }
+
 }

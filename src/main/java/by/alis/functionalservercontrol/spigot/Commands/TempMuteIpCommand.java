@@ -1,9 +1,9 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.TempMuteIpCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -15,14 +15,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class TempMuteIpCommand implements CommandExecutor {
     
-    FunctionalServerControlSpigot plugin;
-    public TempMuteIpCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public TempMuteIpCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("tempmuteip").setExecutor(this);
         plugin.getCommand("tempmuteip").setTabCompleter(new TempMuteIpCompleter());

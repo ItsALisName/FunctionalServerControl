@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileAccessor;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class CooldownsManager {
@@ -148,7 +148,7 @@ public class CooldownsManager {
     }
 
     public static void loadCooldowns() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(getConfigSettings().isSaveCooldowns()) {
                 cooldowns.clear();
                 for(String pac : getSQLiteManager().getPlayersAndCommandsFromCooldowns()) {
@@ -160,7 +160,7 @@ public class CooldownsManager {
     }
 
     public static void setupCooldowns() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             FileAccessor accessor = new FileAccessor();
             if (getConfigSettings().isCooldownsEnabled()) {
                 if (accessor.getGeneralConfig().contains("plugin-settings.cooldowns.command.ban") && OtherUtils.isNumber(accessor.getGeneralConfig().getString("plugin-settings.cooldowns.command.ban"))) {

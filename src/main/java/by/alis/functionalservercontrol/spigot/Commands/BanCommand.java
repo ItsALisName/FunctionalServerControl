@@ -1,10 +1,10 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.API.Enums.BanType;
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.Other.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.BanCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.BanManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
@@ -26,8 +26,8 @@ import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.g
  */
 public class BanCommand implements CommandExecutor {
 
-    FunctionalServerControlSpigot plugin;
-    public BanCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public BanCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("ban").setExecutor(this);
         plugin.getCommand("ban").setTabCompleter(new BanCompleter());

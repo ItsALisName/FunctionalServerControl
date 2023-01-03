@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Commands.Completers;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.TemporaryCache;
-import by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

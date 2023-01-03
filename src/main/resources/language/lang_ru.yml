@@ -91,6 +91,18 @@ other:
   blocked-ip-notify: "&c[FunctionalServerControl] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
   unknown-time: "&c[FunctionalServerControl] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
   player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
+  history-formats: ################################### ДОДЕЛАТЬ ####################################################
+    ban: "Администратор %1$f забанил игрока %2$f по причине %3$f"
+    banip: "Администратор %2$f забанил айпи %2$f по причине %3$f"
+    tempban: "Администратор %1$f забанил игрока %2$f на %3$f по причине: %4$f"
+    tempbanip: "Администратор %1$f забанил айпи %2$f на %3$f по причине: %4$f"
+    unban: "Администратор %1$f разблокировал %2$f по причине: %3$f"
+    mute: "Администратор %1$f заткнул игрока %2$f по причине: %3$f"
+    muteip: "Администратор %1$f заткнул айпи %2$f по причине: %3$f"
+    tempmute: "Администратор %1$f заткнул игрока %2$f на %3$f по причине: %4$f"
+    tempmuteip: "Администратор %1$f заткнул айпи %2$f на %3$f по причине: %4$f"
+    unmute: "Администратор %1$f размутил %2$f по причине: %4$f"
+    ################################### ДОДЕЛАТЬ ####################################################
   player-notifying:
     when-muted:
       expired: "&aВы снова можете писать в чат!"
@@ -115,6 +127,9 @@ other:
     ban: "&c[FunctionalServerControl] &7Заблокированный игрок &c%1$f &7попытался войти (Разблокировка через: &c%2$f&7)"
     ban-ip: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался войти но его IP-адрес(&c%2$f&7) заблокирован (Разблокировка через: &c%3$f&7)"
     mute: "&c[FunctionalServerControl] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
+    client:
+      player-brand-notify: "&c[FunctionalServerControl] &7Игрок &c%1$f &7зашел на сервер используя клиент: &c%2$f"
+      world-downloader: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался зайти используя &cWorldDownloader"
 
 unsafe-actions:
   unsafe-flag-no-perms: "&c[FunctionalServerControl] &7У Вас недостатоно прав использовать флаг &4%1$f"
@@ -128,7 +143,7 @@ commands:
   help:
     - "&cFunctionalServerControl &7от &cALis &7версии &c%1$f"
     - "&4-> &c/fb reload &7- перезагружает конфигурацию плагина"
-    - "&4-> &c/fb purge <тип> &7- очищает из памяти некоторые необязательный данные"
+    - "&4-> &c/fb purge <тип> &7- очищает из памяти некоторые необязательные данные"
 
   reload:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Перезагружает определенные файлы плагина"
@@ -271,6 +286,23 @@ commands:
   unmuteall:
     success: "&c[FunctionalServerControl] &7Вы размутили &c%1$f &7аккаунтов"
     broadcast-message: "&7Администратор &c%1$f &7размутил все аккаунты"
+
+  getinfo:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Дает информацию о айди/нике/uuid/айпи если имеется в базе"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <флаг> <значение>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f -ip 127.0.0.1"
+
+  getversion:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает версию, с которой играет указанный игрок"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis"
+    success: "&c[FunctionalServerControl] &7Игрок &c%1$f &7использует версию Minecraft &c%2$f"
+
+  getclient:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает название клиента, с которого играет указанный игрок"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок>"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis"
+    success: "&c[FunctionalServerControl] &7Игрок &c%1$f &7использует клиент Minecraft &c%2$f"
 
   cheatcheck:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"

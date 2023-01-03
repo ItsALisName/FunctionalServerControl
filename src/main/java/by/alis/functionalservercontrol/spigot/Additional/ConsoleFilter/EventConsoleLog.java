@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalservercontrol.API.Spigot.Events.deprecated.ConsoleLogOutEvent;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -33,7 +33,7 @@ public class EventConsoleLog implements Filter {
         if(consoleMessage == null) return Result.NEUTRAL;
         String[] message = {consoleMessage};
 
-            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class))) {
+            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
                 (new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -50,7 +50,7 @@ public class EventConsoleLog implements Filter {
                             cancel();
                         }
                     }
-                }).runTask(FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class));
+                }).runTask(FunctionalServerControl.getPlugin(FunctionalServerControl.class));
             }
         return Result.NEUTRAL;
     }

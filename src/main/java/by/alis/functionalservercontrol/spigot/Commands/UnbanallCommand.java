@@ -1,8 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.UnbanallCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class UnbanallCommand implements CommandExecutor {
 
-    FunctionalServerControlSpigot plugin;
-    public UnbanallCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public UnbanallCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("unbanall").setExecutor(this);
         plugin.getCommand("unbanall").setTabCompleter(new UnbanallCompleter());

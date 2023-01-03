@@ -1,8 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Additional.Logger;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 import org.bukkit.Bukkit;
 
@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class LogWriter {
 
@@ -23,7 +23,7 @@ public class LogWriter {
     private final File logFile = new File("plugins/FunctionalServerControl/logs/", "log_" + currentSession + ".log");;
 
     public void createLogFile() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(getConfigSettings().isLoggerEnabled()) {
                 try {
                     Files.createDirectories(Paths.get("plugins/FunctionalServerControl/logs/"));

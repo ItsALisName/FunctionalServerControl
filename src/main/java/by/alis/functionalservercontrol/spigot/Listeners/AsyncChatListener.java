@@ -3,10 +3,12 @@ package by.alis.functionalservercontrol.spigot.Listeners;
 import by.alis.functionalservercontrol.API.Enums.MuteType;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,14 +16,15 @@ import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManag
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
 
 public class AsyncChatListener implements Listener, EventExecutor {
+
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         if(isPlayerMuted(player)) {
             if(!event.isCancelled()) {
@@ -37,14 +40,14 @@ public class AsyncChatListener implements Listener, EventExecutor {
                     }
                     if (getConfigSettings().isConsoleNotification()) {
                         Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
+                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                         );
                     }
                     if (getConfigSettings().isPlayersNotification()) {
                         for (Player admin : Bukkit.getOnlinePlayers()) {
                             if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                 admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
+                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                 );
                             }
                         }
@@ -63,14 +66,14 @@ public class AsyncChatListener implements Listener, EventExecutor {
                             }
                             if (getConfigSettings().isConsoleNotification()) {
                                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
+                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                 );
                             }
                             if (getConfigSettings().isPlayersNotification()) {
                                 for (Player admin : Bukkit.getOnlinePlayers()) {
                                     if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                         admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
+                                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                         );
                                     }
                                 }
@@ -86,10 +89,11 @@ public class AsyncChatListener implements Listener, EventExecutor {
 
     @Override
     public void execute(@NotNull Listener listener, @NotNull Event event) {
-        if (listener == this && event instanceof AsyncPlayerChatEvent) {
-            if (((AsyncPlayerChatEvent)event).isCancelled())
+        if (listener == this && event instanceof AsyncChatEvent) {
+            if (((AsyncChatEvent)event).isCancelled())
                 return;
-            onPlayerChat((AsyncPlayerChatEvent)event);
+            onPlayerChat((AsyncChatEvent) event);
         }
     }
+
 }

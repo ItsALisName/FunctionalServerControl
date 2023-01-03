@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
@@ -21,7 +21,7 @@ public class Language {
 
 
     public void loadLanguage() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             titleWhenUnmuted = getFileAccessor().getLang().getString("other.title.when-unmuted.text").split("\\|");
             titleWhenMuted = getFileAccessor().getLang().getString("other.title.when-muted.text").split("\\|");
         });

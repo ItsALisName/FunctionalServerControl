@@ -51,6 +51,9 @@
 ##
 ##  -> functionalservercontrol.notification.ban - players with this permission receive a notification when
 ##  a banned player tries to join
+##
+##  -> functionalservercontrol.notification.clients -
+##
 ##  -> functionalservercontrol.cooldowns.bypass - players with this permission do not have a delay on
 ##  commands, even if it is enabled
 ##
@@ -123,3 +126,11 @@
 ##  -> functionalservercontrol.unmute -
 ##
 ##  -> functionalservercontrol.unmuteall -
+##
+##  -> functionalservercontrol.getversion -
+##
+##  -> functionalservercontrol.commands.bypass -
+##
+##  -> functionalservercontrol.tab-complete.bypass -
+##
+##  -> functionalservercontrol.getclient -

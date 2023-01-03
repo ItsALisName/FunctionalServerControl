@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +18,7 @@ public class EntityDamagesListener implements Listener {
             if(event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
                 Player player = (Player) event.getEntity();
                 Player damager = (Player) event.getDamager();
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                     if(getCheatCheckerManager().isPlayerChecking(damager)) {
                         if(getConfigSettings().isPreventIflictDamageDuringCheck()) event.setCancelled(true);
                         return;

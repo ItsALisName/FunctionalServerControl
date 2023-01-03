@@ -3,19 +3,19 @@ package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import org.bukkit.Bukkit;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getReplacedMessagesContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class ConsoleFilterHelper {
 
     private final List<String> functionalServerControlCommands = new ArrayList<>();
     private final String ISSUED_COMMAND_TEXT = "issued server command: ";
     private final String[] commands = {"/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
-            "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall"
+            "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall", "/getver", "/gv", "/getversion",
+            "getclient", "gc", "getc"
     };
 
     public boolean isFunctionalServerControlCommand(String consoleMessage) {

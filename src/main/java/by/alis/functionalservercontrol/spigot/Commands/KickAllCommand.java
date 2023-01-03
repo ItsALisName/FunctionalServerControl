@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Commands.Completers.KickAllCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Kick.KickManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
@@ -19,8 +19,8 @@ import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.g
  */
 public class KickAllCommand implements CommandExecutor {
 
-    FunctionalServerControlSpigot plugin;
-    public KickAllCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public KickAllCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("kickall").setExecutor(this);
         plugin.getCommand("kickall").setTabCompleter(new KickAllCompleter());

@@ -1,13 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class MuteContainerManager {
 

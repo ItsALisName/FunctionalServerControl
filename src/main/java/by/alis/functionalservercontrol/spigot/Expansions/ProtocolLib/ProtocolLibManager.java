@@ -6,7 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static org.bukkit.Bukkit.getServer;
 
 public class ProtocolLibManager {
@@ -22,17 +22,17 @@ public class ProtocolLibManager {
     public void setupProtocolLib() {
         if(isProtocolLibInstalled()) {
             if(!getConfigSettings().isLessInformation()){
-                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalBans -> ProtocolLib] ProtocolLib detected, connecting..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl -> ProtocolLib] ProtocolLib detected, connecting..."));
             }
             protocolManager = ProtocolLibrary.getProtocolManager();
             if(protocolManager != null) {
                 protocolLibSetuped = true;
                 if(!getConfigSettings().isLessInformation()){
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalBans -> ProtocolLib] Connection to ProtocolLib was successful."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl -> ProtocolLib] Connection to ProtocolLib was successful."));
                 }
             } else {
                 protocolLibSetuped = false;
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalBans -> ProtocolLib] Failed to connect to ProtocolLib"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl -> ProtocolLib] Failed to connect to ProtocolLib"));
             }
         }
     }

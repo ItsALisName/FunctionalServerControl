@@ -1,10 +1,10 @@
 package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
@@ -103,7 +103,7 @@ public class GlobalVariables {
     }
 
     public void loadGlobalVariables() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             try {
                 VAR_REPLACED_CONSOLE_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.console-name");
                 VAR_TIME_NEVER = getFileAccessor().getGeneralConfig().getString("global-variables.never");

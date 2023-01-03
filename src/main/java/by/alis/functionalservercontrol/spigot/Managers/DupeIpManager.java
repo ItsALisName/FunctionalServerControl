@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.TemporaryCache;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import java.util.Map;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
@@ -35,7 +35,7 @@ public class DupeIpManager {
      * @param player Player to be tested
      */
     public static void checkDupeIpOnJoin(Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(getConfigSettings().isDupeIdModeEnabled() && getConfigSettings().getDupeIpCheckMode().equalsIgnoreCase("join")) {
                 String joinedIp = player.getAddress().getAddress().getHostAddress();
                 List<Player> similarPlayers = new ArrayList<>();
@@ -50,7 +50,7 @@ public class DupeIpManager {
                 if(similarPlayers.size() > getConfigSettings().getMaxIpsPerSession()) {
                     for(Player similarPlayer : similarPlayers) {
                         if (!similarPlayer.hasPermission("functionalservercontrol.dupeip.bypass")) {
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), getConfigSettings().getDupeIpAction().replace("%1$f", similarPlayer.getName()));
                             });
                         }
@@ -64,7 +64,7 @@ public class DupeIpManager {
      * Asynchronously creates a report about similar IP addresses
      */
     public static void prepareDupeIpReport(@Nullable CommandSender initiator) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(initiator != null) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-preparing")));
             }
@@ -87,7 +87,7 @@ public class DupeIpManager {
                 getDupeIpReports().setReportInitiator(initiator instanceof Player ? ((Player) initiator).getPlayerListName() : getGlobalVariables().getConsoleVariableName());
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-created").replace("%1$f", String.valueOf(120))));
             }
-            new startRemoveTimer().runTaskLaterAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), 2400L);
+            new startRemoveTimer().runTaskLaterAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 2400L);
         });
     }
 

@@ -1,11 +1,11 @@
 name: FunctionalServerControl
 version: '${project.version}'
-main: by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot
+main: by.alis.functionalservercontrol.spigot.FunctionalServerControl
 api-version: 1.13
 authors: [ ALis ]
-description: Система блокировок аккаунтов
+description: Multifunctional control of the server and players
 website: https://vk.com/alphatwo
-softdepend: [Vault, LuckPerms, ProtocolLib]
+softdepend: [Vault, LuckPerms, ProtocolLib, ViaVersion, ProtocolSupport]
 commands:
   kick:
   functionalservercontrol:
@@ -31,3 +31,7 @@ commands:
   muteip:
   tempmuteip:
   unmuteall:
+  getversion:
+    aliases: [gv, getver]
+  getclient:
+    aliases: [gc, getc]

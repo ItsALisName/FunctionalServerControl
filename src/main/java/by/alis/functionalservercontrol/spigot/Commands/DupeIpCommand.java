@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Commands.Completers.DupeIpCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.DupeIpManager;
 import org.bukkit.Bukkit;
@@ -13,14 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class DupeIpCommand implements CommandExecutor {
 
-    FunctionalServerControlSpigot plugin;
-    public DupeIpCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public DupeIpCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("dupeip").setExecutor(this);
         plugin.getCommand("dupeip").setTabCompleter(new DupeIpCompleter());
@@ -84,7 +84,7 @@ public class DupeIpCommand implements CommandExecutor {
                         return true;
                     }
 
-                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                         String reportFormat = String.join("\n", getFileAccessor().getLang().getStringList("commands.dupeip.reports.report-format")).replace("%1$f", getDupeIpReports().getTime()).replace("%2$f", getDupeIpReports().getReportInitiator());
                         reportFormat = reportFormat
                                 .replace(

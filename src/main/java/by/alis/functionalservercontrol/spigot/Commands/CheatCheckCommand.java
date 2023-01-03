@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Commands.Completers.CheatCheckCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -20,8 +20,8 @@ public class CheatCheckCommand implements CommandExecutor {
 
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
 
-    FunctionalServerControlSpigot plugin;
-    public CheatCheckCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public CheatCheckCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("cheatcheck").setExecutor(this);
         plugin.getCommand("cheatcheck").setTabCompleter(new CheatCheckCompleter());

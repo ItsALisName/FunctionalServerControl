@@ -1,11 +1,10 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.GlobalVariables;
-import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.Other.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.FunctionalServerControlCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,15 +16,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static org.bukkit.plugin.java.JavaPlugin.getPlugin;
 
 public class FunctionalServerControlCommand implements CommandExecutor {
 
 
-    FunctionalServerControlSpigot plugin;
-    public FunctionalServerControlCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public FunctionalServerControlCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("functionalservercontrol").setExecutor(this);
         plugin.getCommand("functionalservercontrol").setTabCompleter(new FunctionalServerControlCompleter());
@@ -41,7 +40,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
 
         if(args.length == 0) {
             if(sender.hasPermission("functionalservercontrol.help")) {
-                sender.sendMessage(setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControlSpigot.class).getDescription().getVersion())));
+                sender.sendMessage(setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControl.class).getDescription().getVersion())));
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             }
@@ -50,7 +49,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
 
         if(args[0].equalsIgnoreCase("help")) {
             if(sender.hasPermission("functionalservercontrol.help")) {
-                sender.sendMessage(setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControlSpigot.class).getDescription().getVersion())));
+                sender.sendMessage(setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControl.class).getDescription().getVersion())));
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             }
@@ -77,6 +76,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                         getConfigSettings().reloadConfig();
                         getGlobalVariables().reloadGlobalVariables();
+                        getCommandLimiterSettings().reloadCommandLimiterSettings();
                         getLanguage().reloadLanguage();
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", getGlobalVariables().getVariableAll()).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
                     });
@@ -108,6 +108,21 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     SFAccessor.reloadFiles();
                     Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                         getConfigSettings().reloadConfig();
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", args[1]).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
+                    });
+                    return true;
+                } catch (RuntimeException ingored) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.failed")));
+                    return true;
+                }
+            }
+
+            if(args[1].equalsIgnoreCase("commandlimiter")) {
+                try{
+                    long start = System.currentTimeMillis();
+                    SFAccessor.reloadFiles();
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        getCommandLimiterSettings().reloadCommandLimiterSettings();
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", args[1]).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
                     });
                     return true;

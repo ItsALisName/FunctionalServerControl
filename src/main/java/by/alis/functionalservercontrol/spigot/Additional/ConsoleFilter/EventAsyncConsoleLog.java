@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncConsoleLogOutEvent;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -23,15 +23,15 @@ public class EventAsyncConsoleLog implements Filter {
         AsyncConsoleLogOutEvent asyncConsoleLogOutEvent = new AsyncConsoleLogOutEvent(message, getConfigSettings().isApiEnabled());
         if(!getConfigSettings().isApiEnabled()) return Result.NEUTRAL;
         if(!getConfigSettings().isApiProtectedByPassword()) {
-            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class))) {
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
+                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                     Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
                 });
             }
         } else {
             if(asyncConsoleLogOutEvent.getApiPassword() != null && asyncConsoleLogOutEvent.getApiPassword().equalsIgnoreCase(accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class))) {
-                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
+                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                         Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
                     });
                 }

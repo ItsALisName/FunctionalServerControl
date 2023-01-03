@@ -1,14 +1,13 @@
 package by.alis.functionalservercontrol.spigot.Managers.Files;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class FileManager {
 
@@ -17,14 +16,16 @@ public class FileManager {
         this.initializeFiles();
     }
 
-    public File configFile;
-    public FileConfiguration configuration;
-    public File langFileRU;
-    public FileConfiguration langRU;
-    public File langFileEN;
-    public FileConfiguration langEN;
-    public File sqlFile;
-    public File helpFile;
+    protected File configFile;
+    protected FileConfiguration configuration;
+    protected File langFileRU;
+    protected FileConfiguration langRU;
+    protected File langFileEN;
+    protected FileConfiguration langEN;
+    protected File sqlFile;
+    protected File helpFile;
+    protected File commandLimiterFile;
+    protected FileConfiguration commandLimiterConfig;
 
     public void initializeFiles() {
         File logsFolder = new File("plugins/FunctionalServerControl/logs");
@@ -39,36 +40,36 @@ public class FileManager {
         this.helpFile = new File("plugins/FunctionalServerControl/", "about.txt");
         this.langFileEN = new File("plugins/FunctionalServerControl/language/", "lang_en.yml");
         this.langEN = YamlConfiguration.loadConfiguration(this.langFileEN);
+        this.commandLimiterFile = new File("plugins/FunctionalServerControl/", "commands-limiter.yml");
+        this.commandLimiterConfig = YamlConfiguration.loadConfiguration(this.commandLimiterFile);
     }
 
     public void initializeAndCreateFilesIfNotExists() {
         this.initializeFiles();
 
         if(!this.configFile.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("general.yml", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("general.yml", false);
         }
 
         if(!this.langFileRU.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_ru.yml", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_ru.yml", false);
         }
 
         if(!this.langFileEN.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_en.yml", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_en.yml", false);
         }
 
         if(!this.sqlFile.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("sqlite.db", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("sqlite.db", false);
         }
 
         if(!this.helpFile.exists()) {
-            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("about.txt", false);
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("about.txt", false);
+        }
+
+        if(!this.commandLimiterFile.exists()) {
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("commands-limiter.yml", false);
         }
 
     }
-
-    protected void reloadFiles() {
-
-    }
-
-
 }

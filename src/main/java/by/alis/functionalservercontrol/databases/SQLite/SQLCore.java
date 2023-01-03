@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.databases.SQLite;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,8 +9,8 @@ import java.sql.Statement;
 public abstract class SQLCore {
 
 
-    FunctionalServerControlSpigot plugin;
-    public SQLCore(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public SQLCore(FunctionalServerControl plugin) {
         this.plugin = plugin;
     }
     Connection sqlConnection;

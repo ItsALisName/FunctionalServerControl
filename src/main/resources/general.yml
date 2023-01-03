@@ -26,8 +26,7 @@ plugin-settings:
   #                          Data storage methods                              #
   #  Available storage methods:                                                #
   #  "sqlite" - fast and easy embedded single-file DBMS                        #
-  #  "mysql" - a popular DBMS with a client-server model                       #
-  #  "h2" - an open cross-platform DBMS written entirely in Java(recommended)  #
+  #  "h2" - coming soon...                                                     #
   ##############################################################################
   storage-method: "sqlite"
 
@@ -51,6 +50,26 @@ plugin-settings:
   #     Hide some non-mandatory information in the console on startup?         #
   ##############################################################################
   less-information: false
+
+  ##############################################################################
+  #                           Action Storage Settings                          #
+  ##############################################################################
+  history-settings:
+
+    ##############################################################################
+    #                         Is action recording enabled?                       #
+    ##############################################################################
+    enabled: true
+
+    ##############################################################################
+    #                 Do save the history after server reboot?                   #
+    ##############################################################################
+    force-save: false
+
+    ##############################################################################
+    #                 Maximum number of entries in the history                   #
+    ##############################################################################
+    maximum-records: 100
 
   ##############################################################################
   #                           Notification Settings                            #
@@ -102,12 +121,6 @@ plugin-settings:
       password:
         enabled: false
         password: "SpigotAPICustomPassword"
-
-    velocity:
-      enabled: true
-      password:
-        enabled: false
-        password: "VelocityAPICustomPassword"
 
   logger:
     enabled: true
@@ -221,6 +234,36 @@ plugin-settings:
   #               Here you can set server login restrictions                   #
   ##############################################################################
   join-settings:
+    announce-console-about-brand: true
+
+    ##############################################################################
+    #               Control of player clients entering the server                #
+    ##############################################################################
+    clients-control:
+
+      ##############################################################################
+      #                             Block "Vanilla"?                               #
+      ##############################################################################
+      vanilla:
+        block: false
+        actions:
+        - "kick %1$f Vanilla отключена на этом сервере!"
+
+      ##############################################################################
+      #                              Block "Forge"?                                #
+      ##############################################################################
+      forge:
+        block: false
+        actions:
+        - "kick %1$f Forge отключен на этом сервере!"
+
+      ##############################################################################
+      #                         Block "WorldDownloader"?                           #
+      ##############################################################################
+      world-downloader:
+        block: true
+        actions:
+        - "kick %1$f Использование WorldDownloader'a запрещено"
 
     ##############################################################################
     #                         Setting banned nicknames                           #

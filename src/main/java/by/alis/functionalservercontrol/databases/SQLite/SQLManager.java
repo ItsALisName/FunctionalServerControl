@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.databases.SQLite;
 
 import by.alis.functionalservercontrol.API.Enums.BanType;
 import by.alis.functionalservercontrol.API.Enums.MuteType;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,12 +12,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class SQLManager extends SQLCore {
 
-    public SQLManager(FunctionalServerControlSpigot plugin) {
+    public SQLManager(FunctionalServerControl plugin) {
         super(plugin);
     }
 
@@ -33,7 +33,7 @@ public class SQLManager extends SQLCore {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] -> Unknown error, try reinstalling the plugin."));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] No further work possible!"));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Disabling the plugin..."));
-                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class));
+                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
                 return null;
             }
 
@@ -72,13 +72,13 @@ public class SQLManager extends SQLCore {
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] -> Unknown error, try reinstalling the plugin."));
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] No further work possible!"));
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Disabling the plugin..."));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class));
+                    this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
                     return null;
                 }
             } else {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] No further work possible!"));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Disabling the plugin..."));
-                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class));
+                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
                 return null;
             }
         }

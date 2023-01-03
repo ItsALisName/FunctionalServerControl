@@ -1,9 +1,9 @@
-package by.alis.functionalservercontrol.spigot.Additional.Other;
+package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class AdventureApiUtils {
 

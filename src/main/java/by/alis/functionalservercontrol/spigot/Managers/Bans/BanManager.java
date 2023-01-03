@@ -3,7 +3,7 @@ package by.alis.functionalservercontrol.spigot.Managers.Bans;
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncBanPreprocessEvent;
 import by.alis.functionalservercontrol.API.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.IdsManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeManager;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Bans.BanChecker.isIpBanned;
 import static by.alis.functionalservercontrol.spigot.Managers.Bans.BanChecker.isPlayerBanned;
@@ -202,7 +202,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                         });
                     }
@@ -226,7 +226,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                         });
                     }
@@ -264,7 +264,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                             });
                         }
@@ -292,7 +292,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                             });
                         }
@@ -323,7 +323,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                         });
                     }
@@ -346,7 +346,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                         });
                     }
@@ -381,7 +381,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalInitiatorName = initiatorName;
                             String finalReason = reason;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
                             });
                         }
@@ -411,7 +411,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
                             });
                         }
@@ -446,7 +446,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
                         });
                     }
@@ -466,7 +466,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
                         });
                     }
@@ -508,7 +508,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
                             });
                         }
@@ -536,7 +536,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                                 player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
                             });
                         }
@@ -567,7 +567,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalInitiatorName = initiatorName;
                         String finalReason = reason;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
                         });
                     }
@@ -590,7 +590,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalInitiatorName = initiatorName;
                         String finalReason = reason;
-                        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
                         });
                     }

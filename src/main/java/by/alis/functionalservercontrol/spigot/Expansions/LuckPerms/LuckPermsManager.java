@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Expansions.LuckPerms;
 
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
+import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -10,7 +11,7 @@ import net.luckperms.api.LuckPermsProvider;
 import java.util.Collection;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static org.bukkit.Bukkit.getServer;
 
 public class LuckPermsManager {
@@ -44,15 +45,12 @@ public class LuckPermsManager {
         return isLuckPermsSetuped;
     }
 
-    public String getPlayerGroup(Player player, Collection<String> possibleGroups) {
-        if (isLuckPermsSetuped()) {
-            for (String group : possibleGroups) {
-                if (player.hasPermission("group." + group)) {
-                    return group;
-                }
-            }
+    public String getPlayerGroup(Player player) {
+        try {
+            return this.luckPermsProvider.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
+        } catch (NullPointerException ignored) {
+            return null;
         }
-        return null;
     }
 
 }

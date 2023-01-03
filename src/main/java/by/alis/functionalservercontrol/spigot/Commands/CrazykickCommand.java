@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Commands.Completers.CrazykickCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 import by.alis.functionalservercontrol.spigot.Managers.Kick.KickManager;
 import org.bukkit.Bukkit;
@@ -14,13 +14,13 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class CrazykickCommand implements CommandExecutor {
 
-    FunctionalServerControlSpigot plugin;
-    public CrazykickCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public CrazykickCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("crazykick").setExecutor(this);
         plugin.getCommand("crazykick").setTabCompleter(new CrazykickCompleter());

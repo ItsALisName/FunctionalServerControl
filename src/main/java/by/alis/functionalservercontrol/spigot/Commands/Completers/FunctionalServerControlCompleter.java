@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands.Completers;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -37,7 +37,7 @@ public class FunctionalServerControlCompleter implements TabCompleter {
             if (args[0].equalsIgnoreCase("reload") && args.length == 2) {
                 List<String> c = new ArrayList<>();
                 if (sender.hasPermission("functionalservercontrol.reload")) {
-                    Collections.addAll(c, "all", "globalvariables", "settings");
+                    Collections.addAll(c, "all", "globalvariables", "settings", "commandlimiter");
                     return TextUtils.sortList(c, args);
                 }
                 return Collections.singletonList("");

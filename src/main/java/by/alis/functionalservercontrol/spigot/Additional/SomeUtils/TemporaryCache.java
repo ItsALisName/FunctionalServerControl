@@ -1,7 +1,8 @@
-package by.alis.functionalservercontrol.spigot.Additional.Other;
+package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
+import by.alis.functionalservercontrol.spigot.Managers.Mute.UnmuteManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class TemporaryCache {
@@ -22,6 +23,7 @@ public class TemporaryCache {
     private static int bansDeletedCount, muteDeletedCount;
     private static final UnbanManager unbanManager = new UnbanManager();
     private static final List<String> checkingPlayersNames = new ArrayList<>();
+    private static final HashMap<Player, String> clientBrands = new HashMap<>();
 
 
     public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
@@ -38,7 +40,7 @@ public class TemporaryCache {
     }
 
     public static void preformCommandUndo(CommandSender initiator) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeBannedPlayers.entrySet()) {
                 if(e.getValue().equals(initiator)) {
                     bansDeletedCount = bansDeletedCount + 1;
@@ -54,7 +56,8 @@ public class TemporaryCache {
                 if(e.getValue().equals(initiator)) {
                     muteDeletedCount = muteDeletedCount + 1;
                     unsafeMutedPlayers.remove(e.getKey());
-                    // TODO: 14.12.2022 Unmute
+                    UnmuteManager unmuteManager = new UnmuteManager();
+                    unmuteManager.preformUnmute(e.getKey(), getGlobalVariables().getDefaultReason());
                 }
             }
             if(muteDeletedCount != 0) {
@@ -116,4 +119,17 @@ public class TemporaryCache {
     public static void unsetCheckingPlayersNames(String name) {
         checkingPlayersNames.remove(name);
     }
+
+    public static HashMap<Player, String> getClientBrands() {
+        return clientBrands;
+    }
+    public static void setClientBrands(Player player, String brand) {
+        if(!clientBrands.containsKey(player)) {
+            clientBrands.put(player, brand);
+        }
+    }
+    public static void unsetClientBrand(Player player) {
+        clientBrands.remove(player);
+    }
+
 }

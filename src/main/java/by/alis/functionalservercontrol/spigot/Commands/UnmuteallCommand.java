@@ -1,9 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.spigot.Additional.Other.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.UnmuteAllCompleter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
-import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.UnmuteManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -15,13 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Other.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class UnmuteallCommand implements CommandExecutor {
     
-    FunctionalServerControlSpigot plugin;
-    public UnmuteallCommand(FunctionalServerControlSpigot plugin) {
+    FunctionalServerControl plugin;
+    public UnmuteallCommand(FunctionalServerControl plugin) {
         this.plugin = plugin;
         plugin.getCommand("unmuteall").setExecutor(this);
         plugin.getCommand("unmuteall").setTabCompleter(new UnmuteAllCompleter());

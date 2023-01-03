@@ -1,8 +1,6 @@
-package by.alis.functionalservercontrol.spigot.Additional.Other;
+package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -84,7 +82,7 @@ public class TextUtils {
     }
 
     public static void sendSyncConsoleMessage(String message) {
-        Bukkit.getScheduler().runTask(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class), () -> {
+        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             Bukkit.getConsoleSender().sendMessage(setColors(message));
         });
     }
