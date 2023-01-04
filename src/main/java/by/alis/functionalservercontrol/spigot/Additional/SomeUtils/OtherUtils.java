@@ -1,19 +1,25 @@
 package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
 
 import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class OtherUtils {
 
@@ -31,7 +37,9 @@ public class OtherUtils {
         }
     }
 
-
+    public static String getServerCoreName(Server server) {
+        return server.getVersion().split("-")[1];
+    }
 
     public static boolean isNotNullPlayer(String ProtocolVersions) {
         switch (getConfigSettings().getStorageType()) {
@@ -190,6 +198,7 @@ public class OtherUtils {
         if(protocolVersion == 109) return ProtocolVersions.V9_2;
         if(protocolVersion <= 203) return ProtocolVersions.V9_3_4;
         if(protocolVersion <= 313) return ProtocolVersions.V10_1_2;
+        if(protocolVersion == 315) return ProtocolVersions.V11;
         if(protocolVersion <= 327) return ProtocolVersions.V11_1_2;
         if(protocolVersion <= 336) return ProtocolVersions.V12;
         if(protocolVersion <= 338) return ProtocolVersions.V12_1;
@@ -231,6 +240,24 @@ public class OtherUtils {
             serverVersion = ProtocolVersions.V8.valueOf("V" + versionSuffix.replace("v1_", "").replace("R", ""));
         }
         return serverVersion;
+    }
+
+    public static void plugmanInjection() {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            if(Bukkit.getPluginManager().getPlugin("PlugManX") != null) {
+                try {
+                    File pManConfigFile = new File("plugins/PlugManX/", "config.yml");
+                    if(pManConfigFile.exists()) {
+                        FileConfiguration pManConfig = YamlConfiguration.loadConfiguration(pManConfigFile);
+                        List<String> a = new ArrayList<>(Arrays.asList(StringUtils.substringBetween(pManConfig.getString("ignored-plugins"), "[", "]").split(",")));
+                        if(a.contains("FunctionalServerControl")) return;
+                        a.add("FunctionalServerControl");
+                        pManConfig.set("ignored-plugins", ("[" + String.join(",", a) + "]").replace(" ", ""));
+                        pManConfig.save(pManConfigFile);
+                    }
+                } catch (IOException ignored) {}
+            }
+        });
     }
 
 }

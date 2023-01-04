@@ -244,7 +244,10 @@ public class MuteIpCommand implements CommandExecutor {
                 }
 
                 if(args.length > 2 && args[0].equalsIgnoreCase("-s") && !timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
-
+                    if(args[2].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     if(OtherUtils.isArgumentIP(args[1])) {
                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                             if(OtherUtils.isNotNullIp(args[1])) {
@@ -338,6 +341,10 @@ public class MuteIpCommand implements CommandExecutor {
                 }
 
                 if(timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1]) && args.length == 2) {
+                    if(args[1].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                     if(OtherUtils.isArgumentIP(args[0])) {
@@ -410,6 +417,10 @@ public class MuteIpCommand implements CommandExecutor {
                 }
 
                 if(args.length == 3 && args[0].equalsIgnoreCase("-s") && timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
+                    if(args[2].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                     if(OtherUtils.isArgumentIP(args[1])) {
@@ -483,6 +494,10 @@ public class MuteIpCommand implements CommandExecutor {
                 }
 
                 if(args.length > 2 && timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
+                    if(args[1].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                     if(OtherUtils.isArgumentIP(args[0])) {
@@ -555,6 +570,10 @@ public class MuteIpCommand implements CommandExecutor {
                 }
 
                 if(args.length > 3 && args[0].equalsIgnoreCase("-s") && timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
+                    if(args[2].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                     if(OtherUtils.isArgumentIP(args[1])) {

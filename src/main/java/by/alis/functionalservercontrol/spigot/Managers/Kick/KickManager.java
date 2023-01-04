@@ -94,8 +94,8 @@ public class KickManager {
         finalReason = kickPreprocessEvent.getReason();
 
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
-            if(getCheatCheckerManager().isPlayerChecking(player)) {
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-on-check")));
+            if(getCheatCheckerManager().isPlayerChecking(player) && getConfigSettings().isPreventKickDuringCheck()) {
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.kick-player-on-check")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
             }

@@ -57,6 +57,10 @@ public class CheatCheckCommand implements CommandExecutor {
                 }
 
                 if(args.length == 3 && args[0].equalsIgnoreCase("start") && (param || this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2]))) {
+                    if(args[2].startsWith("0")) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                        return true;
+                    }
                     Player player = Bukkit.getPlayer(args[1]);
                     if(player == null) {
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
@@ -64,6 +68,10 @@ public class CheatCheckCommand implements CommandExecutor {
                     }
                     int time = getConfigSettings().getDefaultCheatCheckTime();
                     if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
+                        if(args[2].startsWith("0")) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                            return true;
+                        }
                         time = (int)(this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]) - System.currentTimeMillis()) / 1000;
                     } else {
                         time = Integer.parseInt(args[2]);
@@ -74,6 +82,10 @@ public class CheatCheckCommand implements CommandExecutor {
 
                 if(args.length >= 3 && args[0].equalsIgnoreCase("start")) {
                     if(args.length == 3 && (param || this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2]))) {
+                        if(args[2].startsWith("0")) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                            return true;
+                        }
                         Player player = Bukkit.getPlayer(args[1]);
                         if(player == null) {
                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
@@ -81,6 +93,10 @@ public class CheatCheckCommand implements CommandExecutor {
                         }
                         int time = getConfigSettings().getDefaultCheatCheckTime();
                         if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
+                            if(args[2].startsWith("0")) {
+                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                                return true;
+                            }
                             time = (int)(this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]) - System.currentTimeMillis()) / 1000;
                         } else {
                             time = Integer.parseInt(args[2]);
@@ -92,6 +108,10 @@ public class CheatCheckCommand implements CommandExecutor {
                         return true;
                     }
                     if(args.length > 3 && (param || this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2]))) {
+                        if(args[2].startsWith("0")) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                            return true;
+                        }
                         Player player = Bukkit.getPlayer(args[1]);
                         if(player == null) {
                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
@@ -99,6 +119,10 @@ public class CheatCheckCommand implements CommandExecutor {
                         }
                         int time = getConfigSettings().getDefaultCheatCheckTime();
                         if(this.timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
+                            if(args[2].startsWith("0")) {
+                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                                return true;
+                            }
                             time = (int)(this.timeSettingsAccessor.getTimeManager().convertToMillis(args[2]) - System.currentTimeMillis()) / 1000;
                         } else {
                             time = Integer.parseInt(args[2]);

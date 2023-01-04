@@ -29,7 +29,42 @@ public class GlobalVariables {
     private String VAR_TIME_NEVER;
 
     private String VAR_REPLACED_CONSOLE_NAME;
+    private String VAR_IP;
+    private String VAR_ID;
+    private String VAR_NAME;
+    private String VAR_UUID;
+    private String VAR_STATUS_BANNED;
+    private String VAR_STATUS_MUTED;
 
+    private String BUTTON_UNBAN;
+    private String BUTTON_UNMUTE;
+
+
+    public String getVariableId() {
+        return VAR_ID;
+    }
+    public String getVariableIp() {
+        return VAR_IP;
+    }
+    public String getVariableName() {
+        return VAR_NAME;
+    }
+    public String getVariableUUID() {
+        return VAR_UUID;
+    }
+    public String getVariableStatusBanned() {
+        return VAR_STATUS_BANNED;
+    }
+    public String getVariableStatusMuted() {
+        return VAR_STATUS_MUTED;
+    }
+
+    public String getButtonUnban() {
+        return BUTTON_UNBAN;
+    }
+    public String getButtonUnmute() {
+        return BUTTON_UNMUTE;
+    }
     public String getConsoleVariableName() {
         return VAR_REPLACED_CONSOLE_NAME;
     }
@@ -82,6 +117,14 @@ public class GlobalVariables {
 
     public void reloadGlobalVariables() {
             try {
+                BUTTON_UNBAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unban");
+                BUTTON_UNMUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unmute");
+                VAR_STATUS_BANNED = getFileAccessor().getGeneralConfig().getString("global-variables.banned");
+                VAR_STATUS_MUTED = getFileAccessor().getGeneralConfig().getString("global-variables.muted");
+                VAR_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.name");
+                VAR_UUID = getFileAccessor().getGeneralConfig().getString("global-variables.uuid");
+                VAR_ID = getFileAccessor().getGeneralConfig().getString("global-variables.id");
+                VAR_IP = getFileAccessor().getGeneralConfig().getString("global-variables.ip");
                 VAR_REPLACED_CONSOLE_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.console-name");
                 VAR_TIME_NEVER = getFileAccessor().getGeneralConfig().getString("global-variables.never");
                 VAR_TIME_YEARS = getFileAccessor().getGeneralConfig().getString("global-variables.years").split("\\|");
@@ -105,6 +148,14 @@ public class GlobalVariables {
     public void loadGlobalVariables() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             try {
+                BUTTON_UNBAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unban");
+                BUTTON_UNMUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unmute");
+                VAR_STATUS_BANNED = getFileAccessor().getGeneralConfig().getString("global-variables.banned");
+                VAR_STATUS_MUTED = getFileAccessor().getGeneralConfig().getString("global-variables.muted");
+                VAR_ID = getFileAccessor().getGeneralConfig().getString("global-variables.id");
+                VAR_IP = getFileAccessor().getGeneralConfig().getString("global-variables.ip");
+                VAR_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.name");
+                VAR_UUID = getFileAccessor().getGeneralConfig().getString("global-variables.uuid");
                 VAR_REPLACED_CONSOLE_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.console-name");
                 VAR_TIME_NEVER = getFileAccessor().getGeneralConfig().getString("global-variables.never");
                 VAR_TIME_YEARS = getFileAccessor().getGeneralConfig().getString("global-variables.years").split("\\|");

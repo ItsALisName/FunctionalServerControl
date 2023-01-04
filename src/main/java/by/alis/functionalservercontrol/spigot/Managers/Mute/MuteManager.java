@@ -2,16 +2,14 @@ package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncMutePreprocessEvent;
+import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.AdventureApiUtils;
+import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.IdsManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -117,6 +115,13 @@ public class MuteManager {
             initiatorName = initiator.getName();
         }
 
+        if(StaticContainers.getCheckingCheatsPlayers().getCheckingPlayers().contains(player)) {
+            if(getConfigSettings().isCheatCheckFunctionEnabled() && getConfigSettings().isPreventMuteDuringCheck()) {
+                asyncMutePreprocessEvent.setCancelled(true);
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.mute-player-on-check")));
+                return;
+            }
+        }
 
         if(type == MuteType.PERMANENT_NOT_IP) {
             if (isPlayerMuted(player)) {
@@ -1644,19 +1649,15 @@ public class MuteManager {
                 }
                 if(getConfigSettings().isServerSupportsHoverEvents()) {
                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                        TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                        Text text = new Text(setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
-                                .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
-                                .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
-                                .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
-                                .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
-                                .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf)))
-                        );
-                        HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                        textComponent.setHoverEvent(hoverEvent);
-                        player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                        player.spigot().sendMessage(MD5TextUtils.createHoverText(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                                getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                                        .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
+                                        .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
+                                        .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
+                                        .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
+                                        .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf))));
                     } else {
-                        player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                        player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
                                 .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
                                 .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
                                 .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
@@ -1681,19 +1682,17 @@ public class MuteManager {
                         }
                         if(getConfigSettings().isServerSupportsHoverEvents()) {
                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                                Text text = new Text(setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
-                                        .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                        .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))
-                                );
-                                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                                textComponent.setHoverEvent(hoverEvent);
-                                player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                                player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                                        getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                                        getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                                                .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
+                                                .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
+                                                .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
+                                                .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
+                                                .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
+                                ));
                             } else {
-                                player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                                player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
                                         .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
                                         .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
                                         .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
@@ -1726,19 +1725,17 @@ public class MuteManager {
             }
             if(getConfigSettings().isServerSupportsHoverEvents()) {
                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                    TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                    Text text = new Text(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
-                            .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
-                            .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
-                            .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
-                            .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
-                            .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf)))
-                    );
-                    HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                    textComponent.setHoverEvent(hoverEvent);
-                    player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                    player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                                    .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
+                                    .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
+                                    .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
+                                    .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
+                                    .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf))
+                    ));
                 } else {
-                    player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                    player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
                             .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
                             .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
                             .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
@@ -1760,19 +1757,17 @@ public class MuteManager {
                     }
                     if(getConfigSettings().isServerSupportsHoverEvents()) {
                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                            TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                            Text text = new Text(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
-                                    .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                    .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                    .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                    .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                    .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))
-                            );
-                            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                            textComponent.setHoverEvent(hoverEvent);
-                            player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                            player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                                            .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
+                                            .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
+                                            .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
+                                            .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
+                                            .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
+                            ));
                         } else {
-                            player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                            player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
                                     .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
                                     .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
                                     .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
@@ -1804,19 +1799,17 @@ public class MuteManager {
             }
             if(getConfigSettings().isServerSupportsHoverEvents()) {
                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")){
-                    TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                    Text text = new Text(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
-                            .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
-                            .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
-                            .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
-                            .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
-                            .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf)))
-                    );
-                    HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                    textComponent.setHoverEvent(hoverEvent);
-                    player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                    player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                                    .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
+                                    .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
+                                    .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
+                                    .replace("%4$f", getMutedPlayersContainer().getReasonContainer().get(indexOf))
+                                    .replace("%5$f", getMutedPlayersContainer().getIdsContainer().get(indexOf))
+                    ));
                 } else {
-                    player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                    player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
                             .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(indexOf))
                             .replace("%2$f", getMutedPlayersContainer().getRealMuteDateContainer().get(indexOf))
                             .replace("%3$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(indexOf))
@@ -1838,19 +1831,17 @@ public class MuteManager {
                     }
                     if(getConfigSettings().isServerSupportsHoverEvents()) {
                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                            TextComponent textComponent = new TextComponent(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                            Text text = new Text(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
-                                    .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                    .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                    .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                    .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                    .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))
-                            );
-                            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, text);
-                            textComponent.setHoverEvent(hoverEvent);
-                            player.spigot().sendMessage(ChatMessageType.CHAT, textComponent);
+                            player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                                            .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
+                                            .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
+                                            .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
+                                            .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
+                                            .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
+                            ));
                         } else {
-                            player.sendMessage(AdventureApiUtils.createHoverShowText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                            player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
                                     .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
                                     .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
                                     .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))

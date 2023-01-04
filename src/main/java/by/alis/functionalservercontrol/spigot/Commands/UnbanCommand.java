@@ -54,6 +54,20 @@ public class UnbanCommand implements CommandExecutor {
                 return true;
             }
 
+            if(args.length > 1) {
+                if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        unbanManager.preformUnban(args[0], sender, getReason(args, 1), true);
+                    });
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        unbanManager.preformUnban(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
+                    });
+                }
+                return true;
+            }
+
+
             if(args[0].equalsIgnoreCase("-a")) {
                 if(sender.hasPermission("functionalservercontrol.use.unsafe-flags")) {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-not-support").replace("%1$f", "-a")));

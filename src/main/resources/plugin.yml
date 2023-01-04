@@ -35,3 +35,5 @@ commands:
     aliases: [gv, getver]
   getclient:
     aliases: [gc, getc]
+  getinfo:
+    aliases: [getinformation, gi]

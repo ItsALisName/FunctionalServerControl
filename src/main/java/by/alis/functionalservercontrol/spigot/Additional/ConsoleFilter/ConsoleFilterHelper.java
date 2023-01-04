@@ -11,12 +11,10 @@ import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUt
 
 public class ConsoleFilterHelper {
 
-    private final List<String> functionalServerControlCommands = new ArrayList<>();
-    private final String ISSUED_COMMAND_TEXT = "issued server command: ";
-    private final String[] commands = {"/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
+    private final List<String> functionalServerControlCommands = new ArrayList<>(Arrays.asList("/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
             "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall", "/getver", "/gv", "/getversion",
-            "getclient", "gc", "getc"
-    };
+            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation"));
+    private final String ISSUED_COMMAND_TEXT = "issued server command: ";
 
     public boolean isFunctionalServerControlCommand(String consoleMessage) {
         if(!this.functionalServerControlCommands.isEmpty()) {
@@ -30,7 +28,7 @@ public class ConsoleFilterHelper {
     }
 
     public List<String> getPluginCommands() {
-        return Arrays.asList(this.commands);
+        return this.functionalServerControlCommands;
     }
 
     protected boolean isHidedMessage(String consoleMessage) {
@@ -49,7 +47,6 @@ public class ConsoleFilterHelper {
     public void loadFunctionalServerControlCommands() {
         this.functionalServerControlCommands.clear();
         try {
-            Collections.addAll(this.functionalServerControlCommands, commands);
             if(!getConfigSettings().isLessInformation()) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Console filtering commands have been successfully loaded into RAM (Total: %count%) ✔".replace("%count%", String.valueOf(this.functionalServerControlCommands.size()))));
             }

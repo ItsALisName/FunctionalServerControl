@@ -2,6 +2,7 @@ package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.API.Enums.StorageType;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapter;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.DupeIpTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.MuteGlobalTask;
@@ -22,6 +23,7 @@ import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.g
 public class GeneralConfigSettings {
 
 
+    private String serverCoreName;
     private boolean isOldServerVersion = false;
     private String globalLanguage = "ru_RU";
     private boolean isAnnounceWhenLogHided = true;
@@ -45,43 +47,34 @@ public class GeneralConfigSettings {
     private boolean isHistoryForceSave;
     private int maxHistorySize;
     //History settings end
-
     //API settings start
     private boolean isApiEnabled = true;
     private boolean isApiProtectedByPassword = false;
     //API settings end
     private boolean isProhibitYourselfInteraction = false;
-
     //Notification settings start
     private boolean isConsoleNotification = true;
     private boolean isPlayersNotification = true;
     //Notification settings end
-
     //Cooldowns settings start
     private boolean isCooldownsEnabled = false;
     private boolean isSaveCooldowns = false;
     //Cooldowns settings end
-
     private StorageType storageType = StorageType.SQLITE;
     private boolean isAllowedUnbanWithoutReason = true;
     private String banTimeExpired = "The Ban time has expired";
     private String muteTimeExpired = "The Mute time has expired";
     private boolean isAutoPurgerEnabled = false;
     private int autoPurgerDelay = 600;
-
     private boolean sendTitleWhenMuted = true;
     private boolean sendTitleWhenUnmuted = true;
-
     private boolean serverSupportsHoverEvents = false;
     private String supportedHoverEvents = "MD5";
-
     private EventPriority chatListenerPriority = EventPriority.NORMAL;
-
     private List<String> disabledCommandsWhenMuted = new ArrayList<>();
     private boolean sendActionbarWhileMuted = true;
     private boolean blockWorldDownloader = true;
     private List<String> actionsOnWDL = new ArrayList<>();
-
     private boolean isCheatCheckFunctionEnabled = true;
     private boolean isPreventBlockPlaceDuringCheck;
     private boolean isPreventBlockBreakDuringCheck;
@@ -94,50 +87,47 @@ public class GeneralConfigSettings {
     private boolean isPreventPickupItemDuringCheck;
     private List<String> ignoredCommandsDuruingCheck = new ArrayList<>();
     private int defaultCheatCheckTime;
-    private List<String> actionIfQuitDuringCheck = new ArrayList<>();
-    private List<String> actionIfValidCheatCheck = new ArrayList<>();
-    private List<String> actionIfFailedCheatCheck = new ArrayList<>();
-    private List<String> actionIfTimeLeft = new ArrayList<>();
+    private final List<String> actionIfQuitDuringCheck = new ArrayList<>();
+    private final List<String> actionIfValidCheatCheck = new ArrayList<>();
+    private final List<String> actionIfFailedCheatCheck = new ArrayList<>();
+    private final List<String> actionIfTimeLeft = new ArrayList<>();
     private boolean sendTitleOnCheck;
     private boolean preventKickDuringCheck;
-
+    private boolean preventMuteDuringCheck;
     private boolean isLoggerEnabled = false;
-
     private String logFormat = "[FunctionalBans <-> %1$f] %2$f";
-    private List<String> messagesToLog = new ArrayList<>();
+    private final List<String> messagesToLog = new ArrayList<>();
     private boolean isNicksControlEnabled = false;
-
     private String nicknameCheckMode = "contains";
-    private List<String> blockedNickNames = new ArrayList<>();
+    private final List<String> blockedNickNames = new ArrayList<>();
     private boolean notifyConsoleWhenNickNameBlocked = false;
-
     private boolean isIpsControlEnabled = false;
-
-    private List<String> blockedIps = new ArrayList<>();
+    private final List<String> blockedIps = new ArrayList<>();
     private boolean notifyConsoleWhenIPBlocked = false;
     private boolean dupeIdModeEnabled = false;
-
     private int maxIpsPerSession = 1;
     private String dupeIpCheckMode = "timer";
     private String dupeIpAction = null;
     private int dupeIpTimerDelay = 30;
     private boolean nickFormatControlEnabled = false;
-
     private boolean blockVanilla = false;
     private final List<String> vanillaActions = new ArrayList<>();
     private boolean blockForge = false;
-    private List<String> forgeActions = new ArrayList<>();
-
+    private final List<String> forgeActions = new ArrayList<>();
     private final List<String> blockedNickFormats = new ArrayList<>();
 
-
+    private void setServerCoreName(String serverCoreName) {
+        this.serverCoreName = serverCoreName;
+    }
+    public String getServerCoreName() {
+        return serverCoreName;
+    }
     public boolean isAnnounceConsoleAboutBrand() {
         return announceConsoleAboutBrand;
     }
     private void setAnnounceConsoleAboutBrand(boolean announceConsoleAboutBrand) {
         this.announceConsoleAboutBrand = announceConsoleAboutBrand;
     }
-
     public boolean isBlockVanilla() {
         return blockVanilla;
     }
@@ -348,7 +338,12 @@ public class GeneralConfigSettings {
     public boolean isPreventKickDuringCheck() {
         return preventKickDuringCheck;
     }
-
+    private void setPreventMuteDuringCheck(boolean preventMuteDuringCheck) {
+        this.preventMuteDuringCheck = preventMuteDuringCheck;
+    }
+    public boolean isPreventMuteDuringCheck() {
+        return preventMuteDuringCheck;
+    }
     public boolean isDupeIdModeEnabled() {
         return this.dupeIdModeEnabled;
     }
@@ -386,7 +381,6 @@ public class GeneralConfigSettings {
     private void setChatListenerPriority(EventPriority chatListenerPriority) {
         this.chatListenerPriority = chatListenerPriority;
     }
-
     public boolean isIpsControlEnabled() {
         return isIpsControlEnabled;
     }
@@ -406,7 +400,6 @@ public class GeneralConfigSettings {
     public boolean notifyConsoleWhenIPBlocked() {
         return this.notifyConsoleWhenIPBlocked;
     }
-
     public boolean isUnsafeActionsConfirmation() {
         return this.unsafeActionsConfirmation;
     }
@@ -416,7 +409,6 @@ public class GeneralConfigSettings {
     private void setCheatsCheckAllowedWithoutReason(boolean cheatsCheckAllowedWithoutReason) {
         this.isCheatsCheckAllowedWithoutReason = cheatsCheckAllowedWithoutReason;
     }
-
     public boolean showDescription() {
         return this.showDescription;
     }
@@ -577,7 +569,6 @@ public class GeneralConfigSettings {
         this.messagesToLog.clear();
         this.messagesToLog.addAll(messagesToLog);
     }
-
     public boolean isNicksControlEnabled() {
         return this.isNicksControlEnabled;
     }
@@ -603,7 +594,6 @@ public class GeneralConfigSettings {
     public List<String> getBlockedNickNames() {
         return this.blockedNickNames;
     }
-
     public boolean isOldServerVersion() {
         return this.isOldServerVersion;
     }
@@ -622,7 +612,6 @@ public class GeneralConfigSettings {
     private void setAutoPurgerDelay(int autoPurgerDelay) {
         this.autoPurgerDelay = autoPurgerDelay;
     }
-
     private void setNickFormatControlEnabled(boolean nickFormatControlEnabled) {
         this.nickFormatControlEnabled = nickFormatControlEnabled;
     }
@@ -636,7 +625,6 @@ public class GeneralConfigSettings {
     public List<String> getBlockedNickFormats() {
         return blockedNickFormats;
     }
-    
     public boolean isSendActionbarWhileMuted() {
         return sendActionbarWhileMuted;
     }
@@ -650,10 +638,9 @@ public class GeneralConfigSettings {
         return supportedHoverEvents;
     }
 
-
     public void loadConfigSettings() {
+        setServerCoreName(OtherUtils.getServerCoreName(Bukkit.getServer()));
         setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
-
         switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.chat-listener-priority")) {
             case "LOWEST": {
                 setChatListenerPriority(EventPriority.LOWEST);
@@ -686,7 +673,6 @@ public class GeneralConfigSettings {
                 break;
             }
         }
-
         if(OtherUtils.isServerSupportMDHoverText()) {
             setServerSupportsHoverEvents(true);
             setSupportedHoverEvents("MD5");
@@ -695,7 +681,6 @@ public class GeneralConfigSettings {
             setServerSupportsHoverEvents(true);
             setSupportedHoverEvents("ADVENTURE");
         }
-
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
                 case "sqlite": {
@@ -725,7 +710,6 @@ public class GeneralConfigSettings {
                     break;
                 }
             }
-
             setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
             if(isBlockWorldDownloader()) {
                 setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
@@ -780,11 +764,8 @@ public class GeneralConfigSettings {
                         break;
                     }
                 }
-
                 setBlockedNickNames(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.blocked-nicks"), "[", "]").split(", ")));
-
             }
-
             setSendActionbarWhileMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.action-bar-settings.send-while-muted"));
             setDupeIdModeEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.dupe-ip.enabled"));
             if(isDupeIdModeEnabled()) {
@@ -842,6 +823,7 @@ public class GeneralConfigSettings {
                 setPreventDropItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-drop"));
                 setPreventPickupItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-pickup"));
                 setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+                setPreventMuteDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
                 setIgnoredCommandsDuruingCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
                 setDefaultCheatCheckTime(getFileAccessor().getGeneralConfig().getInt("plugin-settings.cheat-checks-settings.default-check-time"));
                 setActionIfQuitDuringCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
@@ -966,6 +948,7 @@ public class GeneralConfigSettings {
             setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
             setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
             setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+            setPreventMuteDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
         }
         setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
         setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));

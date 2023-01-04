@@ -1,10 +1,9 @@
 package by.alis.functionalservercontrol.spigot.Additional.TimerTasks;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.UnmuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -37,8 +36,7 @@ public class MuteGlobalTask extends BukkitRunnable {
                                 break;
                             }
                         }
-                        TextComponent message = new TextComponent(setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
+                        CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
@@ -56,8 +54,7 @@ public class MuteGlobalTask extends BukkitRunnable {
                                         break;
                                     }
                                 }
-                                TextComponent message = new TextComponent(setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
-                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
+                                CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
                             }
                         }
                         case H2: {}

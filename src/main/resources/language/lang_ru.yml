@@ -66,6 +66,7 @@ blocked-ip-kick-format:
 - "&9&oЕсли Вы считаете что это ошибка, обратитесь https://example.com"
 
 other:
+  unknown-flag: "&c[FunctionalServerControl] &7Несуществующий флаг &c%1$f"
   unknown-player: "&c[FunctionalServerControl] &7&oИгрок &c&o%1$f &7&oникогда не заходил на сервер!"
   unknown-ip: "&c[FunctionalServerControl] &7&oНа сервере никогда не было игрока с IP-адресом &c&o%1$f"
   missing-argument: "&c[FunctionalServerControl] &7Недостаточно агрументов &c%1$f"
@@ -90,7 +91,9 @@ other:
   blocked-nickname-notify: "&c[FunctionalServerControl] &7Игрок с запрещенным ником &c%1$f &7попытался зайти на сервер"
   blocked-ip-notify: "&c[FunctionalServerControl] &7Игрок с запрещенным IP-адресом &c%1$f &7попытался зайти на сервер"
   unknown-time: "&c[FunctionalServerControl] &7Похоже &c%1$f &7не является допустимым форматом времени, попробуйте например &c1d, 1h, 1mon"
-  player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
+  zero-time: "&c[FunctionalServerControl] &7Время не может быть 0"
+  kick-player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
+  mute-player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его заткнуть."
   player-notifying:
     when-muted:
       expired: "&aВы снова можете писать в чат!"
@@ -180,7 +183,6 @@ commands:
     example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis 1day Нарушение правил сервера"
     usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок> <время> {причина}"
     broadcast-message: "&7Администратор &c%1$f &7заблокировал IP-адрес &c%2$f &7на &c%3$f &7по причине: &c%4$f"
-
 
   purge:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Очищает некоторые типы данных в плагине"
@@ -279,6 +281,9 @@ commands:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Дает информацию о айди/нике/uuid/айпи если имеется в базе"
     usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <флаг> <значение>"
     example: "&c[FunctionalServerControl] &7Пример: &c/%1$f -ip 127.0.0.1"
+    not-found: "&c[FunctionalServerControl] &7Информация о &c%1$f&7: &c%2$f &7не найдена!"
+    success: "&c[FunctionalServerControl] &7Информация о &c%1$f %2$f&7:"
+    format: "&7Статус: &c%1$f \n&7Игрок: &c%2$f \n&7Инициатор: &c%3$f \n&7Причина: &c%4$f \n&7Осталось: &c%5$f"
 
   getversion:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает версию, с которой играет указанный игрок"

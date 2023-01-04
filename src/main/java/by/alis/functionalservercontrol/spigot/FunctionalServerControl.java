@@ -3,6 +3,7 @@ package by.alis.functionalservercontrol.spigot;
 import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.L4JFilter;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.Logger.LogWriter;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Metrics;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
@@ -43,11 +44,16 @@ public final class FunctionalServerControl extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(OtherUtils.isSuppotedVersion(getServer())) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).toString + " server version &a(Supported)"));
+        if(OtherUtils.isSuppotedVersion(getServer()) && !OtherUtils.getServerCoreName(getServer()).toLowerCase().contains("bukkit")) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + OtherUtils.getServerVersion(getServer()).toString + " server version &a(Supported)"));
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerVersion(getServer()).toString + " server version &c(Not supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + OtherUtils.getServerVersion(getServer()).toString + " server version &c(Not supported)"));
             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Disabling..."));
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        OtherUtils.plugmanInjection();
+        if(!CoreAdapter.setAdapter()) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -102,6 +108,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         new UnmuteallCommand(this);
         new GetVersionCommand(this);
         new GetClientCommand(this);
+        new GetInfoCommand(this);
         //Commands registering
 
         //Loaders

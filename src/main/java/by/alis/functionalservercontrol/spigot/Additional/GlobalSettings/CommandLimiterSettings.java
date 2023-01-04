@@ -31,7 +31,28 @@ public class CommandLimiterSettings {
     private final HashMap<String, HashMap<String, List<String>>> perGroupCompletions =  new HashMap<>();
     private boolean hideCompletionsFully;
 
+    private final List<String> consoleBlockedCommands = new ArrayList<>();
+    private boolean consoleBlockedCommandsUseAsWhiteList;
+    private String consoleCommandsDenyMessage;
 
+    public boolean isConsoleBlockedCommandsUseAsWhiteList() {
+        return consoleBlockedCommandsUseAsWhiteList;
+    }
+    private void setConsoleBlockedCommandsUseAsWhiteList(boolean consoleBlockedCommandsUseAsWhiteList) {
+        this.consoleBlockedCommandsUseAsWhiteList = consoleBlockedCommandsUseAsWhiteList;
+    }
+    public List<String> getConsoleBlockedCommands() {
+        return consoleBlockedCommands;
+    }
+    public void setConsoleBlockedCommands(List<String> consoleBlockedCommands) {
+        this.consoleBlockedCommands.addAll(consoleBlockedCommands);
+    }
+    public String getConsoleCommandsDenyMessage() {
+        return consoleCommandsDenyMessage;
+    }
+    private void setConsoleCommandsDenyMessage(String consoleCommandsDenyMessage) {
+        this.consoleCommandsDenyMessage = consoleCommandsDenyMessage;
+    }
     private void setFunctionEnabled(boolean functionEnabled) {
         this.functionEnabled = functionEnabled;
     }
@@ -167,6 +188,9 @@ public class CommandLimiterSettings {
                     setSyntaxDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.syntax-commands.deny-message"));
                     setWhitelistedSyntaxCommands(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.syntax-commands.whitelisted-syntax-commands"));
                 }
+                setConsoleBlockedCommands(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.console.commands"));
+                setConsoleBlockedCommandsUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.console.use-as-whitelist"));
+                setConsoleCommandsDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.console.deny-message"));
             });
         }
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
@@ -227,11 +251,15 @@ public class CommandLimiterSettings {
                 setSyntaxDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.syntax-commands.deny-message"));
                 setWhitelistedSyntaxCommands(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.syntax-commands.whitelisted-syntax-commands"));
             }
+            setConsoleBlockedCommands(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.console.commands"));
+            setConsoleBlockedCommandsUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.console.use-as-whitelist"));
+            setConsoleCommandsDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.console.deny-message"));
         } else {
             this.limitedWorlds.clear();
             this.perWorldBlockedCommands.clear();
             this.limitedWorlds.clear();
             this.whitelistedSyntaxCommands.clear();
+            this.consoleBlockedCommands.clear();
         }
         setModifyTabCompletions(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.modify-tab-completions"));
         if(isModifyTabCompletions()) {

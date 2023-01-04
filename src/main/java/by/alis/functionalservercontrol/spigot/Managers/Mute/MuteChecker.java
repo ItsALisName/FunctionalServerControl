@@ -3,7 +3,6 @@ package by.alis.functionalservercontrol.spigot.Managers.Mute;
 import org.bukkit.OfflinePlayer;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 

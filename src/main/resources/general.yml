@@ -503,6 +503,12 @@ plugin-settings:
     prevent-player-kick: true
 
     ################################################################################
+    #             Prevents players from being mute during a check                  #
+    #              Works only with mutes produced by this plugin                   #
+    ################################################################################
+    prevent-player-mute: true
+
+    ################################################################################
     #                     Standard check time (in seconds)                         #
     ################################################################################
     default-check-time: 450
@@ -534,10 +540,18 @@ global-variables:
   days: "День|Дня|Дней"
   months: "Месяц|Месяца|Месяцев"
   years: "Год|Года|Лет"
-
   never: "Данная блокировка не ограничена временем!"
   console-name: "Консоль"
   unknown-time: "Could not determine the time"
   all: "Все"
   unmuted: "размучено"
   unbanned: "разблокировано"
+  id: "ID"
+  ip: "IP"
+  name: "Никнейм"
+  uuid: "UUID"
+  banned: "Забанен"
+  muted: "Заткнут"
+  buttons:
+    unban: "&e[Разбанить]"
+    unmute: "&e[Размутить]"

@@ -23,11 +23,11 @@ public class PlayerCommandsListener implements Listener {
     @EventHandler
     public void onPlayerSendCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String command = event.getMessage().split(" ")[0];
+        String command = event.getMessage();
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(getCheatCheckerManager().isPlayerChecking(player)) {
                 if (getConfigSettings().isPreventCommandsDuringCheck()) {
-                    if (!getConfigSettings().getIgnoredCommandsDuruingCheck().contains(command)) {
+                    if (!getConfigSettings().getIgnoredCommandsDuruingCheck().contains(command.split(" ")[0])) {
                         if (!event.isCancelled()) {
                             event.setCancelled(true);
                         }
@@ -38,13 +38,13 @@ public class PlayerCommandsListener implements Listener {
 
         if(getCommandLimiterSettings().isFunctionEnabled()) {
             PlayerCommandManager commandManager = new PlayerCommandManager();
-            if(!commandManager.isPlayerCanUseCommand(player, command)) {
+            if(!commandManager.isPlayerCanUseCommand(player, command.split(" ")[0])) {
                 event.setCancelled(true);
             }
         }
 
         if(MuteChecker.isPlayerMuted(player)) {
-            if (getConfigSettings().getDisabledCommandsWhenMuted().contains(command)) {
+            if (getConfigSettings().getDisabledCommandsWhenMuted().contains(command.split(" ")[0])) {
                 MuteManager muteManager = new MuteManager();
                 TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {

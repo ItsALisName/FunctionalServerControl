@@ -67,7 +67,8 @@ blocked-ip-kick-format:
   - "&9&oIf you think this is a mistake, please contact https://example.com"
 
 other:
-  unknown-player: "&c[FunctionalServerControl] &7&oPlayer &c&o%1$f&7&o never logged into the server!!"
+  unknown-flag: "&c[FunctionalServerControl] &7Defunct flag &c%1$f"
+  unknown-player: "&c[FunctionalServerControl] &7&oPlayer &c&o%1$f&7&o never logged into the server!"
   unknown-ip: "&c[FunctionalServerControl] &7&oThere has never been a player on the server with the IP address &c&o%1$f"
   missing-argument: "&c[FunctionalServerControl] &7Not enough arguments &c%1$f"
   too-many-arguments: "&c[FunctionalServerControl] &7Too many arguments, &c%1$f &7superfluous"
@@ -91,7 +92,9 @@ other:
   blocked-nickname-notify: "&c[FunctionalServerControl] &7Player with a banned nickname &c%1$f &7tried join to the server"
   blocked-ip-notify: "&c[FunctionalServerControl] &7Player with a banned IP address &c%1$f &7 tried join to the server"
   unknown-time: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a valid time format, try for example &c1d, 1h, 1mon"
-  player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot kick it."
+  zero-time: "&c[FunctionalServerControl] &7Time cannot be 0"
+  kick-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot kick it."
+  mute-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot mute it."
   player-notifying:
     when-muted:
       expired: "&aNow you can write to the chat!"
@@ -278,8 +281,11 @@ commands:
 
   getinfo:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gives information about the ID/nickname/uuid/IP if available in the database" #Not work now
-    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <flag> <value>" #Not work now
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f -ip 127.0.0.1" #Not work now
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <flag> <value>"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f -ip 127.0.0.1"
+    not-found: "&c[FunctionalServerControl] &7Information about &c%1$f&7: &c%2$f &7not found!"
+    success: "&c[FunctionalServerControl] &7Information about &c%1$f %2$f&7:"
+    format: "&7Status: &c%1$f \n&7Player: &c%2$f \n&7Initiator: &c%3$f \n&7Reason: &c%4$f \n&7Time left: &c%5$f"
 
   getversion:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gets the version that the specified player is playing with"

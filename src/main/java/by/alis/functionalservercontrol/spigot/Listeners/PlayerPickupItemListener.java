@@ -14,7 +14,7 @@ public class PlayerPickupItemListener implements Listener {
     public void onPlayerPickupItem(EntityPickupItemEvent event) {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
-                if(getConfigSettings().isPreventBlockPlaceDuringCheck()) {
+                if(getConfigSettings().isPreventPickupItemDuringCheck()) {
                     if (event.getEntity() instanceof Player) {
                         if (getCheatCheckerManager().isPlayerChecking(((Player) event.getEntity()).getPlayer())) event.setCancelled(true);
                     }

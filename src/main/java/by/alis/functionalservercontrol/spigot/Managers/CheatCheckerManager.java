@@ -1,10 +1,9 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -214,7 +213,7 @@ public class CheatCheckerManager {
                 if(player != null && isPlayerChecking(player)) {
                     int tLeft = countdown.get(player) - 1;
                     countdown.replace(player, tLeft);
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.actionbar-message").replace("%1$f", timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().convertFromSecToMillis(tLeft))))));
+                    CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("commands.cheatcheck.actionbar-message").replace("%1$f", timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().convertFromSecToMillis(tLeft)))));
                     if(tLeft <= 0) {
                         countdown.remove(player);
                         TemporaryCache.unsetCheckingPlayersNames(player.getName());

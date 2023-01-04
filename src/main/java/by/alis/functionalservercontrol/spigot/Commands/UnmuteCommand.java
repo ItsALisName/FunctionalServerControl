@@ -27,9 +27,9 @@ public class UnmuteCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        UnmuteManager unmuteManager = new UnmuteManager();
 
         if(sender.hasPermission("functionalservercontrol.unmute")) {
+            UnmuteManager unmuteManager = new UnmuteManager();
 
             if(args.length == 0) {
                 if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label))); }
@@ -46,6 +46,19 @@ public class UnmuteCommand implements CommandExecutor {
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                         unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, null, true);
+                    });
+                }
+                return true;
+            }
+
+            if(args.length > 1) {
+                if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        unmuteManager.preformUnmute(args[0], sender, getReason(args, 1), true);
+                    });
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
                     });
                 }
                 return true;
@@ -68,7 +81,7 @@ public class UnmuteCommand implements CommandExecutor {
                     return true;
                 }
                 if(args.length == 2) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
+                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                             unmuteManager.preformUnmute(args[1], sender, null, false);
                         });

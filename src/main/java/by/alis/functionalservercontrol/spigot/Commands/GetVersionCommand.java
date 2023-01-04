@@ -1,8 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.GetVersionCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,12 +43,11 @@ public class GetVersionCommand implements CommandExecutor {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[0])));
                 return true;
             }
-            PlayerManager playerManager = new PlayerManager();
             Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                 sender.sendMessage(setColors(
                         getFileAccessor().getLang().getString("commands.getversion.success")
                                 .replace("%1$f", target.getPlayerListName())
-                                .replace("%2$f", playerManager.getPlayerMinecraftVersion(target).toString)
+                                .replace("%2$f", CoreAdapter.getAdapter().getPlayerVersion(target).toString)
                 ));
             });
         } else {

@@ -83,7 +83,10 @@ public class TempBanIpCommand implements CommandExecutor {
 
                 if(args.length == 2) {
                     if(timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
-
+                        if(args[1].startsWith("0")) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                            return true;
+                        }
                         long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                         if(OtherUtils.isArgumentIP(args[0])) {
@@ -173,7 +176,10 @@ public class TempBanIpCommand implements CommandExecutor {
 
                     if(args.length == 3 && args[0].equalsIgnoreCase("-s")) {
                         if(timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
-
+                            if(args[2].startsWith("0")) {
+                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                                return true;
+                            }
                             long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                             if(OtherUtils.isArgumentIP(args[1])) {
@@ -253,7 +259,10 @@ public class TempBanIpCommand implements CommandExecutor {
                     if(args.length > 3 && args[0].equalsIgnoreCase("-s")) {
 
                         if (timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[2])) {
-
+                            if(args[2].startsWith("0")) {
+                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                                return true;
+                            }
                             long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[2]);
 
                             if(OtherUtils.isArgumentIP(args[1])) {
@@ -331,7 +340,10 @@ public class TempBanIpCommand implements CommandExecutor {
                     }
 
                     if (timeSettingsAccessor.getTimeChecker().checkInputTimeArgument(args[1])) {
-
+                        if(args[1].startsWith("0")) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.zero-time")));
+                            return true;
+                        }
                         long time = timeSettingsAccessor.getTimeManager().convertToMillis(args[1]);
 
                         if(OtherUtils.isArgumentIP(args[0])) {
