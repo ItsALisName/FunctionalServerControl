@@ -354,7 +354,7 @@ public class AsyncJoinListener implements Listener {
                 int indexOf = getBannedPlayersContainer().getUUIDContainer().indexOf(String.valueOf(event.getUniqueId()));
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 long currentTime = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
-                if (System.currentTimeMillis() >= currentTime) {
+                if (banType != BanType.PERMANENT_IP && banType != BanType.PERMANENT_NOT_IP && System.currentTimeMillis() >= currentTime) {
                     OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
                     this.unbanManager.preformUnban(player, "The Ban time has expired");
                     event.allow();
@@ -403,11 +403,6 @@ public class AsyncJoinListener implements Listener {
             }
         }
 
-
-
-
-        //=============================================================================
-        // TODO: 10.12.2022
         else {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {

@@ -5,6 +5,7 @@ import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters.S
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
 import org.bukkit.Bukkit;
 
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils.isClassExists;
 import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class CoreAdapter {
@@ -18,6 +19,7 @@ public class CoreAdapter {
     public static boolean setAdapter() {
         String coreName = OtherUtils.getServerCoreName(Bukkit.getServer()).toLowerCase();
         if(coreName.contains("paper") || coreName.contains("purpur") || coreName.contains("pufferfish") || coreName.contains("airplane") || coreName.contains("petal")) {
+            Adapter.adventureApiExists = isClassExists("net.kyori.adventure.text.Component");
             CoreAdapter.adapter = new PaperAdapter();
             Bukkit.getConsoleSender().sendMessage(setColors("&e[by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters.PaperAdapter] Using PaperAdapter as core adapter"));
             return true;

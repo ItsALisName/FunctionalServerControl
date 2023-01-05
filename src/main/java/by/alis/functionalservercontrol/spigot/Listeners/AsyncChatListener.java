@@ -40,14 +40,14 @@ public class AsyncChatListener implements Listener, EventExecutor {
                     }
                     if (getConfigSettings().isConsoleNotification()) {
                         Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
+                                .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                         );
                     }
                     if (getConfigSettings().isPlayersNotification()) {
                         for (Player admin : Bukkit.getOnlinePlayers()) {
                             if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                 admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
+                                        .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                 );
                             }
                         }
@@ -66,14 +66,14 @@ public class AsyncChatListener implements Listener, EventExecutor {
                             }
                             if (getConfigSettings().isConsoleNotification()) {
                                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
+                                        .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                 );
                             }
                             if (getConfigSettings().isPlayersNotification()) {
                                 for (Player admin : Bukkit.getOnlinePlayers()) {
                                     if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                         admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                                .replace("%1$f", player.getPlayerListName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
+                                                .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                         );
                                     }
                                 }

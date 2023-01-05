@@ -4,7 +4,6 @@ import org.bukkit.OfflinePlayer;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 
 public class BanChecker {
@@ -91,11 +90,11 @@ public class BanChecker {
     public static boolean isIpBanned(OfflinePlayer player) {
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getBannedPlayersContainer().getIpContainer().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId()));
+            return getBannedPlayersContainer().getIpContainer().contains(getSQLiteManager().getIpByUUID(player.getUniqueId()));
         } else {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
-                    return getSQLiteManager().getBannedIps().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId())) && getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
+                    return getSQLiteManager().getBannedIps().contains(getSQLiteManager().getIpByUUID(player.getUniqueId())) && getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
                 }
                 case MYSQL: {
                     return false;

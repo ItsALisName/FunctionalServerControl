@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncUnmutePreprocessEvent;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +24,7 @@ public class UnmuteManager {
     public void preformUnmute(@NotNull OfflinePlayer player, @NotNull CommandSender unmuteInitiator, String unmuteReason, boolean announceUnmute) {
         String initiatorName = null;
         if(unmuteInitiator instanceof Player) {
-            initiatorName = ((Player) unmuteInitiator).getPlayerListName();
+            initiatorName = ((Player) unmuteInitiator).getName();
         } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
@@ -88,11 +89,11 @@ public class UnmuteManager {
             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
             if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
                 if(announceUnmute) {
-                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
                 }
             } else {
                 if(announceUnmute) {
-                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
+                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
                 }
             }
             if(player.isOnline()) {
@@ -111,11 +112,11 @@ public class UnmuteManager {
                     }
                     if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
                         if(announceUnmute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
                         }
                     } else {
                         if(announceUnmute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
                         }
                     }
                     if(player.isOnline()) {
@@ -126,12 +127,7 @@ public class UnmuteManager {
                     }
                     break;
                 }
-                case MYSQL: {
-                    break;
-                }
-                case H2: {
-                    break;
-                }
+                case H2: {}
             }
         }
     }
@@ -143,7 +139,7 @@ public class UnmuteManager {
             return;
         }
         if(unmuteInitiator instanceof Player) {
-            initiatorName = ((Player) unmuteInitiator).getPlayerListName();
+            initiatorName = ((Player) unmuteInitiator).getName();
         } else if(unmuteInitiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -203,21 +199,16 @@ public class UnmuteManager {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                         break;
                     }
-                    case MYSQL: {
-                        break;
-                    }
-                    case H2: {
-                        break;
-                    }
+                    case H2: {}
                 }
                 getMuteContainerManager().removeFromMuteContainer("-n", player);
                 if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
                     if(announceUnmute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                     }
                 } else {
                     if(announceUnmute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
                     }
                 }
                 return;
@@ -235,21 +226,16 @@ public class UnmuteManager {
                     }
                     if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
                         if(announceUnmute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                         }
                     } else {
                         if(announceUnmute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
                         }
                     }
                     break;
                 }
-                case MYSQL: {
-                    break;
-                }
-                case H2: {
-                    break;
-                }
+                case H2: { }
             }
         }
     }
@@ -377,7 +363,7 @@ public class UnmuteManager {
 
         String initiatorName = null;
         if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getPlayerListName();
+            initiatorName = ((Player) initiator).getName();
             if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "unmuteall")) {
                 CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "unmuteall");
                 return;
@@ -426,7 +412,7 @@ public class UnmuteManager {
         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmuteall.success").replace("%1$f", String.valueOf(count))));
 
         if(announceUnmute) {
-            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmuteall.broadcast-message").replace("%1$f", initiatorName)));
+            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmuteall.broadcast-message").replace("%1$f", initiatorName)));
         }
 
     }
@@ -435,7 +421,7 @@ public class UnmuteManager {
         if(reason == null) {
             reason = getGlobalVariables().getDefaultReason();
         }
-        player.sendTitle(setColors(getLanguage().getTitleWhenUnmuted()[0]), setColors(getLanguage().getTitleWhenUnmuted()[1].replace("%1$f", reason).replace("%2$f", initiatorName)), 10,70,20);
+        CoreAdapter.getAdapter().sendTitle(player, setColors(getLanguage().getTitleWhenUnmuted()[0]), setColors(getLanguage().getTitleWhenUnmuted()[1].replace("%1$f", reason).replace("%2$f", initiatorName)));
     }
 
 }

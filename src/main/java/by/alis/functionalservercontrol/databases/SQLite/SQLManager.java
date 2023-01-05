@@ -28,7 +28,7 @@ public class SQLManager extends SQLCore {
                 Class.forName("org.sqlite.JDBC");
                 sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
                 return sqlConnection;
-            } catch (ClassNotFoundException | SQLException ignored) {
+            } catch (ClassNotFoundException | SQLException ex) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to connect to the database!"));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] -> Unknown error, try reinstalling the plugin."));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] No further work possible!"));
@@ -44,7 +44,7 @@ public class SQLManager extends SQLCore {
             Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Attempt to create a file..."));
             try {
                 getFileAccessor().getSQLiteFile().createNewFile();
-            } catch (IOException ignored) {
+            } catch (IOException ex) {
             }
             if (getFileAccessor().getSQLiteFile().exists()) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Database file created successfully, reconnecting..."));
@@ -58,6 +58,7 @@ public class SQLManager extends SQLCore {
                     String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
                     String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
                     String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+                    String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
                     sqlStatement = sqlConnection.createStatement();
                     sqlStatement.executeUpdate(queryTableOne);
                     sqlStatement.executeUpdate(queryTableTwo);
@@ -65,9 +66,10 @@ public class SQLManager extends SQLCore {
                     sqlStatement.executeUpdate(queryTableFour);
                     sqlStatement.executeUpdate(queryTableFive);
                     sqlStatement.executeUpdate(queryTableSix);
+                    sqlStatement.executeUpdate(queryTableSeven);
                     sqlStatement.close();
                     return sqlConnection;
-                } catch (ClassNotFoundException | SQLException ignored) {
+                } catch (ClassNotFoundException | SQLException ex) {
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to connect to the database!"));
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] -> Unknown error, try reinstalling the plugin."));
                     Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] No further work possible!"));
@@ -93,6 +95,7 @@ public class SQLManager extends SQLCore {
         String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
         String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
         String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+        String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
         try {
             sqlStatement = sqlConnection.createStatement();
             sqlStatement.executeUpdate(queryTableOne);
@@ -101,29 +104,87 @@ public class SQLManager extends SQLCore {
             sqlStatement.executeUpdate(queryTableFour);
             sqlStatement.executeUpdate(queryTableFive);
             sqlStatement.executeUpdate(queryTableSix);
+            sqlStatement.executeUpdate(queryTableSeven);
             sqlStatement.close();
         } catch (SQLException a) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-            return;
+            throw new RuntimeException(a);
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
+        }
+    }
+
+    public void insertIntoHistory(String message) {
+        sqlConnection = getSQLConnection();
+        String getUUID = "SELECT uuid FROM allPlayers;";
+        try {
+            String a = "INSERT INTO History (history) VALUES ('" + message + "');";
+            sqlConnection.createStatement().executeUpdate(a);
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
+        }
+    }
+
+
+    public void clearHistory() {
+        sqlConnection = getSQLConnection();
+        try {
+            String a = "DELETE FROM History;";
+            sqlConnection.createStatement().executeUpdate(a);
+            sqlConnection.close();
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -145,26 +206,26 @@ public class SQLManager extends SQLCore {
                 sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
         }
     }
@@ -180,26 +241,26 @@ public class SQLManager extends SQLCore {
                 sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
         }
     }
@@ -218,33 +279,33 @@ public class SQLManager extends SQLCore {
                 }
             }
             return uuid;
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
 
 
-    public String selectIpByUUID(UUID uuid) {
+    public String getIpByUUID(UUID uuid) {
         sqlConnection = getSQLConnection();
         String select = "SELECT ip FROM allPlayers WHERE uuid = '" + uuid + "';";
         try {
@@ -254,25 +315,25 @@ public class SQLManager extends SQLCore {
                 ip = sqlResultSet.getString("ip");
             }
             return ip;
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -288,27 +349,25 @@ public class SQLManager extends SQLCore {
             }
             String insertName = "INSERT INTO allPlayers (name, uuid, ip) VALUES ('" + name + "', '" + uuid + "', '" + ip + "');";
             sqlConnection.createStatement().executeUpdate(insertName);
-            sqlResultSet.close();
-            return;
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return;
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -329,26 +388,27 @@ public class SQLManager extends SQLCore {
                 sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
         }
     }
@@ -364,26 +424,27 @@ public class SQLManager extends SQLCore {
                 sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if (sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
             try {
                 if (sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
             }
         }
     }
@@ -396,22 +457,23 @@ public class SQLManager extends SQLCore {
             sqlResultSet.close();
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -423,22 +485,23 @@ public class SQLManager extends SQLCore {
             sqlResultSet.close();
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -448,24 +511,25 @@ public class SQLManager extends SQLCore {
             String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', 'NULL_PLAYER', '" + unbanTime + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -475,24 +539,25 @@ public class SQLManager extends SQLCore {
             String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', 'NULL_PLAYER', '" + unmuteTime + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -510,17 +575,17 @@ public class SQLManager extends SQLCore {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -538,17 +603,17 @@ public class SQLManager extends SQLCore {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -568,9 +633,25 @@ public class SQLManager extends SQLCore {
                     unbanTimes.add(Long.valueOf(unbanTime));
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return unbanTimes;
     }
@@ -592,9 +673,25 @@ public class SQLManager extends SQLCore {
                 }
             }
             return ips;
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -614,9 +711,25 @@ public class SQLManager extends SQLCore {
                     uuids.add(uuid);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return uuids;
     }
@@ -637,9 +750,25 @@ public class SQLManager extends SQLCore {
                     banDates.add(banDate);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banDates;
     }
@@ -660,9 +789,25 @@ public class SQLManager extends SQLCore {
                     banTimes.add(banTime);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banTimes;
     }
@@ -683,9 +828,25 @@ public class SQLManager extends SQLCore {
                     ids.add(id);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return ids;
     }
@@ -706,9 +867,25 @@ public class SQLManager extends SQLCore {
                     names.add(name);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return names;
     }
@@ -729,9 +906,25 @@ public class SQLManager extends SQLCore {
                     iNames.add(iName);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return iNames;
     }
@@ -752,9 +945,25 @@ public class SQLManager extends SQLCore {
                     reasons.add(reason);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return reasons;
     }
@@ -775,9 +984,25 @@ public class SQLManager extends SQLCore {
                     banTypes.add(BanType.valueOf(banType));
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banTypes;
     }
@@ -801,9 +1026,25 @@ public class SQLManager extends SQLCore {
                     ids.add(id);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return ids;
     }
@@ -824,9 +1065,25 @@ public class SQLManager extends SQLCore {
                     ids.add(id);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return ids;
     }
@@ -847,9 +1104,25 @@ public class SQLManager extends SQLCore {
                     names.add(name);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return names;
     }
@@ -870,9 +1143,25 @@ public class SQLManager extends SQLCore {
                     initiators.add(initiatorName);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return initiators;
     }
@@ -893,9 +1182,25 @@ public class SQLManager extends SQLCore {
                     reasons.add(reason);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return reasons;
     }
@@ -916,9 +1221,25 @@ public class SQLManager extends SQLCore {
                     banTypes.add(BanType.valueOf(banType));
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banTypes;
     }
@@ -939,9 +1260,25 @@ public class SQLManager extends SQLCore {
                     banDates.add(banDate);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banDates;
     }
@@ -962,9 +1299,25 @@ public class SQLManager extends SQLCore {
                     banTimes.add(banTime);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return banTimes;
     }
@@ -985,9 +1338,25 @@ public class SQLManager extends SQLCore {
                     uuids.add(uuid);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return uuids;
     }
@@ -1008,43 +1377,59 @@ public class SQLManager extends SQLCore {
                     unbanTimes.add(Long.valueOf(unbanTime));
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return unbanTimes;
     }
     //bannedPlayer table
 
     public void updateAllPlayers(Player player) {
-        if (!selectIpByUUID(player.getUniqueId()).equalsIgnoreCase(String.valueOf(player.getUniqueId()))) {
+        if (!getIpByUUID(player.getUniqueId()).equalsIgnoreCase(player.getAddress().getAddress().getHostAddress())) {
             sqlConnection = getSQLConnection();
             try {
                 String a = "DELETE FROM allPlayers WHERE uuid = '" + String.valueOf(player.getUniqueId()) + "';";
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.close();
                 insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
-            } catch (SQLException ignored) {
+            } catch (SQLException ex) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-                return;
+                throw new RuntimeException(ex);
             } finally {
                 try {
                     if (sqlConnection != null) {
                         sqlConnection.close();
                     }
-                } catch (SQLException ignored) {
+                } catch (SQLException ex) {
                 }
                 try {
                     if (sqlStatement != null) {
                         sqlStatement.close();
                     }
-                } catch (SQLException ignored) {
+                } catch (SQLException ex) {
                 }
                 try {
                     if (sqlResultSet != null) {
                         sqlResultSet.close();
                     }
-                } catch (SQLException ignored) {
+                } catch (SQLException ex) {
                 }
             }
         }
@@ -1066,9 +1451,25 @@ public class SQLManager extends SQLCore {
                     names.add(name);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return names;
     }
@@ -1089,9 +1490,25 @@ public class SQLManager extends SQLCore {
                     uuids.add(uuid);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return uuids;
     }
@@ -1112,9 +1529,25 @@ public class SQLManager extends SQLCore {
                     ips.add(ip);
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return ips;
     }
@@ -1137,7 +1570,23 @@ public class SQLManager extends SQLCore {
             }
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return playersAndCommands;
     }
@@ -1150,7 +1599,23 @@ public class SQLManager extends SQLCore {
             sqlConnection.close();
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-            return;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -1172,7 +1637,23 @@ public class SQLManager extends SQLCore {
             }
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            return null;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return times;
     }
@@ -1193,23 +1674,23 @@ public class SQLManager extends SQLCore {
             return;
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-            return;
+            throw new RuntimeException(ex);
         } finally {
             try {
                 if(sqlConnection != null) {
                     sqlConnection.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlStatement != null) {
                     sqlStatement.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
             try {
                 if(sqlResultSet != null) {
                     sqlResultSet.close();
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ex) {}
         }
     }
 
@@ -1223,7 +1704,23 @@ public class SQLManager extends SQLCore {
             sqlConnection.close();
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-            return;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -1237,7 +1734,23 @@ public class SQLManager extends SQLCore {
             sqlConnection.close();
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
-            return;
+            throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -1334,6 +1847,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1357,6 +1886,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
     }
 
@@ -1378,6 +1923,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return b;
     }
@@ -1400,6 +1961,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1422,6 +1999,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1444,6 +2037,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1466,6 +2075,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1474,7 +2099,7 @@ public class SQLManager extends SQLCore {
         sqlConnection = getSQLConnection();
         List<String> a = new ArrayList<>();
         try {
-            sqlResultSet = sqlConnection.createStatement().executeQuery("SELECT initiatorName FROM nullMutedPlayers;");
+            sqlResultSet = getSQLConnection().createStatement().executeQuery("SELECT initiatorName FROM nullMutedPlayers;");
             String b = "INITIATOR_NAME_ERROR";
             while (sqlResultSet.next()) {
                 b = sqlResultSet.getString("initiatorName");
@@ -1488,6 +2113,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1532,6 +2173,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1540,7 +2197,7 @@ public class SQLManager extends SQLCore {
         sqlConnection = getSQLConnection();
         List<String> a = new ArrayList<>();
         try {
-            sqlResultSet = sqlConnection.createStatement().executeQuery("SELECT id FROM mutedPlayers;");
+            sqlResultSet = getSQLConnection().createStatement().executeQuery("SELECT id FROM mutedPlayers;");
             String b = "ID_ERROR";
             while (sqlResultSet.next()) {
                 b = sqlResultSet.getString("id");
@@ -1554,6 +2211,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1576,6 +2249,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1596,8 +2285,23 @@ public class SQLManager extends SQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
-            throw new RuntimeException(ex);
+            throw new RuntimeException("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!");
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1620,6 +2324,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1642,6 +2362,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1664,6 +2400,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1686,6 +2438,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1708,6 +2476,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1730,6 +2514,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }
@@ -1752,6 +2552,22 @@ public class SQLManager extends SQLCore {
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
+        }finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
         }
         return a;
     }

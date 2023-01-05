@@ -50,7 +50,7 @@ public class ClientBrandListener implements PluginMessageListener {
             }
             TemporaryCache.setClientBrands(player, clientName);
         } catch (IOException ignored) {
-            Bukkit.broadcastMessage(setColors("&c[FunctionalServerControl] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
+            CoreAdapter.getAdapter().broadcast(setColors("&c[FunctionalServerControl] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
         }
     }
 }

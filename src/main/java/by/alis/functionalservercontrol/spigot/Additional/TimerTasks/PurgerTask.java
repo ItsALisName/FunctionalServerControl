@@ -9,6 +9,7 @@ public class PurgerTask extends BukkitRunnable {
     public void run() {
         TemporaryCache.getUnsafeBannedPlayers().clear();
         TemporaryCache.getUnsafeMutedPlayers().clear();
+
     }
 
 }

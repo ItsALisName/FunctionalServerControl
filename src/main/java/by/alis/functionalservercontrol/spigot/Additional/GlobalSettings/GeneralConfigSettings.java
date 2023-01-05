@@ -833,6 +833,7 @@ public class GeneralConfigSettings {
                 setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
             }
             setAllowedUseRamAsContainer(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
+            //Bases
             if(isAllowedUseRamAsContainer()) {
                 if(!isLessInformation()) {
                     Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin loading] Use RAM for data storage (Allowed by the configuration file)"));
@@ -844,6 +845,7 @@ public class GeneralConfigSettings {
                     Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl | Plugin loading] RAM usage is prohibited, use direct access to the database!"));
                 }
             }
+            //Bases
             setAnnounceWhenLogHided(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
             setApiEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.enabled"));
             if(!isLessInformation()) {
@@ -866,6 +868,7 @@ public class GeneralConfigSettings {
             }
             new MuteGlobalTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             //Tasks
+            OtherUtils.loadCachedPlayers();
         });
         return;
     }

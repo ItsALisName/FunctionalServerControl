@@ -88,11 +88,11 @@ public class MuteChecker {
     public static boolean isIpMuted(OfflinePlayer player) {
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getMutedPlayersContainer().getIpContainer().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId()));
+            return getMutedPlayersContainer().getIpContainer().contains(getSQLiteManager().getIpByUUID(player.getUniqueId()));
         } else {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
-                    return getSQLiteManager().getMutedIps().contains(getSQLiteManager().selectIpByUUID(player.getUniqueId())) && getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
+                    return getSQLiteManager().getMutedIps().contains(getSQLiteManager().getIpByUUID(player.getUniqueId())) && getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
                 }
                 case MYSQL: {
                     return false;

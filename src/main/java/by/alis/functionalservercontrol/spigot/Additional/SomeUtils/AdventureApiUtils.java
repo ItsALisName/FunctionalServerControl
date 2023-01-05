@@ -29,4 +29,8 @@ public class AdventureApiUtils {
         return component.clickEvent(ClickEvent.suggestCommand(action));
     }
 
+    public static Component stringToComponent(String param) {
+        return Component.text(param);
+    }
+
 }

@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class OtherUtils {
@@ -41,10 +42,10 @@ public class OtherUtils {
         return server.getVersion().split("-")[1];
     }
 
-    public static boolean isNotNullPlayer(String ProtocolVersions) {
+    public static boolean isNotNullPlayer(String name) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                return getSQLiteManager().getNamesFromAllPlayers().contains(ProtocolVersions);
+                return getSQLiteManager().getNamesFromAllPlayers().contains(name);
             }
             case MYSQL: {
                 return false;
@@ -123,7 +124,7 @@ public class OtherUtils {
     }
 
     public static int generateRandomNumber() {
-        return (int) (Math.random() * (599 + 1));
+        return (int) (Math.random() * (299 + 1));
     }
 
     public static boolean verifyNickNameFormat(String nickProtocolVersions) {
@@ -257,6 +258,20 @@ public class OtherUtils {
                     }
                 } catch (IOException ignored) {}
             }
+        });
+    }
+
+    public static Class<?> getNmsClass(String nmsClassName) throws ClassNotFoundException {
+        return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + nmsClassName);
+    }
+
+    public static void loadCachedPlayers() {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            for(OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+                String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
+                getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
+            }
+
         });
     }
 

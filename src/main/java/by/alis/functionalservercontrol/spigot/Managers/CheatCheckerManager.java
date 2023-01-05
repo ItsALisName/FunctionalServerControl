@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getCheckingCheatsPlayers;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
@@ -80,7 +81,7 @@ public class CheatCheckerManager {
 
         String initiatorName = null;
         if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getPlayerListName();
+            initiatorName = ((Player) initiator).getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -95,13 +96,16 @@ public class CheatCheckerManager {
         getCheckingCheatsPlayers().setCheckingPlayers(player);
         getCheckingCheatsPlayers().setInitiatorsAndHisPlayers(player, initiator);
         getCheckingCheatsPlayers().setCheckReason(reason);
-        initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.success").replace("%1$f", player.getPlayerListName())));
+        initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.success").replace("%1$f", player.getName())));
         player.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.chat-message-on-start").replace("%1$f", initiatorName).replace("%2$f", reason).replace("%3$f", String.valueOf(checkTime))));
         if(getConfigSettings().isSendTitleOnCheck()) {
-            player.sendTitle(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-start")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-start"))), 10, 70,20);
+            CoreAdapter.getAdapter().sendTitle(player, setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-start")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-start"))));
         }
         this.countdown.put(player, checkTime);
         TemporaryCache.setCheckingPlayersNames(player.getName());
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.cheatcheck").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+        }
         runCountdownTimer(player);
     }
     
@@ -115,10 +119,10 @@ public class CheatCheckerManager {
                 getCheckingCheatsPlayers().getCheckingPlayers().remove(player);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.chat-message-on-stop")));
                 if(getConfigSettings().isSendTitleOnCheck()) {
-                    player.sendTitle(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-stop")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-stop"))), 10, 70,20);
+                    CoreAdapter.getAdapter().sendTitle(player, setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-stop")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-stop"))));
                 }
                 TemporaryCache.unsetCheckingPlayersNames(player.getName());
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.check-stopped").replace("%1$f", player.getPlayerListName())));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.check-stopped").replace("%1$f", player.getName())));
             } else {
                 if(!initiator.hasPermission("functionalservercontrol.cheatcheck.other")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.not-your-player")));
@@ -129,10 +133,10 @@ public class CheatCheckerManager {
                 getCheckingCheatsPlayers().getCheckingPlayers().remove(player);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.chat-message-on-stop")));
                 if(getConfigSettings().isSendTitleOnCheck()) {
-                    player.sendTitle(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-stop")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-stop"))), 10, 70,20);
+                    CoreAdapter.getAdapter().sendTitle(player, setColors(getFileAccessor().getLang().getString("commands.cheatcheck.header-title-on-stop")), setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.cheatcheck.footer-title-on-stop"))));
                 }
                 TemporaryCache.unsetCheckingPlayersNames(player.getName());
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.check-stopped").replace("%1$f", player.getPlayerListName())));
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.check-stopped").replace("%1$f", player.getName())));
             }
         } else {
             initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.player-not-checking-now")));

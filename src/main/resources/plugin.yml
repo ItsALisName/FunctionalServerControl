@@ -37,3 +37,4 @@ commands:
     aliases: [gc, getc]
   getinfo:
     aliases: [getinformation, gi]
+  test:

@@ -46,7 +46,7 @@ public class GetClientCommand implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                 sender.sendMessage(setColors(
                         getFileAccessor().getLang().getString("commands.getclient.success")
-                                .replace("%1$f", target.getPlayerListName())
+                                .replace("%1$f", target.getName())
                                 .replace("%2$f", CoreAdapter.getAdapter().getPlayerMinecraftBrand(target))
                 ));
             });

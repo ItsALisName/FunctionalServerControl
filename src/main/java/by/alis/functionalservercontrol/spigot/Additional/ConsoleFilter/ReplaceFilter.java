@@ -22,7 +22,7 @@ public class ReplaceFilter implements Filter {
             if(player == null) {
                 playerName = getGlobalVariables().getConsoleVariableName();
             } else {
-                playerName = player.getPlayerListName();
+                playerName = player.getName();
             }
             Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", StaticConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
             return Filter.Result.DENY;

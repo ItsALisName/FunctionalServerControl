@@ -2,6 +2,7 @@ package by.alis.functionalservercontrol.spigot.Additional.WorldDate;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class WorldTimeAndDateClass {
 
@@ -23,6 +24,14 @@ public class WorldTimeAndDateClass {
     public static String getTimeA() {
         final Calendar dating = Calendar.getInstance();
         return new SimpleDateFormat("HH-mm").format(dating.getTime());
+    }
+
+    public static String getDate(Date date) {
+        return new SimpleDateFormat("dd/MM/yyyy").format(date);
+    }
+
+    public static String getTime(Date date) {
+        return new SimpleDateFormat("HH:mm:ss").format(date);
     }
 
 }

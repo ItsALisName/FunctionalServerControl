@@ -88,6 +88,7 @@ public final class FunctionalServerControl extends JavaPlugin {
 
 
         //Commands registering
+        new Test(this);
         new KickCommand(this);
         new BanCommand(this);
         new FunctionalServerControlCommand(this);

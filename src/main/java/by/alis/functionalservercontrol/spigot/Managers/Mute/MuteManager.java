@@ -3,6 +3,7 @@ package by.alis.functionalservercontrol.spigot.Managers.Mute;
 import by.alis.functionalservercontrol.API.Enums.MuteType;
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncMutePreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
@@ -12,6 +13,7 @@ import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -108,7 +110,7 @@ public class MuteManager {
         reason = asyncMutePreprocessEvent.getReason().replace("'", "\"");
         String initiatorName = null;
         if(initiator instanceof Player) {
-            initiatorName = ((Player)initiator).getPlayerListName();
+            initiatorName = ((Player)initiator).getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -132,22 +134,18 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ingored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: { }
                         }
                         getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -162,20 +160,16 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ingored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: {}
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -193,19 +187,15 @@ public class MuteManager {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                             break;
                         }
-                        case MYSQL: {
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                        case H2: {}
                     }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -216,19 +206,15 @@ public class MuteManager {
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                             break;
                         }
-                        case MYSQL: {
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                        case H2: { }
                     }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -249,25 +235,21 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: {}
                         }
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -281,20 +263,16 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: {}
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -312,45 +290,39 @@ public class MuteManager {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                             break;
                         }
-                        case MYSQL: {
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                        case H2: {}
                     }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
                             Player onlinePlayer = player.getPlayer();
+                            assert onlinePlayer != null;
                             sendTitleMessageWhenMuted(onlinePlayer, initiatorName, getGlobalVariables().getVariableNever(), reason, id);
                         }
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                             break;
                         }
-                        case MYSQL: {
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                        case H2: {}
                     }
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
                             Player onlinePlayer = player.getPlayer();
+                            assert onlinePlayer != null;
                             sendTitleMessageWhenMuted(onlinePlayer, initiatorName, getGlobalVariables().getVariableNever(), reason, id);
                         }
                     }
@@ -368,25 +340,21 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: { }
                         }
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -401,20 +369,16 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
-                            case MYSQL: {
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                            case H2: {}
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -433,19 +397,17 @@ public class MuteManager {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
                             break;
                         }
                     }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -456,10 +418,8 @@ public class MuteManager {
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -467,7 +427,7 @@ public class MuteManager {
                         }
                     }
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -489,11 +449,9 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                break;
-                            }
-                            case MYSQL: {
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -503,11 +461,11 @@ public class MuteManager {
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -521,11 +479,9 @@ public class MuteManager {
                                 try {
                                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
                                 try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().selectIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                break;
-                            }
-                            case MYSQL: {
+                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
+                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -534,7 +490,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                         if(player.isOnline()) {
                             if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -552,19 +508,17 @@ public class MuteManager {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
                             break;
                         }
                     }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -575,10 +529,8 @@ public class MuteManager {
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().selectIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -586,7 +538,7 @@ public class MuteManager {
                         }
                     }
                     if(announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                     if(player.isOnline()) {
                         if(getConfigSettings().isSendTitleWhenMuted()) {
@@ -677,7 +629,7 @@ public class MuteManager {
 
         String initiatorName = "ERROR";
         if (initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getPlayerListName();
+            initiatorName = ((Player) initiator).getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -692,9 +644,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -706,7 +656,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     } else {
@@ -714,9 +664,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -726,7 +674,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     }
@@ -739,9 +687,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -751,16 +697,14 @@ public class MuteManager {
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -769,7 +713,7 @@ public class MuteManager {
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 }
@@ -784,9 +728,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -798,7 +740,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     } else {
@@ -806,9 +748,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -818,7 +758,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     }
@@ -831,9 +771,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -843,16 +781,14 @@ public class MuteManager {
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", mutePreprocessEvent.getMuteTime());
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -861,7 +797,7 @@ public class MuteManager {
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 }
@@ -876,9 +812,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -890,15 +824,14 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
                         switch (getConfigSettings().getStorageType()) {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -908,7 +841,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     }
                 } else {
@@ -920,9 +853,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -932,15 +863,13 @@ public class MuteManager {
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -949,7 +878,7 @@ public class MuteManager {
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 }
             }
@@ -963,9 +892,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -977,16 +904,14 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
                         switch (getConfigSettings().getStorageType()) {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                                 getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -996,7 +921,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     }
                 } else {
@@ -1008,9 +933,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1020,15 +943,13 @@ public class MuteManager {
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1037,7 +958,7 @@ public class MuteManager {
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 }
             }
@@ -1122,7 +1043,7 @@ public class MuteManager {
 
         String initiatorName = "ERROR";
         if (initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getPlayerListName();
+            initiatorName = ((Player) initiator).getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -1137,9 +1058,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1153,7 +1072,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     } else {
@@ -1161,9 +1080,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1175,7 +1092,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     }
@@ -1188,9 +1105,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -1202,16 +1117,14 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -1222,7 +1135,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.ip-broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 }
@@ -1237,9 +1150,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1253,7 +1164,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     } else {
@@ -1261,9 +1172,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1275,7 +1184,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                         }
                         return;
                     }
@@ -1288,9 +1197,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -1302,16 +1209,14 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason));
                             break;
                         }
                         case H2: {
@@ -1322,7 +1227,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", ip).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
                     return;
                 }
@@ -1337,9 +1242,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1353,15 +1256,14 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
                         switch (getConfigSettings().getStorageType()) {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1373,7 +1275,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     }
                 } else {
@@ -1385,9 +1287,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1399,15 +1299,13 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1418,7 +1316,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 }
             }
@@ -1432,9 +1330,7 @@ public class MuteManager {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1448,16 +1344,14 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
                         switch (getConfigSettings().getStorageType()) {
                             case SQLITE: {
                                 getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
                                 getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                break;
-                            }
-                            case MYSQL: {
+                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                                 break;
                             }
                             case H2: {
@@ -1469,7 +1363,7 @@ public class MuteManager {
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ip-mute-removed").replace("%1$f", ip)));
                         if (announceMute) {
-                            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     }
                 } else {
@@ -1481,9 +1375,7 @@ public class MuteManager {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1495,15 +1387,13 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
                             getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            break;
-                        }
-                        case MYSQL: {
+                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason));
                             break;
                         }
                         case H2: {
@@ -1514,7 +1404,7 @@ public class MuteManager {
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-ip").replace("%1$f", ip)));
                     }
                     if (announceMute) {
-                        Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 }
             }
@@ -1863,7 +1753,7 @@ public class MuteManager {
     }
 
     public void sendTitleMessageWhenMuted(Player player, String initiatorName, String unmuteTime, String reason, String id) {
-        player.sendTitle(setColors(getLanguage().getTitleWhenMuted()[0]), setColors(getLanguage().getTitleWhenMuted()[1].replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", unmuteTime)), 10,70,20);
+        CoreAdapter.getAdapter().sendTitle(player, setColors(getLanguage().getTitleWhenMuted()[0]), setColors(getLanguage().getTitleWhenMuted()[1].replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", unmuteTime)));
     }
 
     public static MuteContainerManager getMuteContainerManager() {

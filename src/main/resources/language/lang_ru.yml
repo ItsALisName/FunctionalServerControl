@@ -94,6 +94,17 @@ other:
   zero-time: "&c[FunctionalServerControl] &7Время не может быть 0"
   kick-player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его кикнуть."
   mute-player-on-check: "&c[FunctionalServerControl] &7Данный игрок сейчас находится на проверке, Вы не можете его заткнуть."
+  history-formats: #
+    ban: "Администратор %1$f забанил игрока %2$f по причине %3$f"#
+    banip: "Администратор %1$f забанил айпи %2$f по причине %3$f"#
+    tempban: "Администратор %1$f забанил игрока %2$f на %3$f по причине %4$f"#
+    tempbanip: "Администратор %1$f забанил айпи %2$f на %3$f по причине %4$f"#
+    cheatcheck: "Администратор %1$f вызвал игрока %2$f на проверку на читы"#
+    kick: "Администратор %1$f кикнул игрока %2$f по причине %3$f" #
+    mute: "Администратор %1$f заткнул игрока %2$f по причине %3$f" #
+    muteip: "Администратор %1$f заткнул айпи %2$f по причине %3$f" #
+    tempmute: "Администратор %1$f заткнул игрока %2$f на %3$f по причине %4$f" #
+    tempmuteip: "Администратор %1$f заткнул айпи %2$f на %3$f по причине %4$f" #
   player-notifying:
     when-muted:
       expired: "&aВы снова можете писать в чат!"
@@ -296,6 +307,15 @@ commands:
     usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <игрок>"
     example: "&c[FunctionalServerControl] &7Пример: &c/%1$f ALis"
     success: "&c[FunctionalServerControl] &7Игрок &c%1$f &7использует клиент Minecraft &c%2$f"
+
+  import: #
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает название клиента, с которого играет указанный игрок"#
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <источник>"#
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f vanilla"#
+    importing-started: "&c[FunctionalServerControl] &7Импорт данных из &c%1$f &7начат"#
+    importing-ended: "&c[FunctionalServerControl] &7Импорт данных из &c%1$f &7окончен"#
+    empty: "&c[FunctionalServerControl] &7Список данных &c%1$f &7пуст."#
+    unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип источника &c%1$f"
 
   cheatcheck:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"

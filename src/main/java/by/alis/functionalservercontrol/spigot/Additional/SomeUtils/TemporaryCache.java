@@ -16,10 +16,10 @@ import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.g
 
 public class TemporaryCache {
 
-    private static HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
-    private static HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
-    private static List<String> onlinePlayerNames = new ArrayList<>();
-    private static Map<Player, String> onlineIps = new HashMap<>();
+    private static final HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
+    private static final HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
+    private static final List<String> onlinePlayerNames = new ArrayList<>();
+    private static final Map<Player, String> onlineIps = new HashMap<>();
     private static int bansDeletedCount, muteDeletedCount;
     private static final UnbanManager unbanManager = new UnbanManager();
     private static final List<String> checkingPlayersNames = new ArrayList<>();

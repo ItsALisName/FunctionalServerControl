@@ -84,7 +84,7 @@ public class DupeIpManager {
             getDupeIpReports().setTime(getDate() + " " + getTime());
             getDupeIpReports().setReportExists(true);
             if(initiator != null) {
-                getDupeIpReports().setReportInitiator(initiator instanceof Player ? ((Player) initiator).getPlayerListName() : getGlobalVariables().getConsoleVariableName());
+                getDupeIpReports().setReportInitiator(initiator instanceof Player ? ((Player) initiator).getName() : getGlobalVariables().getConsoleVariableName());
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.reports.report-created").replace("%1$f", String.valueOf(120))));
             }
             new startRemoveTimer().runTaskLaterAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 2400L);

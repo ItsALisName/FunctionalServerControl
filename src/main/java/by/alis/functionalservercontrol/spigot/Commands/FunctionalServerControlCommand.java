@@ -6,6 +6,7 @@ import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCach
 import by.alis.functionalservercontrol.spigot.Commands.Completers.FunctionalServerControlCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor;
+import by.alis.functionalservercontrol.spigot.Managers.ImportManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -193,13 +194,28 @@ public class FunctionalServerControlCommand implements CommandExecutor {
             }
         }
 
+        if(args[0].equalsIgnoreCase("import")) {
+            if(sender.hasPermission("functionalservercontrol.import")) {
+                if (args.length == 1 || args.length > 2) {
+                    if (getConfigSettings().showDescription())
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.description").replace("%1$f", label + " " + args[0])));
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.usage").replace("%1$f", label + " " + args[0])));
+                    if (getConfigSettings().showExamples())
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.example").replace("%1$f", label + " " + args[0])));
+                    return true;
+                }
 
-        if(args[0].equalsIgnoreCase("playerinfo")) {
+                if (args[1].equalsIgnoreCase("vanilla")) {
+                    ImportManager.importDataFromVanilla(sender);
+                    return true;
+                }
 
-
-
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.unknown-type").replace("%1$f", args[1])));
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+            }
+            return true;
         }
-
 
         if(sender.hasPermission("functionalservercontrol.help")) {
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-subcommand").replace("%1$f", args[0] == null ? "" : args[0])));

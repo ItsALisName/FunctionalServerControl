@@ -1,9 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
 
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.entity.Player;
 
 import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
@@ -37,6 +39,10 @@ public class MD5TextUtils {
         TextComponent component = new TextComponent(setColors(inputText));
         component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, action));
         return component;
+    }
+
+    public static void sendActionBarText(Player player, String text) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
     }
 
 }
