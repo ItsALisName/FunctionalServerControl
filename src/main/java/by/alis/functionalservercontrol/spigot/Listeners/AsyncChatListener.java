@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -45,7 +46,13 @@ public class AsyncChatListener implements Listener, EventExecutor {
                     }
                     if (getConfigSettings().isPlayersNotification()) {
                         for (Player admin : Bukkit.getOnlinePlayers()) {
-                            if (player.hasPermission("functionalservercontrol.notification.mute")) {
+                            if (admin.hasPermission("functionalservercontrol.notification.mute")) {
+                                if(admin.hasPermission("functionalservercontrol.unmute")) {
+                                    admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
+                                                    .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime)))
+                                            .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));
+                                    continue;
+                                }
                                 admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                         .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                 );
@@ -71,7 +78,13 @@ public class AsyncChatListener implements Listener, EventExecutor {
                             }
                             if (getConfigSettings().isPlayersNotification()) {
                                 for (Player admin : Bukkit.getOnlinePlayers()) {
-                                    if (player.hasPermission("functionalservercontrol.notification.mute")) {
+                                    if (admin.hasPermission("functionalservercontrol.notification.mute")) {
+                                        if(admin.hasPermission("functionalservercontrol.unmute")) {
+                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
+                                                    .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime)))
+                                                    .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));
+                                            continue;
+                                        }
                                         admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                                 .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime))
                                         );

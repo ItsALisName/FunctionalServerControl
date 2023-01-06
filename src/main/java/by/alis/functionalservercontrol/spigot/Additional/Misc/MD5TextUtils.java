@@ -45,4 +45,13 @@ public class MD5TextUtils {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
     }
 
+    public static TextComponent stringToTextComponent(String param) {
+        return new TextComponent(param);
+    }
+
+    public static TextComponent appendTwo(TextComponent param1, TextComponent param2) {
+        param1.addExtra(param2);
+        return param1;
+    }
+
 }
