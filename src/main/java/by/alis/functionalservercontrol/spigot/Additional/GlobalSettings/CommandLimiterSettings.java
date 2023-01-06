@@ -4,11 +4,10 @@ import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class CommandLimiterSettings {

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static org.bukkit.Bukkit.getServer;
 
 public class VaultManager {

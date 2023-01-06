@@ -5,19 +5,17 @@ import by.alis.functionalservercontrol.API.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.IdsManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Bans.BanChecker.isIpBanned;
 import static by.alis.functionalservercontrol.spigot.Managers.Bans.BanChecker.isPlayerBanned;
@@ -93,16 +91,6 @@ public class BanManager {
                     banPlayerEvent.setCancelled(true);
                     return;
                 }
-            }
-        }
-
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                banPlayerEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
             }
         }
 
@@ -678,16 +666,6 @@ public class BanManager {
             }
         }
 
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                banPlayerEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
-            }
-        }
-
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player)) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
@@ -1139,13 +1117,6 @@ public class BanManager {
         }
 
         if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                banPlayerEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
-            }
             if(getConfigSettings().isProhibitYourselfInteraction()) {
                 if(((Player) initiator).getPlayer().getAddress().getAddress().getHostAddress().equalsIgnoreCase(ip)) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));

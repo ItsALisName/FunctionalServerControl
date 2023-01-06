@@ -1,4 +1,4 @@
-package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
+package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
 import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -19,8 +19,6 @@ import java.util.regex.Pattern;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
-import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class OtherUtils {
 

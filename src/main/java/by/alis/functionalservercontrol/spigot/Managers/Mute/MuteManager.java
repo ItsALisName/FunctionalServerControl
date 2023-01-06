@@ -4,16 +4,14 @@ import by.alis.functionalservercontrol.API.Enums.MuteType;
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncMutePreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.AdventureApiUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.IdsManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +21,7 @@ import java.util.UUID;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isIpMuted;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
@@ -86,16 +84,6 @@ public class MuteManager {
                     asyncMutePreprocessEvent.setCancelled(true);
                     return;
                 }
-            }
-        }
-
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                asyncMutePreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
             }
         }
 
@@ -609,16 +597,6 @@ public class MuteManager {
             }
         }
 
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                mutePreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
-            }
-        }
-
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player)) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
@@ -1024,13 +1002,6 @@ public class MuteManager {
         }
 
         if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), command)) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), command);
-                mutePreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), command);
-            }
             if(getConfigSettings().isProhibitYourselfInteraction()) {
                 if(((Player) initiator).getPlayer().getAddress().getAddress().getHostAddress().equalsIgnoreCase(ip)) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));

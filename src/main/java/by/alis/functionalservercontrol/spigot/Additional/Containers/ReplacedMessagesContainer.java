@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import java.util.HashMap;
 import java.util.Map;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class ReplacedMessagesContainer {

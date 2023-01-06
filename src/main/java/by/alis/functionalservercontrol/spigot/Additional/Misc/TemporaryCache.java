@@ -1,4 +1,4 @@
-package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
+package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class TemporaryCache {

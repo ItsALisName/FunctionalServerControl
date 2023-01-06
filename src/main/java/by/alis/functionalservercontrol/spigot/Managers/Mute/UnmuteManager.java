@@ -2,7 +2,6 @@ package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
 import by.alis.functionalservercontrol.API.Spigot.Events.AsyncUnmutePreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,7 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
@@ -47,16 +47,6 @@ public class UnmuteManager {
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
 
-        if(unmuteInitiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) unmuteInitiator).getPlayer(), "unmute")) {
-                CooldownsManager.notifyAboutCooldown(((Player) unmuteInitiator).getPlayer(), "unmute");
-                asyncUnmutePreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) unmuteInitiator).getPlayer(), "unmute");
-            }
-        }
-
         if(unmuteReason == null) {
             if(unmuteInitiator instanceof Player) {
                 if(!getConfigSettings().isUnmuteAllowedWithoutReason() && !unmuteInitiator.hasPermission("functionalservercontrol.use.no-reason")) {
@@ -81,13 +71,14 @@ public class UnmuteManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                    getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
                     break;
                 }
                 case MYSQL: {}
                 case H2: {}
             }
             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
-            if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
+            if(!isTextNotNull(unmuteReason)) {
                 if(announceUnmute) {
                     CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
                 }
@@ -107,10 +98,11 @@ public class UnmuteManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unmute player %player%".replace("%player%", player.getName())));
                     }
-                    if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
+                    if(!isTextNotNull(unmuteReason)) {
                         if(announceUnmute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
                         }
@@ -160,16 +152,6 @@ public class UnmuteManager {
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
 
-        if(unmuteInitiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) unmuteInitiator).getPlayer(), "unmute")) {
-                CooldownsManager.notifyAboutCooldown(((Player) unmuteInitiator).getPlayer(), "unmute");
-                asyncUnmutePreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) unmuteInitiator).getPlayer(), "unmute");
-            }
-        }
-
         if(unmuteReason == null) {
             if(unmuteInitiator instanceof Player) {
                 if(!getConfigSettings().isUnmuteAllowedWithoutReason() && !unmuteInitiator.hasPermission("functionalservercontrol.use.no-reason")) {
@@ -197,12 +179,13 @@ public class UnmuteManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
                         break;
                     }
                     case H2: {}
                 }
                 getMuteContainerManager().removeFromMuteContainer("-n", player);
-                if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
+                if(!isTextNotNull(unmuteReason)) {
                     if(announceUnmute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                     }
@@ -221,10 +204,11 @@ public class UnmuteManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unmute player %player%".replace("%player%", player)));
                     }
-                    if(unmuteReason == null || unmuteReason.equalsIgnoreCase("")) {
+                    if(!isTextNotNull(unmuteReason)) {
                         if(announceUnmute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                         }
@@ -240,7 +224,7 @@ public class UnmuteManager {
         }
     }
 
-    public void preformUnmute(OfflinePlayer player, String unmuteReason) { //NEW
+    public void preformUnmute(OfflinePlayer player, String unmuteReason) {
         AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason, getConfigSettings().isApiEnabled());
 
         if(getConfigSettings().isApiEnabled()) {
@@ -260,9 +244,6 @@ public class UnmuteManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        break;
-                    }
-                    case MYSQL: {
                         break;
                     }
                     case H2: {
@@ -289,9 +270,6 @@ public class UnmuteManager {
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unmute player %player%".replace("%player%", player.getName())));
                     }
-                    break;
-                }
-                case MYSQL: {
                     break;
                 }
                 case H2: {
@@ -326,9 +304,6 @@ public class UnmuteManager {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
                         break;
                     }
-                    case MYSQL: {
-                        break;
-                    }
                     case H2: {
                         break;
                     }
@@ -349,9 +324,6 @@ public class UnmuteManager {
                     }
                     break;
                 }
-                case MYSQL: {
-                    break;
-                }
                 case H2: {
                     break;
                 }
@@ -362,17 +334,6 @@ public class UnmuteManager {
     public void preformGlobalUnmute(@Nullable CommandSender initiator, @Nullable boolean announceUnmute) {
 
         String initiatorName = null;
-        if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getName();
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "unmuteall")) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "unmuteall");
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), "unmuteall");
-            }
-        } else {
-            initiatorName = getGlobalVariables().getConsoleVariableName();
-        }
 
         if(!announceUnmute) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
@@ -399,9 +360,6 @@ public class UnmuteManager {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
                 getSQLiteManager().clearMutes();
-                break;
-            }
-            case MYSQL: {
                 break;
             }
             case H2: {

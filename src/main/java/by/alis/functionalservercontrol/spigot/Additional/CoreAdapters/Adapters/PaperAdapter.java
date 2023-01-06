@@ -2,11 +2,11 @@ package by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters;
 
 import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Reflect.ActionBarReflect;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Reflect.TitleReflect;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Reflect.ActionBarReflect;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Reflect.TitleReflect;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -16,27 +16,22 @@ import protocolsupport.api.ProtocolSupportAPI;
 
 import java.util.UUID;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.AdventureApiUtils.stringToComponent;
 import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.*;
 
 public class PaperAdapter extends Adapter {
 
     @Override
     public void sendActionBar(Player player, String param) {
-        if (adventureApiExists) {
-            player.sendActionBar(stringToComponent(param));
-        } else {
+        try {
+            Player.class.getMethod("sendActionBar", String.class);
+            player.sendActionBar(param);
+        } catch (NoSuchMethodException ignored) {
             try {
-                Player.class.getMethod("sendActionBar", String.class);
-                player.sendActionBar(param);
-            } catch (NoSuchMethodException ignored) {
-                try {
-                    Player.class.getMethod("spigot");
-                    Player.Spigot.class.getMethod("sendMessage");
-                    MD5TextUtils.sendActionBarText(player, param);
-                } catch (NoSuchMethodException ignored1) {
-                    ActionBarReflect.sendActionBar(player, param);
-                }
+                Player.class.getMethod("spigot");
+                Player.Spigot.class.getMethod("sendMessage");
+                MD5TextUtils.sendActionBarText(player, param);
+            } catch (NoSuchMethodException ignored1) {
+                ActionBarReflect.sendActionBar(player, param);
             }
         }
     }
@@ -53,20 +48,14 @@ public class PaperAdapter extends Adapter {
 
     @Override
     public int getPlayerProtocolVersion(Player player) {
-        try {
-            Player.class.getMethod("getProtocolVersion");
-            player.getProtocolVersion();
-        } catch (NoSuchMethodException ignored) {
-            if(getViaVersionManager().isViaVersionSetuped()) {
-                return getViaVersionManager().getViaVersion().getPlayerVersion(player.getUniqueId());
-            }
-            if(getProtocolLibManager().isProtocolLibSetuped()) {
-                return getProtocolLibManager().getProtocolManager().getProtocolVersion(player);
-            }
-            if(getProtocolSupportManager().isProtocolSupportSetuped()) {
-                return ProtocolSupportAPI.getProtocolVersion(player).getId();
-            }
-            return 0;
+        if(getViaVersionManager().isViaVersionSetuped()) {
+            return getViaVersionManager().getViaVersion().getPlayerVersion(player.getUniqueId());
+        }
+        if(getProtocolLibManager().isProtocolLibSetuped()) {
+            return getProtocolLibManager().getProtocolManager().getProtocolVersion(player);
+        }
+        if(getProtocolSupportManager().isProtocolSupportSetuped()) {
+            return ProtocolSupportAPI.getProtocolVersion(player).getId();
         }
         return 0;
     }
@@ -93,22 +82,13 @@ public class PaperAdapter extends Adapter {
 
     @Override
     public void broadcast(@NotNull String message) {
-        if(adventureApiExists) {
-            Bukkit.broadcast(stringToComponent(message));
-        } else {
-            Bukkit.broadcastMessage(message);
-        }
+        Bukkit.broadcastMessage(message);
     }
 
     @Override
     public void kick(@NotNull Player player, @Nullable String reason) {
-        if(adventureApiExists) {
-            if (reason != null && !reason.equalsIgnoreCase("")) player.kick(stringToComponent(reason));
-            player.kick();
-        } else {
-            if (reason != null && !reason.equalsIgnoreCase("")) player.kickPlayer(reason);
-            player.kickPlayer("");
-        }
+        if (reason != null && !reason.equalsIgnoreCase("")) player.kickPlayer(reason);
+        player.kickPlayer("");
     }
 
     @Override

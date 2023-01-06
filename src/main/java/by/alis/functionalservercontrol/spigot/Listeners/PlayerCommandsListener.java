@@ -14,7 +14,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns.getCooldowns;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -36,9 +37,16 @@ public class PlayerCommandsListener implements Listener {
             }
         }
 
+        if(getCooldowns().playerHasCooldown(player, command.split(" ")[0].substring(1))) {
+            getCooldowns().notifyAboutCooldown(player, command.split(" ")[0].substring(1));
+            event.setCancelled(true);
+            return;
+        } else {
+            getCooldowns().setUpCooldown(player, command.split(" ")[0].substring(1), command.split(" ").length - 1);
+        }
+
         if(getCommandLimiterSettings().isFunctionEnabled()) {
-            PlayerCommandManager commandManager = new PlayerCommandManager();
-            if(!commandManager.isPlayerCanUseCommand(player, command.split(" ")[0])) {
+            if(!new PlayerCommandManager().isPlayerCanUseCommand(player, command.split(" ")[0])) {
                 event.setCancelled(true);
             }
         }

@@ -1,4 +1,4 @@
-package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
+package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

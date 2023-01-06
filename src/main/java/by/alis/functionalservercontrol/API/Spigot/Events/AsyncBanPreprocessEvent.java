@@ -92,11 +92,9 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
      * Used by the plugin to verify the entered password
      * @return entered password
      */
+    @Nullable
     public String getApiPassword() {
-        if(this.apiPassword == null || this.apiPassword.equalsIgnoreCase("")) {
-            return null;
-        }
-        return apiPassword;
+        return this.apiPassword;
     }
 
     /**

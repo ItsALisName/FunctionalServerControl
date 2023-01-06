@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands.Completers;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

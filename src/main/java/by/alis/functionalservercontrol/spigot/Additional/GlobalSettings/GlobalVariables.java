@@ -3,8 +3,7 @@ package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**
@@ -138,7 +137,6 @@ public class GlobalVariables {
                 VAR_ALL = getFileAccessor().getGeneralConfig().getString("global-variables.all");
                 VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
                 VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Global variables successfully reloaded"));
             } catch (ExceptionInInitializerError ignored) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to reload global variables"));
             }
@@ -169,9 +167,6 @@ public class GlobalVariables {
                 VAR_ALL = getFileAccessor().getGeneralConfig().getString("global-variables.all");
                 VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
                 VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
-                if(!getConfigSettings().isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Global variables successfully reloaded"));
-                }
             } catch (ExceptionInInitializerError ignored) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to reload global variables"));
             }

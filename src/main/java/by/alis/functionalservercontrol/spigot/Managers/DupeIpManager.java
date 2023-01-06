@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import java.util.Map;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;

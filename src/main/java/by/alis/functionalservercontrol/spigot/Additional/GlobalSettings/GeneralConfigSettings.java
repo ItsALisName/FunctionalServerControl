@@ -2,13 +2,12 @@ package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.API.Enums.StorageType;
-import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.CooldownsTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.DupeIpTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.MuteGlobalTask;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.PurgerTask;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
@@ -16,7 +15,7 @@ import org.bukkit.event.EventPriority;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
 
@@ -56,10 +55,6 @@ public class GeneralConfigSettings {
     private boolean isConsoleNotification = true;
     private boolean isPlayersNotification = true;
     //Notification settings end
-    //Cooldowns settings start
-    private boolean isCooldownsEnabled = false;
-    private boolean isSaveCooldowns = false;
-    //Cooldowns settings end
     private StorageType storageType = StorageType.SQLITE;
     private boolean isAllowedUnbanWithoutReason = true;
     private String banTimeExpired = "The Ban time has expired";
@@ -519,18 +514,6 @@ public class GeneralConfigSettings {
     private void setConsoleNotification(boolean consoleNotification) {
         isConsoleNotification = consoleNotification;
     }
-    private void setCooldownsEnabled(boolean cooldownsEnabled) {
-        isCooldownsEnabled = cooldownsEnabled;
-    }
-    public boolean isCooldownsEnabled() {
-        return isCooldownsEnabled;
-    }
-    public boolean isSaveCooldowns() {
-        return isSaveCooldowns;
-    }
-    private void setSaveCooldowns(boolean saveCooldowns) {
-        isSaveCooldowns = saveCooldowns;
-    }
     public String getGlobalLanguage() {
         return this.globalLanguage;
     }
@@ -725,9 +708,6 @@ public class GeneralConfigSettings {
             setDisabledCommandsWhenMuted(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.disabled-commands-when-muted"), "[", "]").split(", ")));
             setSendTitleWhenMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-muted"));
             setSendTitleWhenUnmuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-unmuted"));
-            setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
-            setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
-            CooldownsManager.setupCooldowns();
             setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
             setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));
             setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
@@ -860,13 +840,16 @@ public class GeneralConfigSettings {
             //Tasks
             if (isAutoPurgerEnabled()) {
                 if (getAutoPurgerDelay() > 5) {
-                    new PurgerTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getAutoPurgerDelay() * 20L);
+                    Bukkit.getScheduler().runTaskLater(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+                        new PurgerTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getAutoPurgerDelay() * 20L);
+                    }, 200L);
                 }
             }
             if(isDupeIdModeEnabled()) {
                 new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getDupeIpTimerDelay() * 20L);        //Timers
             }
             new MuteGlobalTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
+            new CooldownsTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             //Tasks
             OtherUtils.loadCachedPlayers();
         });
@@ -931,9 +914,6 @@ public class GeneralConfigSettings {
         setProhibitYourselfInteraction(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.prohibit-interaction-to-yourself"));
         StaticContainers.getReplacedMessagesContainer().reloadReplacedMessages();
         StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
-        setCooldownsEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.enabled"));
-        setSaveCooldowns(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cooldowns.save-cooldowns"));
-        CooldownsManager.setupCooldowns();
         setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
         if(isCheatCheckFunctionEnabled()) {
             setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));

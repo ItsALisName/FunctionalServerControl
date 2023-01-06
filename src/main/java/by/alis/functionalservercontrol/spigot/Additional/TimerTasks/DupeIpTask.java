@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.TimerTasks;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

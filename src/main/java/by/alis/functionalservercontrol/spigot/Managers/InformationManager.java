@@ -1,19 +1,20 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.AdventureApiUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class InformationManager {
@@ -651,6 +652,34 @@ public class InformationManager {
                     }
                 }
                 return;
+            }
+        });
+    }
+
+    public static void sendHistory(CommandSender recipient, int lines, @Nullable String attribute) { //Добавить команду /fsc history
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            if(lines <= 0){
+                recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.not-zero")));
+                return;
+            }
+
+            if(attribute == null) {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-num")
+                            .replace("%1$f", String.valueOf(lines))
+                            .replace("%2$f", String.join("\n", getSQLiteManager().getRecordsFromHistory(recipient, lines, null)))
+                    ));
+                    case H2: {}
+                }
+            } else {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-attribute")
+                            .replace("%1$f", String.valueOf(lines))
+                            .replace("%2$f", attribute)
+                            .replace("%3$f", String.join("\n", getSQLiteManager().getRecordsFromHistory(recipient, lines, attribute)))
+                    ));
+                    case H2: {}
+                }
             }
         });
     }

@@ -4,19 +4,16 @@ import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getCommandLimiterSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.getProtocolLibManager;
 
 public class PacketCommandsListener {

@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;

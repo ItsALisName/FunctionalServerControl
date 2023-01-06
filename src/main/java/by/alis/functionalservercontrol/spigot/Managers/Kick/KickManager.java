@@ -4,7 +4,6 @@ import by.alis.functionalservercontrol.API.Enums.KickType;
 import by.alis.functionalservercontrol.API.Spigot.Events.KickPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -72,16 +71,6 @@ public class KickManager {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
-            }
-        }
-
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "kick")) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "kick");
-                kickPreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), "kick");
             }
         }
 
@@ -172,16 +161,6 @@ public class KickManager {
                 }
             }
 
-            if(initiator instanceof Player) {
-                if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "kick")) {
-                    CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "kick");
-                    kickPreprocessEvent.setCancelled(true);
-                    return;
-                } else {
-                    CooldownsManager.setCooldown(((Player) initiator).getPlayer(), "kick");
-                }
-            }
-
             if(player.getName().equalsIgnoreCase(initiator.getName())) {
                 kickPreprocessEvent.setCancelled(true);
                 continue;
@@ -236,15 +215,6 @@ public class KickManager {
         }
 
         if(kickPreprocessEvent.isCancelled()) return;
-        if(initiator instanceof Player) {
-            if(CooldownsManager.playerHasCooldown(((Player) initiator).getPlayer(), "crazykick")) {
-                CooldownsManager.notifyAboutCooldown(((Player) initiator).getPlayer(), "crazykick");
-                kickPreprocessEvent.setCancelled(true);
-                return;
-            } else {
-                CooldownsManager.setCooldown(((Player) initiator).getPlayer(), "crazykick");
-            }
-        }
 
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player.getName())) {

@@ -389,43 +389,6 @@ plugin-settings:
         mute: "1|years"
 
   ##############################################################################
-  #                   Setting up delays for using commands                     #
-  ##############################################################################
-  cooldowns:
-
-    ##############################################################################
-    #                     Are delays on commands enabled?                        #
-    ##############################################################################
-    enabled: true
-
-    ###############################################################################
-    #      Will delays persist after the server is restarted or shut down?        #
-    # It is assumed that the timer will continue its countdown, but will not stop #
-    ###############################################################################
-    save-cooldowns: true
-
-    ##############################################################################
-    #                        Command delays (In seconds)                         #
-    ##############################################################################
-    command:
-      ban: 120
-      tempban: 100
-      tempbanip: 120
-      banip: 300
-      kick: 60
-      mute: 90
-      tempmute: 60
-      muteip: 300
-      tempmuteip: 150
-      unban: 120
-      unbanall: 300
-      crazykick: 90
-      dupeip: 100
-      cheatcheck: 40
-      unmute: 90
-      unmuteall: 300
-
-  ##############################################################################
   #           Configuring automatic cleaning of some data from RAM             #
   ##############################################################################
   auto-purger:

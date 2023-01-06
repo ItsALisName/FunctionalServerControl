@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.spigot.Managers;
 
 import by.alis.functionalservercontrol.API.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -19,8 +19,8 @@ import static by.alis.functionalservercontrol.spigot.Additional.Containers.Stati
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils.generateRandomNumber;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils.generateRandomNumber;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;

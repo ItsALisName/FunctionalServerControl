@@ -2,11 +2,11 @@ package by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters;
 
 import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.MD5TextUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Reflect.ActionBarReflect;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Reflect.TitleReflect;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Reflect.ActionBarReflect;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Reflect.TitleReflect;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

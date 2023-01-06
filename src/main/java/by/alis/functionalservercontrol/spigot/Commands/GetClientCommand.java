@@ -1,7 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.GetClientCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
@@ -12,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class GetClientCommand implements CommandExecutor {

@@ -1,17 +1,14 @@
 package by.alis.functionalservercontrol.spigot.Expansions.LuckPerms;
 
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
-import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 
-import java.util.Collection;
-
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static org.bukkit.Bukkit.getServer;
 
 public class LuckPermsManager {

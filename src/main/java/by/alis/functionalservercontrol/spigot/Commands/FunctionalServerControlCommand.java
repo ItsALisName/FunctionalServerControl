@@ -1,12 +1,14 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.GlobalVariables;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.FunctionalServerControlCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor;
 import by.alis.functionalservercontrol.spigot.Managers.ImportManager;
+import by.alis.functionalservercontrol.spigot.Managers.InformationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,8 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static org.bukkit.plugin.java.JavaPlugin.getPlugin;
 
@@ -79,6 +82,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                         getGlobalVariables().reloadGlobalVariables();
                         getCommandLimiterSettings().reloadCommandLimiterSettings();
                         getLanguage().reloadLanguage();
+                        Cooldowns.getCooldowns().reloadCooldowns(sender);
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", getGlobalVariables().getVariableAll()).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
                     });
                     return true;
@@ -124,6 +128,21 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     SFAccessor.reloadFiles();
                     Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                         getCommandLimiterSettings().reloadCommandLimiterSettings();
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", args[1]).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
+                    });
+                    return true;
+                } catch (RuntimeException ingored) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.failed")));
+                    return true;
+                }
+            }
+
+            if(args[1].equalsIgnoreCase("cooldowns")) {
+                try{
+                    long start = System.currentTimeMillis();
+                    SFAccessor.reloadFiles();
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        Cooldowns.getCooldowns().reloadCooldowns(sender);
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", args[1]).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
                     });
                     return true;
@@ -184,10 +203,17 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.cache.cleared")));
                         return true;
                     }
-                } else {
-                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.unknown-type").replace("%1$f", "cache")));
+                }
+                if(args[1].equalsIgnoreCase("history")) {
+                    switch (getConfigSettings().getStorageType()) {
+                        case SQLITE: getSQLiteManager().clearHistory();
+                        case H2: {}
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.history.cleared")));
                     return true;
                 }
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.unknown-type").replace("%1$f", "cache")));
+                return true;
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
                 return true;
@@ -217,8 +243,56 @@ public class FunctionalServerControlCommand implements CommandExecutor {
             return true;
         }
 
+        if(args[0].equalsIgnoreCase("history")) {
+            if(sender.hasPermission("functionalservercontrol.history")) {
+                if(args.length == 1) {
+                    if(getConfigSettings().showDescription()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.description").replace("%1$f", label + " history")));
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.usage").replace("%1$f", label + " history")));
+                    if(getConfigSettings().showExamples()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.example").replace("%1$f", label + " history")));
+                    return true;
+                }
+                if(args.length == 2) {
+                    int lines;
+                    try {
+                        lines = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ignored) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.not-num").replace("%1$f", args[1])));
+                        return true;
+                    }
+                    InformationManager.sendHistory(sender, lines, null);
+                    return true;
+                }
+                if(args.length > 2) {
+                    if(!args[2].equalsIgnoreCase("attribute")) {
+                        if(getConfigSettings().showDescription()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.description").replace("%1$f", label + " history")));
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.usage").replace("%1$f", label + " history")));
+                        if(getConfigSettings().showExamples()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.example").replace("%1$f", label + " history")));
+                        return true;
+                    }
+                    if(args.length > 4) {
+                        if(getConfigSettings().showDescription()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.description").replace("%1$f", label + " history")));
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.usage").replace("%1$f", label + " history")));
+                        if(getConfigSettings().showExamples()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.example").replace("%1$f", label + " history")));
+                        return true;
+                    }
+                    int lines;
+                    try {
+                        lines = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ignored) {
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.not-num").replace("%1$f", args[1])));
+                        return true;
+                    }
+                    InformationManager.sendHistory(sender, lines, args[3]);
+                    return true;
+                }
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+            }
+            return true;
+        }
+
         if(sender.hasPermission("functionalservercontrol.help")) {
-            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-subcommand").replace("%1$f", args[0] == null ? "" : args[0])));
+            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-subcommand").replace("%1$f", args[0])));
         } else {
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
         }

@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.Logger;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 
 public class LogWriter {
 

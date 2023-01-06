@@ -2,11 +2,11 @@ package by.alis.functionalservercontrol.spigot.Additional.CoreAdapters;
 
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters.PaperAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters.SpigotAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import org.bukkit.Bukkit;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils.isClassExists;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils.isClassExists;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 
 public class CoreAdapter {
 

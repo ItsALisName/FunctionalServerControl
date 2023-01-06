@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.UnbanallCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class UnbanallCommand implements CommandExecutor {

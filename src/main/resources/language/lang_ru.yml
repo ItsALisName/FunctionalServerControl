@@ -105,6 +105,8 @@ other:
     muteip: "Администратор %1$f заткнул айпи %2$f по причине %3$f" #
     tempmute: "Администратор %1$f заткнул игрока %2$f на %3$f по причине %4$f" #
     tempmuteip: "Администратор %1$f заткнул айпи %2$f на %3$f по причине %4$f" #
+    unban: "Администратор %1$f разблокировал аккаунт %2$f по причине %3$f" #
+    unmute: "Администратор %1$f размутил игрока %2$f по причине %3$f" #
   player-notifying:
     when-muted:
       expired: "&aВы снова можете писать в чат!"
@@ -144,8 +146,10 @@ commands:
 
   help:
     - "&cFunctionalServerControl &7от &cALis &7версии &c%1$f"
-    - "&4-> &c/fb reload &7- перезагружает конфигурацию плагина"
-    - "&4-> &c/fb purge <тип> &7- очищает из памяти некоторые необязательные данные"
+    - "&4-> &c/fsc reload &7- перезагружает конфигурацию плагина"
+    - "&4-> &c/fsc purge <тип> &7- очищает из памяти некоторые необязательные данные"
+    - "&4-> &c/fsc import <источник> &7- импортирует подходящие данные из указанного источника"
+    - "&4-> &f/fsc history <кол-во записей> {attribute} {атрибут}"
 
   reload:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Перезагружает определенные файлы плагина"
@@ -204,6 +208,8 @@ commands:
     cache:
       cleared: "&c[FunctionalServerControl] &7Кэш успешно очищен."
       empty: "&c[FunctionalServerControl] &7Кэш уже пустой"
+    history: #
+      cleared: "&c[FunctionalServerControl] &7История успешно очищена" #
 
   kick:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера"
@@ -309,13 +315,23 @@ commands:
     success: "&c[FunctionalServerControl] &7Игрок &c%1$f &7использует клиент Minecraft &c%2$f"
 
   import: #
-    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает название клиента, с которого играет указанный игрок"#
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Импортирует данные из указанного источника"#
     usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <источник>"#
     example: "&c[FunctionalServerControl] &7Пример: &c/%1$f vanilla"#
     importing-started: "&c[FunctionalServerControl] &7Импорт данных из &c%1$f &7начат"#
     importing-ended: "&c[FunctionalServerControl] &7Импорт данных из &c%1$f &7окончен"#
     empty: "&c[FunctionalServerControl] &7Список данных &c%1$f &7пуст."#
-    unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип источника &c%1$f"
+    unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип источника &c%1$f" #
+
+  history:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает записи сохраненные в истории"#
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <кол-во записей> {attribute} {атрибут}"#
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f 10"#
+    message-num: "&7Последние &c%1$f &7записей: \n%2$f"
+    message-attribute: "&7Последние &c%1$f &7записей по признаку &c%2$f: \n%3$f"
+    fewer-records: "&c[FunctionalServerControl] &7Записей оказалось меньше чем вы указывали, всего нашлось &c%1$f"
+    not-zero: "&c[FunctionalServerControl] &7Кол-во получаемых записей не может быть 0"
+    not-num: "&c[FunctionalServerControl] &7Похоже аргумент &c%1$f &7не является числовым"
 
   cheatcheck:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Управление вызовами проверок игра на использование стороннего ПО"

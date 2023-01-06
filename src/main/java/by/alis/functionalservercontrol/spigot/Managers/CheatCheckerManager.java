@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -19,7 +19,8 @@ import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManag
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getCheckingCheatsPlayers;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class CheatCheckerManager {
@@ -51,7 +52,7 @@ public class CheatCheckerManager {
             return;
         }
 
-        if(reason == null || reason.equalsIgnoreCase("")) {
+        if(!isTextNotNull(reason)) {
             reason = getGlobalVariables().getDefaultReason();
         }
 
@@ -59,16 +60,6 @@ public class CheatCheckerManager {
             if(!getConfigSettings().isCheatsCheckAllowedWithoutReason() && !initiator.hasPermission("functionalservercontrol.use.no-reason")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                 return;
-            }
-        }
-
-        if(initiator instanceof Player) {
-            Player i = ((Player) initiator).getPlayer();
-            if(CooldownsManager.playerHasCooldown(i, "cheatcheck")) {
-                CooldownsManager.notifyAboutCooldown(i, "cheatcheck");
-                return;
-            } else {
-                CooldownsManager.setCooldown(i, "cheatcheck");
             }
         }
 

@@ -1,4 +1,4 @@
-package by.alis.functionalservercontrol.spigot.Additional.SomeUtils;
+package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
@@ -25,14 +25,17 @@ public class TextUtils {
     }
 
     @NotNull
-    public static String getReason(String[] arg, int num){
-        StringBuilder sb = new StringBuilder();
-        for(int i = num; i < arg.length; i++) {
-            sb.append(arg[i]).append(" ");
+    public static String getReason(String[] arg, int start){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = start; i < arg.length; i++) {
+            stringBuilder.append(arg[i]).append(" ");
         }
-        return setColors(sb.toString().trim());
+        return setColors(stringBuilder.toString().trim());
     }
 
+    public static boolean isTextNotNull(@Nullable String inputText) {
+        return inputText != null && !inputText.equalsIgnoreCase("");
+    }
 
     @Nullable
     @Deprecated
@@ -57,8 +60,10 @@ public class TextUtils {
     }
 
     /**
-     * Code by imDaniX,
+     * Code by imDaniX
+     * <p>
      * Convert string to standardized hexadecimal format
+     *
      * @param inputText String message
      * @return Message translated to hex colors
      */

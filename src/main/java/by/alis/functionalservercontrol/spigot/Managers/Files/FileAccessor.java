@@ -75,4 +75,12 @@ public class FileAccessor {
         } catch (IOException ignored) {}
     }
 
+    public FileConfiguration getCooldownsConfig() {
+        return this.fileManager.cooldownsConfig;
+    }
+
+    public void reloadCooldownsConfig() {
+        this.fileManager.cooldownsConfig = YamlConfiguration.loadConfiguration(this.fileManager.cooldownsFile);
+    }
+
 }

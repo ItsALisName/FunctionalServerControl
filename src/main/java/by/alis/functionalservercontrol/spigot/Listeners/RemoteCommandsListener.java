@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 
 import static by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.StaticConsoleFilterHelper.getConsoleFilterHelper;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 
 public class RemoteCommandsListener implements Listener {
 

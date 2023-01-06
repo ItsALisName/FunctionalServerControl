@@ -2,7 +2,6 @@ package by.alis.functionalservercontrol.spigot.Commands;
 
 import by.alis.functionalservercontrol.spigot.Commands.Completers.DupeIpCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.DupeIpManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getDupeIpReports;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.getReason;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.getReason;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class DupeIpCommand implements CommandExecutor {
@@ -30,16 +29,6 @@ public class DupeIpCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if(sender.hasPermission("functionalservercontrol.dupeip")) {
-
-            if(sender instanceof Player) {
-                Player player = ((Player) sender).getPlayer();
-                if (!CooldownsManager.playerHasCooldown(player, command.getName())) {
-                    CooldownsManager.setCooldown(player, command.getName());
-                } else {
-                    CooldownsManager.notifyAboutCooldown(player, command.getName());
-                    return true;
-                }
-            }
 
             if(args.length == 0) {
                 if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.dupeip.description").replace("%1$f", label))); }

@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners.PluginMessages;
 
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TemporaryCache;;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -12,7 +12,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class ClientBrandListener implements PluginMessageListener {

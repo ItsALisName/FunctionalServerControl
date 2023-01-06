@@ -4,7 +4,9 @@ import by.alis.functionalservercontrol.API.Enums.BanType;
 import by.alis.functionalservercontrol.API.Enums.MuteType;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,7 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class SQLManager extends SQLCore {
@@ -159,6 +161,57 @@ public class SQLManager extends SQLCore {
         }
     }
 
+    public List<String> getRecordsFromHistory(CommandSender sender, int count, @Nullable String attribute) {
+        sqlConnection = getSQLConnection();
+        List<String> a = new ArrayList<>();
+        if(attribute == null) {
+            try {
+                String b = "SELECT history FROM History;";
+                sqlResultSet = sqlConnection.createStatement().executeQuery(b);
+                String record = "null";
+                int start = 0;
+                while (sqlResultSet.next()) {
+                    record = sqlResultSet.getString("history");
+                    if (record != null) {
+                        start = start + 1;
+                        a.add(start + ". " + record);
+                        if(start >= count) return a;
+                    }
+                }
+                if(start < count) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.fewer-records").replace("%1$f", String.valueOf(start))));
+                }
+                if(sqlConnection != null) sqlConnection.close();
+                if(sqlResultSet != null) sqlResultSet.close();
+            }catch (SQLException ex) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+                throw new RuntimeException(ex);
+            }
+        } else {
+            try {
+                String b = "SELECT history FROM History;";
+                sqlResultSet = sqlConnection.createStatement().executeQuery(b);
+                String record = "null";
+                int start = 0;
+                while (sqlResultSet.next()) {
+                    record = sqlResultSet.getString("history");
+                    if (record != null && record.contains(attribute)) {
+                        a.add(record);
+                        start = start + 1;
+                    }
+                }
+                if(start < count) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.fewer-records").replace("%1$f", String.valueOf(start))));
+                }
+                if(sqlConnection != null) sqlConnection.close();
+                if(sqlResultSet != null) sqlResultSet.close();
+            }catch (SQLException ex) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+                throw new RuntimeException(ex);
+            }
+        }
+        return a;
+    }
 
     public void clearHistory() {
         sqlConnection = getSQLConnection();

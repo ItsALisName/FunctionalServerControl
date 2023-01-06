@@ -1,13 +1,10 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
-import org.bukkit.Bukkit;
 
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getReplacedMessagesContainer;
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
 
 public class ConsoleFilterHelper {
 
@@ -42,17 +39,6 @@ public class ConsoleFilterHelper {
     public String getUsedFunctionalServerControlCommand(String consoleMessage) {
         if(consoleMessage == null) return "Could not identify the command";;
         return consoleMessage.split(ISSUED_COMMAND_TEXT)[1];
-    }
-
-    public void loadFunctionalServerControlCommands() {
-        this.functionalServerControlCommands.clear();
-        try {
-            if(!getConfigSettings().isLessInformation()) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Console filtering commands have been successfully loaded into RAM (Total: %count%) ✔".replace("%count%", String.valueOf(this.functionalServerControlCommands.size()))));
-            }
-        } catch (Exception ignored) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to load filtering commands into RAM &4✘"));
-        }
     }
 
     public boolean isMessageToReplace(String consoleMessage) {

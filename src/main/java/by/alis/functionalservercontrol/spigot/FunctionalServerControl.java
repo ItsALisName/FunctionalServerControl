@@ -5,8 +5,9 @@ import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.ConsoleFi
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.Logger.LogWriter;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.Metrics;
-import by.alis.functionalservercontrol.spigot.Additional.SomeUtils.OtherUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.Metrics;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.*;
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
 import by.alis.functionalservercontrol.spigot.Listeners.*;
@@ -16,7 +17,6 @@ import by.alis.functionalservercontrol.spigot.Listeners.Old.TabCompleteListener;
 import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.ClientBrandListener;
 import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.WorldDownloaderChannelListener;
 import by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners.PacketCommandsListener;
-import by.alis.functionalservercontrol.spigot.Managers.CooldownsManager;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileManager;
 import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -25,11 +25,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-import static by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.StaticConsoleFilterHelper.getConsoleFilterHelper;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.getProtocolLibManager;
 
 /**
@@ -67,6 +66,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         //Creating files if not exists
 
         //Settings initializer
+        Cooldowns.getCooldowns().loadCooldowns();
         StaticSettingsAccessor.getConfigSettings().loadConfigSettings();
         StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
         StaticSettingsAccessor.getLanguage().loadLanguage();
@@ -75,8 +75,6 @@ public final class FunctionalServerControl extends JavaPlugin {
 
         //Bases functions
         getSQLiteManager().setupTables();
-        CooldownsManager.loadCooldowns();
-        getSQLiteManager().clearCooldowns();
         //Bases functions
 
         //Expansions
@@ -161,7 +159,6 @@ public final class FunctionalServerControl extends JavaPlugin {
 
         //Console filters
         this.writer.createLogFile();
-        getConsoleFilterHelper().loadFunctionalServerControlCommands();
         this.consoleFilterCore = new L4JFilter();
         getConsoleFilterCore().eventLog();
         getConsoleFilterCore().replaceMessage();
@@ -172,7 +169,6 @@ public final class FunctionalServerControl extends JavaPlugin {
     @Override
     public void onDisable() {
         this.unregisterPluginChannels();
-        CooldownsManager.saveCooldowns();
     }
 
     private ConsoleFilterCore getConsoleFilterCore() {

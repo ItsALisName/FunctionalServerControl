@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
-import static by.alis.functionalservercontrol.spigot.Additional.SomeUtils.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 
 public class FileManager {
 
@@ -26,6 +26,9 @@ public class FileManager {
     protected File commandLimiterFile;
     protected FileConfiguration commandLimiterConfig;
 
+    protected File cooldownsFile;
+    protected FileConfiguration cooldownsConfig;
+
     public void initializeFiles() {
         File logsFolder = new File("plugins/FunctionalServerControl/logs");
         if(!logsFolder.exists() && !logsFolder.mkdirs()) {
@@ -40,6 +43,8 @@ public class FileManager {
         this.langEN = YamlConfiguration.loadConfiguration(this.langFileEN);
         this.commandLimiterFile = new File("plugins/FunctionalServerControl/", "commands-limiter.yml");
         this.commandLimiterConfig = YamlConfiguration.loadConfiguration(this.commandLimiterFile);
+        this.cooldownsFile = new File("plugins/FunctionalServerControl/", "global-cooldowns.yml");
+        this.cooldownsConfig = YamlConfiguration.loadConfiguration(this.cooldownsFile);
     }
 
     public void initializeAndCreateFilesIfNotExists() {
@@ -63,6 +68,10 @@ public class FileManager {
 
         if(!this.commandLimiterFile.exists()) {
             FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("commands-limiter.yml", false);
+        }
+
+        if(!this.cooldownsFile.exists()) {
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("global-cooldowns.yml", false);
         }
 
     }
