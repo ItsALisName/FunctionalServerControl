@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+
 public class BanIpCompleter implements TabCompleter {
 
     @Nullable
@@ -27,7 +29,7 @@ public class BanIpCompleter implements TabCompleter {
                         a.add("-s");
                     }
                     a.addAll(TemporaryCache.getOnlinePlayerNames());
-                    a.addAll(TemporaryCache.getOnlineIps().values());
+                    if(!getConfigSettings().isHideIpsFromCompletions()) a.addAll(TemporaryCache.getOnlineIps().values());
                 }
                 return TextUtils.sortList(a, args);
             }
@@ -43,7 +45,7 @@ public class BanIpCompleter implements TabCompleter {
                 List<String> a = new ArrayList<>();
                 if (sender.hasPermission("functionalservercontrol.ban-ip") && sender.hasPermission("functionalservercontrol.use.silently")) {
                     a.addAll(TemporaryCache.getOnlinePlayerNames());
-                    a.addAll(TemporaryCache.getOnlineIps().values());
+                    if(!getConfigSettings().isHideIpsFromCompletions()) a.addAll(TemporaryCache.getOnlineIps().values());
                 }
                 return TextUtils.sortList(a, args);
             }

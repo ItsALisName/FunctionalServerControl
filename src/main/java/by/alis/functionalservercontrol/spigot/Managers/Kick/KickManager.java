@@ -103,7 +103,7 @@ public class KickManager {
             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
         }
         switch (getConfigSettings().getStorageType()) {
-            case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", player.getName()).replace("%2$f", initiatorName).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
+            case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
             case H2: {}
         }
         return;
@@ -184,7 +184,7 @@ public class KickManager {
                 CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
             }
             switch (getConfigSettings().getStorageType()) {
-                case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", player.getName()).replace("%2$f", initiatorName).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
+                case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
                 case H2: {}
             }
         }

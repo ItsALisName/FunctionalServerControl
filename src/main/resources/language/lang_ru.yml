@@ -134,6 +134,8 @@ other:
     client:
       player-brand-notify: "&c[FunctionalServerControl] &7Игрок &c%1$f &7зашел на сервер используя клиент: &c%2$f&7, (Версия: &c%3$f&7)"
       world-downloader: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался зайти используя &cWorldDownloader"
+  permissions-protection:
+    player-cannot-be-operator: "&c[FunctionalServerControl] &7Игрок &c%1$f &7не может быть оператором" #---> Version: v1.04
 
 unsafe-actions:
   unsafe-flag-no-perms: "&c[FunctionalServerControl] &7У Вас недостатоно прав использовать флаг &4%1$f"
@@ -224,6 +226,30 @@ commands:
 
   kick-all:
     success: "&c[FunctionalServerControl] &7Вы выкинули &c%1$f &7игроков с сервера"
+
+  banlist: # ---> Version v1.04
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Показывает список забаненных игроков"# ---> Version v1.04
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f 1"# ---> Version v1.04
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <страница>"# ---> Version v1.04
+    page-not-found: "&c[FunctionalServerControl] &7Страница &c%1$f &7не найдена, всего страниц &c%2$f"# ---> Version v1.04
+    page-not-zero: "&c[FunctionalServerControl] &7Страница не может быть меньше 1"# ---> Version v1.04
+    success: "&7Список забаненных игроков, страница: &c%1$f &9(Наведите на ник для информации)"# ---> Version v1.04
+    format: "&7Ник: &c%1$f"# ---> Version v1.04
+    hover-text: "&c%1$f &7забанил &c%2$f. \n&7Когда: &c%3$f &7в &c%4$f &7\nПричина: &c%5$f &7\nАйди: &c%6$f"# ---> Version v1.04
+    not-num: "&c[FunctionalServerControl] &7Похоже, &c%1$f &7не является числом!" # ---> Version v1.04
+    no-banned-players: "&c[FunctionalServerControl] &7Не найдено ни одного забанненого игрока!"# ---> Version v1.04
+
+  mutelist: # ---> Version v1.04
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Показывает список заткнутых игроков"# ---> Version v1.04
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f 1"# ---> Version v1.04
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <страница>"# ---> Version v1.04
+    page-not-found: "&c[FunctionalServerControl] &7Страница &c%1$f &7не найдена, всего страниц &c%2$f"# ---> Version v1.04
+    page-not-zero: "&c[FunctionalServerControl] &7Страница не может быть меньше 1"# ---> Version v1.04
+    success: "&7Список заткнутых игроков, страница: &c%1$f &9(Наведите на ник для информации)"# ---> Version v1.04
+    format: "&7Ник: &c%1$f"# ---> Version v1.04
+    hover-text: "&c%1$f &7заткнул &c%2$f. \n&7Когда: &c%3$f &7в &c%4$f &7\nПричина: &c%5$f &7\nАйди: &c%6$f"# ---> Version v1.04
+    not-num: "&c[FunctionalServerControl] &7Похоже, &c%1$f &7не является числом!" # ---> Version v1.04
+    no-muted-players: "&c[FunctionalServerControl] &7Не найдено ни одного заткнутого игрока!"# ---> Version v1.04
 
   crazykick:
     description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Выкидывает указанного игрока с сервера с неадекватной причиной"

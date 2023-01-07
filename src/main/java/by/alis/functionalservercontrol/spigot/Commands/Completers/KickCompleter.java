@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+
 public class KickCompleter implements TabCompleter {
 
     @Nullable
@@ -24,6 +26,7 @@ public class KickCompleter implements TabCompleter {
                         a.add("-s");
                     }
                     a.addAll(TemporaryCache.getOnlinePlayerNames());
+                    if(!getConfigSettings().isHideIpsFromCompletions()) a.addAll(TemporaryCache.getOnlineIps().values());
                 }
                 return TextUtils.sortList(a, args);
             }

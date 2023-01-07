@@ -33,9 +33,6 @@ public class UnbanCompleter implements TabCompleter {
                                 a.removeIf((cmd) -> cmd.equalsIgnoreCase("NULL_PLAYER"));
                                 return TextUtils.sortList(a, args);
                             }
-                            case MYSQL: {
-                                return Collections.singletonList("");
-                            }
                             case H2: {
                                 return Collections.singletonList("");
                             }

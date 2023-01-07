@@ -6,7 +6,7 @@
 
     <groupId>as</groupId>
     <artifactId>as</artifactId>
-    <version>1.03</version>
+    <version>1.04</version>
     <packaging>jar</packaging>
 
     <name>As</name>

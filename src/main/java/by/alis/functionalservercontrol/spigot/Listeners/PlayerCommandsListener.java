@@ -15,16 +15,20 @@ import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManag
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns.getCooldowns;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class PlayerCommandsListener implements Listener {
 
+    private final PlayerCommandManager commandManager = new PlayerCommandManager();
+
     @EventHandler
     public void onPlayerSendCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String command = event.getMessage();
+        String[] args = command.split(" ");
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(getCheatCheckerManager().isPlayerChecking(player)) {
                 if (getConfigSettings().isPreventCommandsDuringCheck()) {
@@ -46,8 +50,24 @@ public class PlayerCommandsListener implements Listener {
         }
 
         if(getCommandLimiterSettings().isFunctionEnabled()) {
-            if(!new PlayerCommandManager().isPlayerCanUseCommand(player, command.split(" ")[0])) {
+            if(!this.commandManager.isPlayerCanUseCommand(player, command.split(" ")[0])) {
                 event.setCancelled(true);
+            }
+        }
+
+        if(getConfigSettings().isReplaceMinecraftCommand()) {
+            event.setMessage("/" + this.commandManager.replaceMinecraftCommand(command));
+        }
+
+        if(getConfigSettings().isPermissionsProtectionEnabled()) {
+            if ((command.startsWith("/op") || command.startsWith("/minecraft:op")) && args.length >= 2) {
+                if (player.hasPermission("bukkit.command.op.give") || player.hasPermission("minecraft.command.op")) {
+                    if (!getConfigSettings().getOpAllowedPlayers().contains(args[1])) {
+                        event.setCancelled(true);
+                        player.sendMessage(setColors(getFileAccessor().getLang().getString("other.permissions-protection.player-cannot-be-operator").replace("%1$f", args[1])));
+                        return;
+                    }
+                }
             }
         }
 

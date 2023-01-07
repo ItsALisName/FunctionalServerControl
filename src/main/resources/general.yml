@@ -51,25 +51,19 @@ plugin-settings:
   ##############################################################################
   less-information: false
 
-  ##############################################################################
-  #                           Action Storage Settings                          #
-  ##############################################################################
-  history-settings: #Not work now
+  plugin-commands: #---> Version: v1.04
 
     ##############################################################################
-    #                         Is action recording enabled?                       #
+    #          If enabled, online IPs will be removed from autofill              #
     ##############################################################################
-    enabled: true
+    hide-ips-from-completions: true #---> Version: v1.04
 
-    ##############################################################################
-    #                 Do save the history after server reload?                   #
-    ##############################################################################
-    force-save: false
-
-    ##############################################################################
-    #                 Maximum number of entries in the history                   #
-    ##############################################################################
-    maximum-records: 100
+    ##################################################################################
+    #          If enabled, standard minecraft commands will be replaced with         #
+    #                                 plugin commands                                #
+    # Example: '/minecraft:ban' will be replaced with '/functionalservercontrol:ban' #
+    ##################################################################################
+    replace-default-minecraft-commands: true #---> Version: v1.04
 
   ##############################################################################
   #                           Notification Settings                            #
@@ -87,6 +81,13 @@ plugin-settings:
     #       tries to log in or a gagged player tries to write to the chat?       #
     ##############################################################################
     players: true
+
+    ##############################################################################
+    #  If enabled, a button will be added to players who receive a notification  #
+    #   about the entry of a banned player or an attempt by a muted player to    #
+    #       write to the chat with the ability to unmute/unban the player.      #
+    ##############################################################################
+    buttons-on-notifications: true #----> Version: v1.04
 
   ##############################################################################
   #     If enabled, players will not be able to interact with themselves       #
@@ -207,6 +208,60 @@ plugin-settings:
     #     Send a message to the "Actionbar" to the player while he is muted?     #
     ##############################################################################
     send-while-muted: true
+
+  ##############################################################################
+  #         OP protection, groups and certain permissions protection           #
+  ##############################################################################
+  permissions-protection: #---> Version v1.04
+    ##############################################################################
+    #           Is the feature enabled? Not changed by '/fsc reload'             #
+    ##############################################################################
+    enabled: true #---> Version v1.04
+    ##############################################################################
+    #                     Time between checks (in seconds)                       #
+    ##############################################################################
+    check-delay: 5 #---> Version v1.04
+    op-protection: #---> Version v1.04
+      auto-deop: true #---> Version v1.04
+      ##############################################################################
+      #               Players who will not be affected by the check                #
+      ##############################################################################
+      allowed-players: [YOU,AND_SOME_PLAYERS,ALis] #---> Version v1.04
+      ##############################################################################
+      #       Actions to be performed in the console when the player has OP        #
+      ##############################################################################
+      actions: #---> Version v1.04
+      - "kick %1$f Вы не можете быть оператором" #---> Version v1.04
+
+    group-protection: #---> Version v1.04
+      ##############################################################################
+      #                         List of protected groups                           #
+      ##############################################################################
+      protected-groups: [admin,owner,etc] #---> Version v1.04
+      ##############################################################################
+      #               Players who will not be affected by the check                #
+      ##############################################################################
+      allowed-players: [YOU,AND_SOME_PLAYERS,ALis] #---> Version v1.04
+      ##############################################################################
+      # Actions to be performed in the console when the player has protected group #
+      ##############################################################################
+      actions: #---> Version v1.04
+      - "lp user %1$f parent set default" #---> Version v1.04
+      - "kick %1$f Вы не можете иметь группу %2$f" #---> Version v1.04
+
+    perms-protection: #---> Version v1.04
+      protected-permissions: #---> Version v1.04
+      - "minecraft.command.op" #---> Version v1.04
+      - "your.custom.permissions" #---> Version v1.04
+      ##############################################################################
+      #               Players who will not be affected by the check                #
+      ##############################################################################
+      allowed-player: [YOU,AND_SOME_PLAYERS,ALis] #---> Version v1.04
+      actions: #---> Version v1.04
+      - "lp user %1$f permission set %2$f false" #---> Version v1.04
+      - "kick %1$f Вы не можете иметь права '%2$f'" #---> Version v1.04
+
+
 
   ##############################################################################
   #                        Chat function configuration                         #

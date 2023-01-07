@@ -45,7 +45,7 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
                     if (getConfigSettings().isPlayersNotification() ) {
                         for (Player admin : Bukkit.getOnlinePlayers()) {
                             if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                     if (admin.hasPermission("functionalservercontrol.unmute")) {
                                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                             admin.spigot().sendMessage(MD5TextUtils.appendTwo(
@@ -86,7 +86,7 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
                             if (getConfigSettings().isPlayersNotification()) {
                                 for (Player admin : Bukkit.getOnlinePlayers()) {
                                     if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                             if (admin.hasPermission("functionalservercontrol.unmute")) {
                                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                     admin.spigot().sendMessage(MD5TextUtils.appendTwo(

@@ -229,7 +229,7 @@ public class Cooldowns {
     public void setUpCooldown(Player player, String command, int args) {
         if (functionEnabled) {
             Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                if (player.hasPermission("functionalbans.cooldowns.bypass") || player.hasPermission("functionalbans.cooldowns." + command + ".bypass"))
+                if (player.hasPermission("functionalservercontrol.cooldowns.bypass") || player.hasPermission("functionalservercontrol.cooldowns." + command + ".bypass"))
                     return;
                 for (TrackedCommand trackedCommand : this.trackedCommands) {
                     if (trackedCommand.isCheckAliases()) {

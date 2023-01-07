@@ -1,11 +1,22 @@
 package by.alis.functionalservercontrol.spigot.Managers.Bans;
 
 import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class BanContainerManager {
 
@@ -109,6 +120,244 @@ public class BanContainerManager {
             }
             return;
         }
+    }
+
+    public void sendBanList(CommandSender sender, int page) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            if(getConfigSettings().isAllowedUseRamAsContainer()) {
+                if(getBannedPlayersContainer().getIdsContainer().size() == 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.no-banned-players")));
+                    return;
+                }
+                if(page < 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-zero")));
+                    return;
+                }
+                int maxPages = getBannedPlayersContainer().getIdsContainer().size() / 10;
+                if(maxPages == 0) maxPages = 1;
+                if(page > maxPages) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
+                    return;
+                }
+                int start = page * 10; if(page == 1) start = 0;
+                int stop = start + 10; if(stop > getBannedPlayersContainer().getIdsContainer().size()) stop = getBannedPlayersContainer().getIdsContainer().size();
+                String format = getFileAccessor().getLang().getString("commands.banlist.format");
+                String hoverText = getFileAccessor().getLang().getString("commands.banlist.hover-text");
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.success").replace("%1$f", String.valueOf(page))));
+                if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                        if (sender.hasPermission("functionalservercontrol.unban")) {
+                            do {
+                                sender.spigot().sendMessage(
+                                        MD5TextUtils.appendTwo(
+                                                MD5TextUtils.createHoverText(setColors(
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                                .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
+                                                                .replace("%3$f", getBannedPlayersContainer().getRealBanDateContainer().get(start))
+                                                                .replace("%4$f", getBannedPlayersContainer().getRealBanTimeContainer().get(start))
+                                                                .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
+                                                                .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
+                                                ),
+                                                MD5TextUtils.createClickableSuggestCommandText(
+                                                        setColors(" " + getGlobalVariables().getButtonUnban()),
+                                                        "/unban " + getBannedPlayersContainer().getNameContainer().get(start)
+                                                )
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        } else {
+                            do {
+                                sender.spigot().sendMessage(
+                                        MD5TextUtils.createHoverText(setColors(
+                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getBannedPlayersContainer().getRealBanDateContainer().get(start))
+                                                        .replace("%4$f", getBannedPlayersContainer().getRealBanTimeContainer().get(start))
+                                                        .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                        if (sender.hasPermission("functionalservercontrol.unban")) {
+                            do {
+                                sender.sendMessage(
+                                        AdventureApiUtils.createHoverText(
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getBannedPlayersContainer().getRealBanDateContainer().get(start))
+                                                        .replace("%4$f", getBannedPlayersContainer().getRealBanTimeContainer().get(start))
+                                                        .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
+                                        ).append(AdventureApiUtils.createClickableSuggestCommandText(
+                                                " " + setColors(getGlobalVariables().getButtonUnban()),
+                                                "/unban " + getBannedPlayersContainer().getNameContainer().get(start)
+
+                                        ))
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        } else {
+                            do {
+                                sender.sendMessage(
+                                        AdventureApiUtils.createHoverText(
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getBannedPlayersContainer().getRealBanDateContainer().get(start))
+                                                        .replace("%4$f", getBannedPlayersContainer().getRealBanTimeContainer().get(start))
+                                                        .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                } else {
+                    do {
+                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))));
+                        start = start + 1;
+                    } while (start < stop);
+                    return;
+                }
+            } else {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        if(getSQLiteManager().getBannedIds().size() == 0) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.no-banned-players")));
+                            return;
+                        }
+                        if(page < 0) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-zero")));
+                            return;
+                        }
+                        int maxPages = getSQLiteManager().getBannedIds().size() / 10;
+                        if(maxPages == 0) maxPages = 1;
+                        if(page > maxPages) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
+                            return;
+                        }
+                        int start = page * 10; if(page == 1) start = 0;
+                        int stop = start + 10; if(stop > getSQLiteManager().getBannedIds().size()) stop = getSQLiteManager().getBannedIds().size();
+                        String format = getFileAccessor().getLang().getString("commands.banlist.format");
+                        String hoverText = getFileAccessor().getLang().getString("commands.banlist.hover-text");
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.success").replace("%1$f", String.valueOf(page))));
+                        if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    do {
+                                        sender.spigot().sendMessage(
+                                                MD5TextUtils.appendTwo(
+                                                        MD5TextUtils.createHoverText(setColors(
+                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                                setColors(hoverText
+                                                                        .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
+                                                                        .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
+                                                                        .replace("%3$f", getSQLiteManager().getBansDates().get(start))
+                                                                        .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
+                                                                        .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
+                                                                        .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
+                                                        ),
+                                                        MD5TextUtils.createClickableSuggestCommandText(
+                                                                setColors(" " + getGlobalVariables().getButtonUnban()),
+                                                                "/unban " + getSQLiteManager().getBannedPlayersNames().get(start)
+                                                        )
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                } else {
+                                    do {
+                                        sender.spigot().sendMessage(
+                                                MD5TextUtils.createHoverText(setColors(
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getBansDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                }
+                            }
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    do {
+                                        sender.sendMessage(
+                                                AdventureApiUtils.createHoverText(
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getBansDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
+                                                ).append(AdventureApiUtils.createClickableSuggestCommandText(
+                                                        " " + setColors(getGlobalVariables().getButtonUnban()),
+                                                        "/unban " + getSQLiteManager().getBannedPlayersNames().get(start)
+
+                                                ))
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                } else {
+                                    do {
+                                        sender.sendMessage(
+                                                AdventureApiUtils.createHoverText(
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getBansDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                }
+                            }
+                        } else {
+                            do {
+                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))));
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                    case H2: {
+
+                    }
+                }
+            }
+
+        });
     }
 
 }

@@ -38,3 +38,7 @@ commands:
   getinfo:
     aliases: [getinformation, gi]
   test:
+  banlist:
+    aliases: [banslist]
+  mutelist:
+    aliases: [muteslist]

@@ -139,7 +139,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -178,7 +178,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -262,7 +262,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -292,7 +292,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -340,7 +340,7 @@ public class AsyncJoinListener implements Listener {
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                     if (admin.hasPermission("functionalservercontrol.unban")) {
                                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                             admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
@@ -370,7 +370,7 @@ public class AsyncJoinListener implements Listener {
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                     if (admin.hasPermission("functionalservercontrol.unban")) {
                                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                             admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -402,7 +402,7 @@ public class AsyncJoinListener implements Listener {
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                     if (admin.hasPermission("functionalservercontrol.unban")) {
                                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                             admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
@@ -432,7 +432,7 @@ public class AsyncJoinListener implements Listener {
                     if(getConfigSettings().isPlayersNotification()) {
                         for(Player admin : Bukkit.getOnlinePlayers()) {
                             if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                     if (admin.hasPermission("functionalservercontrol.unban")) {
                                         if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                             admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -481,7 +481,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
@@ -511,7 +511,7 @@ public class AsyncJoinListener implements Listener {
                         if(getConfigSettings().isPlayersNotification()) {
                             for(Player admin : Bukkit.getOnlinePlayers()) {
                                 if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                         if (admin.hasPermission("functionalservercontrol.unban")) {
                                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                 admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
@@ -571,7 +571,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -601,7 +601,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -658,7 +658,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -688,7 +688,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -736,7 +736,7 @@ public class AsyncJoinListener implements Listener {
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                             if (admin.hasPermission("functionalservercontrol.unban")) {
                                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                     admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
@@ -766,7 +766,7 @@ public class AsyncJoinListener implements Listener {
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                             if (admin.hasPermission("functionalservercontrol.unban")) {
                                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                     admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -798,7 +798,7 @@ public class AsyncJoinListener implements Listener {
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                             if (admin.hasPermission("functionalservercontrol.unban")) {
                                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                     admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
@@ -828,7 +828,7 @@ public class AsyncJoinListener implements Listener {
                             if(getConfigSettings().isPlayersNotification()) {
                                 for(Player admin : Bukkit.getOnlinePlayers()) {
                                     if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                             if (admin.hasPermission("functionalservercontrol.unban")) {
                                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                     admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
@@ -877,7 +877,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
@@ -907,7 +907,7 @@ public class AsyncJoinListener implements Listener {
                                 if(getConfigSettings().isPlayersNotification()) {
                                     for(Player admin : Bukkit.getOnlinePlayers()) {
                                         if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
                                                 if (admin.hasPermission("functionalservercontrol.unban")) {
                                                     if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
                                                         admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),

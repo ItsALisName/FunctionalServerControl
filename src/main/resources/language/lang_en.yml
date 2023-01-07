@@ -135,6 +135,8 @@ other:
     client:
       player-brand-notify: "&c[FunctionalServerControl] &7Player &c%1$f &7logged into the server using the client: &c%2$f&7, Minecraft version: &c%3$f"
       world-downloader: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to log in using &cWorldDownloader"
+  permissions-protection:
+    player-cannot-be-operator: "&c[FunctionalServerControl] &7Player &c%1$f &7cannot be an operator" #---> Version: v1.04
 
 unsafe-actions:
   unsafe-flag-no-perms: "&c[FunctionalServerControl] &7You don't have permissions to use the flag &4%1$f"
@@ -223,6 +225,30 @@ commands:
   unbanall:
     success: "&c[FunctionalServerControl] &7You have unban &c%1$f &7accounts"
     broadcast-message: "&7Administrator &c%1$f &7unban all accounts"
+
+  banlist: # ---> Version v1.04
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of banned players"# ---> Version v1.04
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"# ---> Version v1.04
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"# ---> Version v1.04
+    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"# ---> Version v1.04
+    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"# ---> Version v1.04
+    success: "&7List of banned players, page: &c%1$f &9(Hover over nickname for info)"# ---> Version v1.04
+    format: "&7Nickname: &c%1$f"# ---> Version v1.04
+    hover-text: "&c%1$f &7banned &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f &7\nID: &c%6$f"# ---> Version v1.04
+    not-num: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a number!" # ---> Version v1.04
+    no-banned-players: "&c[FunctionalServerControl] &7No banned players found!"# ---> Version v1.04
+
+  mutelist: # ---> Version v1.04
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of muted players"# ---> Version v1.04
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"# ---> Version v1.04
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"# ---> Version v1.04
+    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"# ---> Version v1.04
+    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"# ---> Version v1.04
+    success: "&7List of muted players, page: &c%1$f &9(Hover over nickname for info)"# ---> Version v1.04
+    format: "&7Nickname: &c%1$f"# ---> Version v1.04
+    hover-text: "&c%1$f &7muted &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f &7\nID: &c%6$f"# ---> Version v1.04
+    not-num: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a number!" # ---> Version v1.04
+    no-muted-players: "&c[FunctionalServerControl] &7No muted players found!"# ---> Version v1.04
 
   kick-all:
     success: "&c[FunctionalServerControl] &7You kick &c%1$f &7players from the server"

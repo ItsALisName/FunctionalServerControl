@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+
 public class TempMuteCompleter implements TabCompleter {
 
     @Nullable
@@ -24,7 +26,7 @@ public class TempMuteCompleter implements TabCompleter {
                         a.add("-s");
                     }
                     a.addAll(TemporaryCache.getOnlinePlayerNames());
-                    a.addAll(TemporaryCache.getOnlineIps().values());
+                    if(!getConfigSettings().isHideIpsFromCompletions()) a.addAll(TemporaryCache.getOnlineIps().values());
                 }
                 return TextUtils.sortList(a, args);
             }
@@ -33,7 +35,7 @@ public class TempMuteCompleter implements TabCompleter {
                 List<String> b = new ArrayList<>();
                 if (sender.hasPermission("functionalservercontrol.tempmute") && sender.hasPermission("functionalservercontrol.use.silently")) {
                     b.addAll(TemporaryCache.getOnlinePlayerNames());
-                    b.addAll(TemporaryCache.getOnlineIps().values());
+                    if(!getConfigSettings().isHideIpsFromCompletions()) b.addAll(TemporaryCache.getOnlineIps().values());
                 }
                 return TextUtils.sortList(b, args);
             }

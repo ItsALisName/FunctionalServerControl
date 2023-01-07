@@ -265,7 +265,7 @@ public class OtherUtils {
 
     public static void loadCachedPlayers() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-            for(OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+            for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                 String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
                 getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
             }

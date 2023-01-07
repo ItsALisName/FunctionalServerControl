@@ -2,6 +2,7 @@ package by.alis.functionalservercontrol.spigot.Listeners;
 
 import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

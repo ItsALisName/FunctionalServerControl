@@ -10,7 +10,7 @@ public class ConsoleFilterHelper {
 
     private final List<String> functionalServerControlCommands = new ArrayList<>(Arrays.asList("/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
             "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall", "/getver", "/gv", "/getversion",
-            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation"));
+            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation", "/banlist", "/banslist", "/mutelist", "/muteslist"));
     private final String ISSUED_COMMAND_TEXT = "issued server command: ";
 
     public boolean isFunctionalServerControlCommand(String consoleMessage) {

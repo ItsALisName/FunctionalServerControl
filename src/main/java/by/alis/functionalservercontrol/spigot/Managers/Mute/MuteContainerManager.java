@@ -1,11 +1,19 @@
 package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
 import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class MuteContainerManager {
 
@@ -109,6 +117,244 @@ public class MuteContainerManager {
             }
             return;
         }
+    }
+
+    public void sendMuteList(CommandSender sender, int page) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            if(getConfigSettings().isAllowedUseRamAsContainer()) {
+                if(getMutedPlayersContainer().getIdsContainer().size() == 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.no-muted-players")));
+                    return;
+                }
+                if(page < 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.page-not-zero")));
+                    return;
+                }
+                int maxPages = getMutedPlayersContainer().getIdsContainer().size() / 10;
+                if(maxPages == 0) maxPages = 1;
+                if(page > maxPages) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
+                    return;
+                }
+                int start = page * 10; if(page == 1) start = 0;
+                int stop = start + 10; if(stop > getMutedPlayersContainer().getIdsContainer().size()) stop = getMutedPlayersContainer().getIdsContainer().size();
+                String format = getFileAccessor().getLang().getString("commands.mutelist.format");
+                String hoverText = getFileAccessor().getLang().getString("commands.mutelist.hover-text");
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.success").replace("%1$f", String.valueOf(page))));
+                if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                        if (sender.hasPermission("functionalservercontrol.unmute")) {
+                            do {
+                                sender.spigot().sendMessage(
+                                        MD5TextUtils.appendTwo(
+                                                MD5TextUtils.createHoverText(setColors(
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                                .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
+                                                                .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
+                                                                .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
+                                                                .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
+                                                                .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
+                                                ),
+                                                MD5TextUtils.createClickableSuggestCommandText(
+                                                        setColors(" " + getGlobalVariables().getButtonUnmute()),
+                                                        "/unban " + getMutedPlayersContainer().getNameContainer().get(start)
+                                                )
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        } else {
+                            do {
+                                sender.spigot().sendMessage(
+                                        MD5TextUtils.createHoverText(setColors(
+                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
+                                                        .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
+                                                        .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                        if (sender.hasPermission("functionalservercontrol.unmute")) {
+                            do {
+                                sender.sendMessage(
+                                        AdventureApiUtils.createHoverText(
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
+                                                        .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
+                                                        .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
+                                        ).append(AdventureApiUtils.createClickableSuggestCommandText(
+                                                " " + setColors(getGlobalVariables().getButtonUnmute()),
+                                                "/unban " + getMutedPlayersContainer().getNameContainer().get(start)
+
+                                        ))
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        } else {
+                            do {
+                                sender.sendMessage(
+                                        AdventureApiUtils.createHoverText(
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                setColors(hoverText
+                                                        .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                        .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
+                                                        .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
+                                                        .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
+                                                        .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
+                                                        .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
+                                        )
+                                );
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                } else {
+                    do {
+                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))));
+                        start = start + 1;
+                    } while (start < stop);
+                    return;
+                }
+            } else {
+                switch (getConfigSettings().getStorageType()) {
+                    case SQLITE: {
+                        if(getSQLiteManager().getMutedIds().size() == 0) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.no-muted-players")));
+                            return;
+                        }
+                        if(page < 0) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.page-not-zero")));
+                            return;
+                        }
+                        int maxPages = getSQLiteManager().getMutedIds().size() / 10;
+                        if(maxPages == 0) maxPages = 1;
+                        if(page > maxPages) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
+                            return;
+                        }
+                        int start = page * 10; if(page == 1) start = 0;
+                        int stop = start + 10; if(stop > getSQLiteManager().getMutedIds().size()) stop = getSQLiteManager().getMutedIds().size();
+                        String format = getFileAccessor().getLang().getString("commands.mutelist.format");
+                        String hoverText = getFileAccessor().getLang().getString("commands.mutelist.hover-text");
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.mutelist.success").replace("%1$f", String.valueOf(page))));
+                        if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    do {
+                                        sender.spigot().sendMessage(
+                                                MD5TextUtils.appendTwo(
+                                                        MD5TextUtils.createHoverText(setColors(
+                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                                setColors(hoverText
+                                                                        .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
+                                                                        .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
+                                                                        .replace("%3$f", getSQLiteManager().getMuteDates().get(start))
+                                                                        .replace("%4$f", getSQLiteManager().getMuteTimes().get(start))
+                                                                        .replace("%5$f", getSQLiteManager().getMuteReasons().get(start))
+                                                                        .replace("%6$f", getSQLiteManager().getMutedIds().get(start))
+                                                        ),
+                                                        MD5TextUtils.createClickableSuggestCommandText(
+                                                                setColors(" " + getGlobalVariables().getButtonUnmute()),
+                                                                "/unban " + getSQLiteManager().getMutedPlayersNames().get(start)
+                                                        )
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                } else {
+                                    do {
+                                        sender.spigot().sendMessage(
+                                                MD5TextUtils.createHoverText(setColors(
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getMuteDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getMuteTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getMuteReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getMutedIds().get(start))
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                }
+                            }
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    do {
+                                        sender.sendMessage(
+                                                AdventureApiUtils.createHoverText(
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getMuteDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getMuteTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getMuteReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getMutedIds().get(start))
+                                                ).append(AdventureApiUtils.createClickableSuggestCommandText(
+                                                        " " + setColors(getGlobalVariables().getButtonUnmute()),
+                                                        "/unban " + getSQLiteManager().getMutedPlayersNames().get(start)
+
+                                                ))
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                } else {
+                                    do {
+                                        sender.sendMessage(
+                                                AdventureApiUtils.createHoverText(
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                        setColors(hoverText
+                                                                .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
+                                                                .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
+                                                                .replace("%3$f", getSQLiteManager().getMuteDates().get(start))
+                                                                .replace("%4$f", getSQLiteManager().getMuteTimes().get(start))
+                                                                .replace("%5$f", getSQLiteManager().getMuteReasons().get(start))
+                                                                .replace("%6$f", getSQLiteManager().getMutedIds().get(start))
+                                                )
+                                        );
+                                        start = start + 1;
+                                    } while (start < stop);
+                                    return;
+                                }
+                            }
+                        } else {
+                            do {
+                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))));
+                                start = start + 1;
+                            } while (start < stop);
+                            return;
+                        }
+                    }
+                    case H2: {
+
+                    }
+                }
+            }
+
+        });
     }
     
 }

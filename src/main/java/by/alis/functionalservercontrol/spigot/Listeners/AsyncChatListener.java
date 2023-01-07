@@ -47,7 +47,7 @@ public class AsyncChatListener implements Listener, EventExecutor {
                     if (getConfigSettings().isPlayersNotification()) {
                         for (Player admin : Bukkit.getOnlinePlayers()) {
                             if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                if(admin.hasPermission("functionalservercontrol.unmute")) {
+                                if(admin.hasPermission("functionalservercontrol.unmute") && getConfigSettings().isButtonsOnNotifications()) {
                                     admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                                     .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime)))
                                             .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));
@@ -79,7 +79,7 @@ public class AsyncChatListener implements Listener, EventExecutor {
                             if (getConfigSettings().isPlayersNotification()) {
                                 for (Player admin : Bukkit.getOnlinePlayers()) {
                                     if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                        if(admin.hasPermission("functionalservercontrol.unmute")) {
+                                        if(admin.hasPermission("functionalservercontrol.unmute") && getConfigSettings().isButtonsOnNotifications()) {
                                             admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                                     .replace("%1$f", player.getName()).replace("%2$f", event.message().toString()).replace("%3$f", translatedTime)))
                                                     .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));

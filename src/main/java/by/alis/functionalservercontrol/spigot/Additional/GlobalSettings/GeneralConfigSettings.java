@@ -3,10 +3,7 @@ package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
 import by.alis.functionalservercontrol.API.Enums.StorageType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.CooldownsTask;
-import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.DupeIpTask;
-import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.MuteGlobalTask;
-import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.PurgerTask;
+import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.*;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -40,12 +37,6 @@ public class GeneralConfigSettings {
     private boolean showExamples = true;
     private boolean announceConsoleAboutBrand = false;
     private Set<String> timeRestrictionGroups = new HashSet<>();
-
-    //History settings start
-    private boolean isHistoryRecordingEnabled;
-    private boolean isHistoryForceSave;
-    private int maxHistorySize;
-    //History settings end
     //API settings start
     private boolean isApiEnabled = true;
     private boolean isApiProtectedByPassword = false;
@@ -110,7 +101,115 @@ public class GeneralConfigSettings {
     private boolean blockForge = false;
     private final List<String> forgeActions = new ArrayList<>();
     private final List<String> blockedNickFormats = new ArrayList<>();
+    private boolean buttonsOnNotifications;
+    private boolean hideIpsFromCompletions;
+    private boolean replaceMinecraftCommand;
 
+    //Permissions protection start
+    private boolean permissionsProtectionEnabled;
+    private int permissionsProtectionDelay;
+    private boolean permissionsProtectionAutoDeop;
+    private final List<String> opAllowedPlayers = new ArrayList<>();
+    private final List<String> opProtectionActions = new ArrayList<>();
+    private final List<String> protectedGroups = new ArrayList<>();
+    private final List<String> groupAllowedPlayers = new ArrayList<>();
+    private final List<String> groupProtectionActions = new ArrayList<>();
+    private List<String> protectedPermissions = new ArrayList<>();
+    private List<String> permissionAllowedPlayers = new ArrayList<>();
+    private List<String> permissionsProtectionActions = new ArrayList<>();
+    //Permissions protection stop
+
+    //Permissions protection start
+    public boolean isPermissionsProtectionEnabled() {
+        return permissionsProtectionEnabled;
+    }
+    private void setPermissionsProtectionEnabled(boolean permissionsProtectionEnabled) {
+        this.permissionsProtectionEnabled = permissionsProtectionEnabled;
+    }
+    public int getPermissionsProtectionDelay() {
+        return permissionsProtectionDelay;
+    }
+    private void setPermissionsProtectionDelay(int permissionsProtectionDelay) {
+        this.permissionsProtectionDelay = permissionsProtectionDelay;
+    }
+    public boolean isPermissionsProtectionAutoDeop() {
+        return permissionsProtectionAutoDeop;
+    }
+    private void setPermissionsProtectionAutoDeop(boolean permissionsProtectionAutoDeop) {
+        this.permissionsProtectionAutoDeop = permissionsProtectionAutoDeop;
+    }
+    public List<String> getOpAllowedPlayers() {
+        return opAllowedPlayers;
+    }
+    private void setOpAllowedPlayers(List<String> opAllowedPlayers) {
+        this.opAllowedPlayers.clear();
+        this.opAllowedPlayers.addAll(opAllowedPlayers);
+    }
+    public List<String> getOpProtectionActions() {
+        return opProtectionActions;
+    }
+    public void setOpProtectionActions(List<String> opProtectionActions) {
+        this.opProtectionActions.clear();
+        this.opProtectionActions.addAll(opProtectionActions);
+    }
+    public List<String> getProtectedGroups() {
+        return protectedGroups;
+    }
+    private void setProtectedGroups(List<String> protectedGroups) {
+        this.protectedGroups.clear();
+        this.protectedGroups.addAll(protectedGroups);
+    }
+    public List<String> getGroupAllowedPlayers() {
+        return groupAllowedPlayers;
+    }
+    private void setGroupAllowedPlayers(List<String> groupAllowedPlayers) {
+        this.groupAllowedPlayers.clear();
+        this.groupAllowedPlayers.addAll(groupAllowedPlayers);
+    }
+    public List<String> getGroupProtectionActions() {
+        return groupProtectionActions;
+    }
+    private void setGroupProtectionActions(List<String> groupProtectionActions) {
+        this.groupProtectionActions.clear();
+        this.groupProtectionActions.addAll(groupProtectionActions);
+    }
+    private void setProtectedPermissions(List<String> protectedPermissions) {
+        this.protectedPermissions = protectedPermissions;
+    }
+    public List<String> getProtectedPermissions() {
+        return protectedPermissions;
+    }
+    private void setPermissionAllowedPlayers(List<String> permissionAllowedPlayers) {
+        this.permissionAllowedPlayers = permissionAllowedPlayers;
+    }
+    public List<String> getPermissionAllowedPlayers() {
+        return permissionAllowedPlayers;
+    }
+    private void setPermissionsProtectionActions(List<String> permissionsProtectionActions) {
+        this.permissionsProtectionActions = permissionsProtectionActions;
+    }
+    public List<String> getPermissionsProtectionActions() {
+        return permissionsProtectionActions;
+    }
+    //Permissions protection stop
+    public boolean isHideIpsFromCompletions() {
+        return hideIpsFromCompletions;
+    }
+    public boolean isReplaceMinecraftCommand() {
+        return replaceMinecraftCommand;
+    }
+    private void setHideIpsFromCompletions(boolean hideIpsFromCompletions) {
+        this.hideIpsFromCompletions = hideIpsFromCompletions;
+    }
+    public void setReplaceMinecraftCommand(boolean replaceMinecraftCommand) {
+        this.replaceMinecraftCommand = replaceMinecraftCommand;
+    }
+    public boolean isButtonsOnNotifications() {
+        return buttonsOnNotifications;
+    }
+    private void setButtonsOnNotifications(boolean buttonsOnNotifications) {
+        this.buttonsOnNotifications = buttonsOnNotifications;
+    }
     private void setServerCoreName(String serverCoreName) {
         this.serverCoreName = serverCoreName;
     }
@@ -163,33 +262,12 @@ public class GeneralConfigSettings {
         this.actionsOnWDL.clear();
         this.actionsOnWDL.addAll(actionsOnWDL);
     }
-
-    public boolean isHistoryRecordingEnabled() {
-        return isHistoryRecordingEnabled;
-    }
-    public boolean isHistoryForceSave() {
-        return isHistoryForceSave;
-    }
-    public int getMaxHistorySize() {
-        return maxHistorySize;
-    }
-    private void setHistoryRecordingEnabled(boolean historyRecordingEnabled) {
-        isHistoryRecordingEnabled = historyRecordingEnabled;
-    }
-    private void setHistoryForceSave(boolean historyForceSave) {
-        isHistoryForceSave = historyForceSave;
-    }
-    private void setMaxHistorySize(int maxHistorySize) {
-        this.maxHistorySize = maxHistorySize;
-    }
-
     public boolean isServerSupportsHoverEvents() {
         return serverSupportsHoverEvents;
     }
     private void setServerSupportsHoverEvents(boolean serverSupportsHoverEvents) {
         this.serverSupportsHoverEvents = serverSupportsHoverEvents;
     }
-
     public List<String> getDisabledCommandsWhenMuted() {
         return disabledCommandsWhenMuted;
     }
@@ -693,17 +771,33 @@ public class GeneralConfigSettings {
                     break;
                 }
             }
+            setPermissionsProtectionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.permissions-protection.enabled"));
+            if(isPermissionsProtectionEnabled()) {
+                if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
+                    setPermissionsProtectionDelay(5);
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
+                } else {
+                    setPermissionsProtectionDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay"));
+                }
+                setPermissionsProtectionAutoDeop(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.permissions-protection.op-protection.auto-deop"));
+                setOpAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.op-protection.allowed-players").replace(" ",""), "[", "]").split(",")));
+                setOpProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.op-protection.actions"));
+                setProtectedGroups(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.group-protection.protected-groups").replace(" ",""), "[", "]").split(",")));
+                setGroupAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.group-protection.allowed-players").replace(" ",""), "[", "]").split(",")));
+                setGroupProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.group-protection.actions"));
+                setProtectedPermissions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.perms-protection.protected-permissions"));
+                setPermissionAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.perms-protection.allowed-player").replace(" ",""), "[", "]").split(",")));
+                setPermissionsProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.perms-protection.actions"));
+            }
+            setHideIpsFromCompletions(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.hide-ips-from-completions"));
+            setReplaceMinecraftCommand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.replace-default-minecraft-commands"));
+            setButtonsOnNotifications(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.buttons-on-notifications"));
             setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
             if(isBlockWorldDownloader()) {
                 setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
             }
             setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
             setMuteTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.mute-time-left"));
-            setHistoryRecordingEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.enabled"));
-            if(isHistoryRecordingEnabled()) {
-                setHistoryForceSave(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.force-save"));
-                setMaxHistorySize(getFileAccessor().getGeneralConfig().getInt("plugin-settings.history-settings.maximum-records"));
-            }
             setGlobalLanguage(getFileAccessor().getGeneralConfig().getString("plugin-settings.global-language"));
             setDisabledCommandsWhenMuted(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.disabled-commands-when-muted"), "[", "]").split(", ")));
             setSendTitleWhenMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-muted"));
@@ -846,10 +940,13 @@ public class GeneralConfigSettings {
                 }
             }
             if(isDupeIdModeEnabled()) {
-                new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getDupeIpTimerDelay() * 20L);        //Timers
+                new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getDupeIpTimerDelay() * 20L);
             }
             new MuteGlobalTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             new CooldownsTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
+            if(isPermissionsProtectionEnabled()) {
+                new PermissionsControlTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getPermissionsProtectionDelay() * 20L);
+            }
             //Tasks
             OtherUtils.loadCachedPlayers();
         });
@@ -858,41 +955,11 @@ public class GeneralConfigSettings {
 
     public void reloadConfig() {
         setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
-        switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
-            case "sqlite": {
-                setStorageType(StorageType.SQLITE);
-                if (!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                }
-                break;
-            }
-            case "mysql": {
-                setStorageType(StorageType.MYSQL);
-                if (!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                }
-                break;
-            }
-            case "h2": {
-                setStorageType(StorageType.H2);
-                if (!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                }
-                break;
-            }
-            default: {
-                setStorageType(StorageType.SQLITE);
-                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Plugin Loading] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
-                break;
-            }
-        }
+        setButtonsOnNotifications(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.notifications.buttons-on-notifications"));
         setBanTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.ban-time-left"));
         setMuteTimeExpired(getFileAccessor().getGeneralConfig().getString("plugin-settings.reason-settings.mute-time-left"));
-        setHistoryRecordingEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.enabled"));
-        if(isHistoryRecordingEnabled()) {
-            setHistoryForceSave(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.history-settings.force-save"));
-            setMaxHistorySize(getFileAccessor().getGeneralConfig().getInt("plugin-settings.history-settings.maximum-records"));
-        }
+        setHideIpsFromCompletions(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.hide-ips-from-completions"));
+        setReplaceMinecraftCommand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.replace-default-minecraft-commands"));
         setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
         if(isBlockWorldDownloader()) {
             setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
@@ -904,6 +971,23 @@ public class GeneralConfigSettings {
         setBlockForge(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
         if(isBlockForge()) {
             setForgeActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+        }
+        if(isPermissionsProtectionEnabled()) {
+            if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
+                setPermissionsProtectionDelay(5);
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
+            } else {
+                setPermissionsProtectionDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay"));
+            }
+            setPermissionsProtectionAutoDeop(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.permissions-protection.op-protection.auto-deop"));
+            setOpAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.op-protection.allowed-players").replace(" ",""), "[", "]").split(",")));
+            setOpProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.op-protection.actions"));
+            setProtectedGroups(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.group-protection.protected-groups").replace(" ",""), "[", "]").split(",")));
+            setGroupAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.group-protection.allowed-players").replace(" ",""), "[", "]").split(",")));
+            setGroupProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.group-protection.actions"));
+            setProtectedPermissions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.perms-protection.protected-permissions"));
+            setPermissionAllowedPlayers(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.permissions-protection.perms-protection.allowed-player").replace(" ",""), "[", "]").split(",")));
+            setPermissionsProtectionActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.permissions-protection.perms-protection.actions"));
         }
         setDisabledCommandsWhenMuted(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.disabled-commands-when-muted"), "[", "]").split(", ")));
         setSendTitleWhenMuted(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.title-settings.send-when-muted"));
