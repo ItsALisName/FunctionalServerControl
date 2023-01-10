@@ -1,0 +1,141 @@
+settings:
+  ##############################################################################
+  #                 Are the functions of this config enabled?                  #
+  #                 Not changed by the "/fsx reload" command                   #
+  ##############################################################################
+  enabled: true
+  ##############################################################################
+  #             Should I use different settings for different groups           #
+  #                     where possible? (Vault, LuckPerms)                     #
+  ##############################################################################
+  use-groups: true
+##############################################################################
+#                       Advertising Protection Settings                      #
+##############################################################################
+advertise-protection:
+  ##############################################################################
+  #   Will the administrators with the necessary right be informed about the   #
+  #                   player's attempt to advertise ip/domain?                 #
+  ##############################################################################
+  notify-admins: true
+  ##############################################################################
+  #                    Is ad protection enabled in the chat?                   #
+  ##############################################################################
+  chat:
+    ip-protection:
+      enabled: true
+      actions:
+      #- "mute %1$f 5m Рекламирование сторонних проектов запрещено!"
+    domains-protection:
+      enabled: true
+      actions: []
+  ##############################################################################
+  #                    Is ad protection enabled on the signs?                  #
+  ##############################################################################
+  signs:
+    ip-protection:
+      enabled: true
+      actions:
+      #- "mute %1$f 5m Рекламирование сторонних проектов запрещено!"
+    domains-protection:
+      enabled: true
+      actions: []
+  ##############################################################################
+  #                   Is ad protection enabled in the books?                   #
+  ##############################################################################
+  books:
+    ip-protection:
+      enabled: true
+      actions:
+      #- "mute %1$f 5m Рекламирование сторонних проектов запрещено!"
+    domains-protection:
+      enabled: true
+      actions: []
+  ##############################################################################
+  #           Is ad protection enabled in the item name/description?           #
+  ##############################################################################
+  items:
+    ip-protection:
+      enabled: true
+      actions:
+      #- "mute %1$f 5m Рекламирование сторонних проектов запрещено!"
+    domains-protection:
+      enabled: true
+      actions: []
+  ##############################################################################
+  #                 Is ad protection enabled in the commands?                  #
+  ##############################################################################
+  commands:
+    ip-protection:
+      enabled: true
+      actions:
+      #- "mute %1$f 5m Рекламирование сторонних проектов запрещено!"
+    domains-protection:
+      enabled: true
+      actions: [ ]
+
+chat:
+  #######################################################################
+  #               Are duplicate chat messages prohibited?               #
+  #######################################################################
+  block-repeating-messages: true
+  #######################################################################
+  #             Delay between two chat messages(In seconds)             #
+  #                           -1 to disable                             #
+  #######################################################################
+  chat-delay:
+    #######################################################################
+    #     Should the countdown continue if the player is offline?         #
+    #######################################################################
+    tick-if-offline: true
+    standard: 20
+    per-group:
+      default: 10
+      admin: -1
+  #######################################################################
+  #                    Chat Word Substitute Settings                    #
+  #######################################################################
+  messages-replacer:
+    enabled: true
+    #######################################################################
+    #             If enabled, "some text" will be replaced with           #
+    #                     "new some text" in the message                  #
+    #######################################################################
+    replaces:
+    - "some text -> new some text"
+    - "127.0.0.1 -> advertise"
+  #######################################################################
+  #                       Word Blocking Settings                        #
+  #######################################################################
+  blocked-words:
+    enabled: true
+    notify-admins: true
+    #######################################################################
+    #      Сheck for the presence of prohibited words on the signs?       #
+    #######################################################################
+    check-signs: true
+    #######################################################################
+    #      Сheck for the presence of prohibited words in the books?       #
+    #######################################################################
+    check-books: true
+    #######################################################################
+    #      Сheck for the presence of prohibited words on the signs?       #
+    #######################################################################
+    check-items: true
+    #######################################################################
+    #         Сheck for the presence of prohibited words in the           #
+    #                  name/description of the subject?                   #
+    #######################################################################
+    check-commands: true
+    words:
+    - "your_custom"
+    - "words"
+    punishments:
+      enabled: true
+      commands:
+      #- "mute %1$f 5m Вам не разрешено использовать слово %2$f!"
+    #######################################################################
+    #               Worlds where word restriction doesn't work            #
+    #######################################################################
+    disabled-worlds:
+    - "some_world"

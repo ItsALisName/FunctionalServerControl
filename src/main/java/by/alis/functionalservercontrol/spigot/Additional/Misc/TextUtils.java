@@ -1,9 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +21,11 @@ public class TextUtils {
     @NotNull
     public static String setColors(String inputText) {
         return translateHexColorCodes(inputText).replace("&", "§");
+    }
+
+    @Contract(pure = true)
+    public static String stringToMonolith(String input) {
+        return input.replace(" ", "");
     }
 
     @NotNull
@@ -84,12 +88,6 @@ public class TextUtils {
         } else {
             return inputText;
         }
-    }
-
-    public static void sendSyncConsoleMessage(String message) {
-        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-            Bukkit.getConsoleSender().sendMessage(setColors(message));
-        });
     }
 
     public static List<String> sortList(List<String> list, String[] args){

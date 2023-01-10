@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -12,13 +12,17 @@ import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.g
 
 public class CommandLimiterSettings {
 
-    private boolean functionEnabled = true;
+    private boolean functionEnabled;
+    private boolean notifyAdmins;
     private String checkMode;
     private final Collection<String> limitedWorlds = new ArrayList<>();
     private final HashMap<String, List<String>> globalBlockedCommands = new HashMap<>();
     private String globalDenyMessage;
     private boolean globalUseAsWhiteList;
-    private final HashMap<World, HashMap<String, List<String>>> perWorldBlockedCommands = new HashMap<>();
+    private boolean disableSpigotReloadCommand;
+    private final List<String> perWorldGroups = new ArrayList<>();
+    private final List<World> perGroupWorlds = new ArrayList<>();
+    private final List<List<String>> perGroupCommands = new ArrayList<>();
     private String perWorldDenyMessage;
     private boolean perWorldUseAsWhiteList;
     private boolean blockSyntaxCommand;
@@ -29,10 +33,32 @@ public class CommandLimiterSettings {
     private final HashMap<String, List<String>> globalCompletions = new HashMap<>();
     private final HashMap<String, HashMap<String, List<String>>> perGroupCompletions =  new HashMap<>();
     private boolean hideCompletionsFully;
-
     private final List<String> consoleBlockedCommands = new ArrayList<>();
     private boolean consoleBlockedCommandsUseAsWhiteList;
     private String consoleCommandsDenyMessage;
+
+
+    public boolean isNotifyAdmins() {
+        return notifyAdmins;
+    }
+    private void setNotifyAdmins(boolean notifyAdmins) {
+        this.notifyAdmins = notifyAdmins;
+    }
+    private void setDisableSpigotReloadCommand(boolean disableSpigotReloadCommand) {
+        this.disableSpigotReloadCommand = disableSpigotReloadCommand;
+    }
+    public boolean isDisableSpigotReloadCommand() {
+        return disableSpigotReloadCommand;
+    }
+    public List<String> getPerWorldGroups() {
+        return perWorldGroups;
+    }
+    public List<List<String>> getPerGroupCommands() {
+        return perGroupCommands;
+    }
+    public List<World> getPerGroupWorlds() {
+        return perGroupWorlds;
+    }
 
     public boolean isConsoleBlockedCommandsUseAsWhiteList() {
         return consoleBlockedCommandsUseAsWhiteList;
@@ -64,9 +90,6 @@ public class CommandLimiterSettings {
     private void setLimitedWorlds(Collection<String> limitedWorlds) {
         this.limitedWorlds.clear();
         this.limitedWorlds.addAll(limitedWorlds);
-    }
-    public HashMap<World, HashMap<String, List<String>>> getPerWorldBlockedCommands() {
-        return perWorldBlockedCommands;
     }
     public String getPerWorldDenyMessage() {
         return perWorldDenyMessage;
@@ -150,6 +173,8 @@ public class CommandLimiterSettings {
         setFunctionEnabled(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.enabled"));
         if (isFunctionEnabled()) {
             Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+                setNotifyAdmins(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.notify-admins"));
+                setDisableSpigotReloadCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.disable-reload-command"));
                 setCheckMode(getFileAccessor().getCommandsLimiterConfig().getString("settings.commands-check-mode"));
                 setUseGroups(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.use-groups"));
                 if(!getCheckMode().equalsIgnoreCase("first_arg") && !getCheckMode().equalsIgnoreCase("all_args")) {
@@ -170,18 +195,19 @@ public class CommandLimiterSettings {
                         World world = Bukkit.getWorld(worldName);
                         if (world != null) {
                             for (String groupName : getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("blocked-commands.per-world." + worldName + ".group").getKeys(false)) {
-                                HashMap<String, List<String>> a = new HashMap<>();
-                                a.put(groupName, getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".group." + groupName));
-                                this.perWorldBlockedCommands.put(world, a);
+                                this.perGroupWorlds.add(world);
+                                this.perWorldGroups.add(groupName);
+                                this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".group." + groupName));
                             }
-                            HashMap<String, List<String>> b = new HashMap<>();
-                            b.put("global", getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
-                            this.perWorldBlockedCommands.put(world, b);
+                                this.perWorldGroups.add("global");
+                                this.perGroupWorlds.add(world);
+                                this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         } else {
                             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                         }
                     }
                 }
+
                 setBlockSyntaxCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.syntax-commands.block"));
                 if(isBlockSyntaxCommand()) {
                     setSyntaxDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.syntax-commands.deny-message"));
@@ -212,6 +238,8 @@ public class CommandLimiterSettings {
 
     public void reloadCommandLimiterSettings() {
         setFunctionEnabled(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.enabled"));
+        setDisableSpigotReloadCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.disable-reload-command"));
+        setNotifyAdmins(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.notify-admins"));
         if (isFunctionEnabled()) {
             setCheckMode(getFileAccessor().getCommandsLimiterConfig().getString("settings.commands-check-mode"));
             setUseGroups(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.use-groups"));
@@ -228,18 +256,23 @@ public class CommandLimiterSettings {
             setPerWorldDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.per-world.deny-message"));
             setPerWorldUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.per-world.use-as-whitelist"));
             setLimitedWorlds(getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("blocked-commands.per-world").getKeys(false));
+            this.perGroupCommands.clear();
+            this.perWorldGroups.clear();
+            this.perGroupWorlds.clear();
             for (String worldName : getLimitedWorlds()) {
                 if (!worldName.equalsIgnoreCase("deny-message") && !worldName.equalsIgnoreCase("use-as-whitelist")) {
                     World world = Bukkit.getWorld(worldName);
                     if (world != null) {
                         for (String groupName : getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("blocked-commands.per-world." + worldName + ".group").getKeys(false)) {
-                            HashMap<String, List<String>> a = new HashMap<>();
-                            a.put(groupName, getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".group." + groupName));
-                            this.perWorldBlockedCommands.put(world, a);
+                            this.perGroupWorlds.add(world);
+                            this.perWorldGroups.add(groupName);
+                            this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".group." + groupName));
                         }
-                        HashMap<String, List<String>> b = new HashMap<>();
-                        b.put("global", getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
-                        this.perWorldBlockedCommands.put(world, b);
+                        if(!this.perWorldGroups.contains("global")) {
+                            this.perWorldGroups.add("global");
+                            this.perGroupWorlds.add(world);
+                            this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
+                        }
                     } else {
                         Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                     }
@@ -253,12 +286,6 @@ public class CommandLimiterSettings {
             setConsoleBlockedCommands(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.console.commands"));
             setConsoleBlockedCommandsUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.console.use-as-whitelist"));
             setConsoleCommandsDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.console.deny-message"));
-        } else {
-            this.limitedWorlds.clear();
-            this.perWorldBlockedCommands.clear();
-            this.limitedWorlds.clear();
-            this.whitelistedSyntaxCommands.clear();
-            this.consoleBlockedCommands.clear();
         }
         setModifyTabCompletions(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.modify-tab-completions"));
         if(isModifyTabCompletions()) {
@@ -273,9 +300,6 @@ public class CommandLimiterSettings {
                 }
             }
             setHideCompletionsFully(getFileAccessor().getCommandsLimiterConfig().getBoolean("tab-completions.hide-fully"));
-        } else {
-            this.globalCompletions.clear();
-            this.perGroupCompletions.clear();
         }
     }
 

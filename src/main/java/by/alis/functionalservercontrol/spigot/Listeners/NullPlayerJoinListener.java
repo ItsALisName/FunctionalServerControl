@@ -1,8 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.Bans.BanManager;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -20,8 +19,6 @@ import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.s
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class NullPlayerJoinListener implements Listener {
-
-    private final BanManager banManager = new BanManager();
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     private final UnbanManager unbanManager = new UnbanManager();
 
@@ -51,9 +48,6 @@ public class NullPlayerJoinListener implements Listener {
                     case SQLITE: {
                         getSQLiteManager().deleteFromNullBannedPlayers("-n", player.getName());
                         getSQLiteManager().insertIntoBannedPlayers(id, player.getAddress().getAddress().getHostAddress(), player.getName(), initiatorName, reason, banType, realDate, realTime, player.getUniqueId(), time);
-                        break;
-                    }
-                    case MYSQL: {
                         break;
                     }
                     case H2: {
@@ -150,9 +144,7 @@ public class NullPlayerJoinListener implements Listener {
                         getSQLiteManager().insertIntoBannedPlayers(id, player.getAddress().getAddress().getHostAddress(), player.getName(), initiatorName, reason, banType, realDate, realTime, player.getUniqueId(), time);
                         break;
                     }
-                    case MYSQL: {
-                        break;
-                    }
+                    
                     case H2: {
                         break;
                     }
@@ -385,9 +377,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
 
-                    case MYSQL: {
-                        break;
-                    }
+                    
 
                     case H2: {
                         break;

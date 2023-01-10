@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
+import by.alis.functionalservercontrol.spigot.Managers.GlobalCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +19,11 @@ public class ConsoleSendCommandListener implements Listener {
         CommandSender sender = event.getSender();
         String command = event.getCommand();
         String[] args = command.split(" ");
+        GlobalCommandManager commandManager = new GlobalCommandManager();
+        if(commandManager.preventReloadCommand(sender, command)) {
+            event.setCancelled(true);
+            return;
+        }
         if(getCommandLimiterSettings().isFunctionEnabled()) {
             if(getCommandLimiterSettings().isConsoleBlockedCommandsUseAsWhiteList()) {
                 if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
@@ -53,7 +58,7 @@ public class ConsoleSendCommandListener implements Listener {
         }
 
         if(getConfigSettings().isReplaceMinecraftCommand()) {
-            event.setCommand(new PlayerCommandManager().replaceMinecraftCommand(command));
+            event.setCommand(commandManager.replaceMinecraftCommand(command));
         }
 
         if(getConfigSettings().isPermissionsProtectionEnabled()) {

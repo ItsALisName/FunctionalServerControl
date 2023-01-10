@@ -1,11 +1,14 @@
 package by.alis.functionalservercontrol.spigot.Additional.Misc;
 
-import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.api.Enums.Chat;
+import by.alis.functionalservercontrol.api.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,8 +22,11 @@ import java.util.regex.Pattern;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class OtherUtils {
+    private static final String DOMAINS_REGEX = "AC|ACADEMY|ACCOUNTANTS|ACTOR|AD|AE|AERO|AF|AG|AGENCY|AI|AIRFORCE|AL|AM|AN|AO|AQ|AR|ARCHI|ARPA|AS|ASIA|ASSOCIATES|AT|AU|AW|AX|AXA|AZ|BA|BAR|BARGAINS|BAYERN|BB|BD|BE|BERLIN|BEST|BF|BG|BH|BI|BID|BIKE|BIZ|BJ|BLACK|BLACKFRIDAY|BLUE|BM|BN|BO|BOUTIQUE|BR|BS|BT|BUILD|BUILDERS|BUZZ|BV|BW|BY|BZ|CA|CAB|CAMERA|CAMP|CAPITAL|CARDS|CARE|CAREER|CAREERS|CASH|CAT|CATERING|CC|CD|CENTER|CEO|CF|CG|CH|CHEAP|CHRISTMAS|CI|CITIC|CK|CL|CLAIMS|CLEANING|CLINIC|CLOTHING|CLUB|CM|CN|CO|CODES|COFFEE|COLLEGE|COLOGNE|COM|COMMUNITY|COMPANY|COMPUTER|CONDOS|CONSTRUCTION|CONSULTING|CONTRACTORS|COOKING|COOL|COOP|COUNTRY|CR|CREDIT|CREDITCARD|CRUISES|CU|CV|CW|CX|CY|CZ|DANCE|DATING|DE|DEMOCRAT|DENTAL|DESI|DIAMONDS|DIGITAL|DIRECTORY|DISCOUNT|DJ|DK|DM|DNP|DO|DOMAINS|DZ|EC|EDU|EDUCATION|EE|EG|EMAIL|ENGINEERING|ENTERPRISES|EQUIPMENT|ER|ES|ESTATE|ET|EU|EUS|EVENTS|EXCHANGE|EXPERT|EXPOSED|FAIL|FARM|FEEDBACK|FI|FINANCE|FINANCIAL|FISH|FISHING|FITNESS|FJ|FK|FLIGHTS|FLORIST|FM|FO|FOO|FOUNDATION|FR|FROGANS|FUND|FURNITURE|FUTBOL|GA|GAL|GALLERY|GB|GD|GE|GF|GG|GH|GI|GIFT|GL|GLASS|GLOBO|GM|GMO|GN|GOP|GOV|GP|GQ|GR|GRAPHICS|GRATIS|GRIPE|GS|GT|GU|GUITARS|GURU|GW|GY|HAUS|HK|HM|HN|HOLDINGS|HOLIDAY|HORSE|HOUSE|HR|HT|HU|ID|IE|IL|IM|IMMOBILIEN|IN|INDUSTRIES|INFO|INK|INSTITUTE|INSURE|INT|INTERNATIONAL|INVESTMENTS|IO|IQ|IR|IS|IT|JE|JETZT|JM|JO|JOBS|JP|KAUFEN|KE|KG|KH|KI|KIM|KITCHEN|KIWI|KM|KN|KOELN|KP|KR|KRED|KW|KY|KZ|LA|LAND|LB|LC|LEASE|LI|LIGHTING|LIMITED|LIMO|LINK|LK|LONDON|LR|LS|LT|LU|LUXURY|LV|LY|MA|MAISON|MANAGEMENT|MANGO|MARKETING|MC|MD|ME|MEDIA|MEET|MENU|MG|MH|MIAMI|MIL|MK|ML|MM|MN|MO|MOBI|MODA|MOE|MONASH|MOSCOW|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAGOYA|NAME|NC|NE|NET|NEUSTAR|NF|NG|NI|NINJA|NL|NO|NP|NR|NU|NYC|NZ|OKINAWA|OM|ONL|ORG|PA|PARIS|PARTNERS|PARTS|PE|PF|PG|PH|PHOTO|PHOTOGRAPHY|PHOTOS|PICS|PICTURES|PINK|PK|PL|PLUMBING|PM|PN|POST|PR|PRO|PRODUCTIONS|PROPERTIES|PS|PT|PUB|PW|PY|QA|QPON|QUEBEC|RE|RECIPES|RED|REISEN|REN|RENTALS|REPAIR|REPORT|REST|REVIEWS|RICH|RO|ROCKS|RODEO|RS|RU|RUHR|RW|RYUKYU|SA|SAARLAND|SB|SC|SCHULE|SD|SE|SERVICES|SEXY|SG|SH|SHIKSHA|SHOES|SI|SINGLES|SJ|SK|SL|SM|SN|SO|SOCIAL|SOHU|SOLAR|SOLUTIONS|SOY|SR|ST|SU|SUPPLIES|SUPPLY|SUPPORT|SURGERY|SV|SX|SY|SYSTEMS|SZ|TATTOO|TAX|TC|TD|TECHNOLOGY|TEL|TF|TG|TH|TIENDA|TIPS|TJ|TK|TL|TM|TN|TO|TODAY|TOKYO|TOOLS|TOWN|TOYS|TP|TR|TRADE|TRAINING|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|UNIVERSITY|UNO|US|UY|UZ|VA|VACATIONS|VC|VE|VEGAS|VENTURES|VG|VI|VIAJES|VILLAS|VISION|VN|VODKA|VOTE|VOTING|VOTO|VOYAGE|VU|WANG|WATCH|WEBCAM|WED|WF|WIEN|WIKI|WORKS|WS|WTC|WTF|XN--3BST00M|XN--3DS443G|XN--3E0B707E|XN--45BRJ9C|XN--55QW42G|XN--55QX5D|XN--6FRZ82G|XN--6QQ986B3XL|XN--80ADXHKS|XN--80AO21A|XN--80ASEHDB|XN--80ASWG|XN--90A3AC|XN--C1AVG|XN--CG4BKI|XN--CLCHC0EA0B2G2A9GCD|XN--CZRU2D|XN--D1ACJ3B|XN--FIQ228C5HS|XN--FIQ64B|XN--FIQS8S|XN--FIQZ9S|XN--FPCRJ9C3D|XN--FZC2C9E2C|XN--GECRJ9C|XN--H2BRJ9C|XN--I1B6B1A6A2E|XN--IO0A7I|XN--J1AMH|XN--J6W193G|XN--KPRW13D|XN--KPRY57D|XN--L1ACC|XN--LGBBAT1AD8J|XN--MGB9AWBF|XN--MGBA3A4F16A|XN--MGBAAM7A8H|XN--MGBAB2BD|XN--MGBAYH7GPA|XN--MGBBH1A71E|XN--MGBC0A9AZCG|XN--MGBERP4A5D4AR|XN--MGBX4CD0AB|XN--NGBC5AZD|XN--NQV7F|XN--NQV7FS00EMA|XN--O3CW4H|XN--OGBPF8FL|XN--P1AI|XN--PGBS0DH|XN--Q9JYB4C|XN--RHQV96G|XN--S9BRJ9C|XN--SES554G|XN--UNUP4Y|XN--WGBH1C|XN--WGBL6A|XN--XKC2AL3HYE2A|XN--XKC2DL3A5EE0H|XN--YFRO4I67O|XN--YGBI2AMMX|XN--ZFR164B|XXX|XYZ|YE|YOKOHAMA|YT|ZA|ZM|ZONE|ZW";
 
     public static boolean isArgumentIP(String str) {
         String ipPattern = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
@@ -45,9 +51,6 @@ public class OtherUtils {
             case SQLITE: {
                 return getSQLiteManager().getNamesFromAllPlayers().contains(name);
             }
-            case MYSQL: {
-                return false;
-            }
             case H2: {
                 return false;
             }
@@ -60,9 +63,6 @@ public class OtherUtils {
             case SQLITE: {
                 return getSQLiteManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
             }
-            case MYSQL: {
-                return true;
-            }
             case H2: {
                 return true;
             }
@@ -74,9 +74,6 @@ public class OtherUtils {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
                 return getSQLiteManager().getIpsFromAllPlayers().contains(ip);
-            }
-            case MYSQL: {
-                return true;
             }
             case H2: {
                 return true;
@@ -139,7 +136,7 @@ public class OtherUtils {
     }
 
     @Nullable
-    public static OfflinePlayer getPlayerByIP(String ip) {
+    public static OfflinePlayer getOnlinePlayerByIP(String ip) {
         for(Map.Entry<Player, String> e : TemporaryCache.getOnlineIps().entrySet()) {
             if(e.getValue().equalsIgnoreCase(ip)) {
                 return (OfflinePlayer)e.getKey();
@@ -148,6 +145,39 @@ public class OtherUtils {
         return null;
     }
 
+    @Nullable
+    public static OfflinePlayer getOfflinePlayerByName(String name) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                if(getSQLiteManager().getUuidByName(name) != null) {
+                    OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(UUID.fromString(getSQLiteManager().getUuidByName(name)));
+                    return player == null ? null : player;
+                }
+            }
+            case H2: return null;
+        }
+        return null;
+    }
+
+    public static OfflinePlayer getPlayerByIP(String ip) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                if(getOnlinePlayerByIP(ip) != null) return getOnlinePlayerByIP(ip);
+                if(getSQLiteManager().getUUIDByIp(ip) != null) {
+                    OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(getSQLiteManager().getUUIDByIp(ip));
+                    return player == null ? null : player;
+                }
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
+
+    public static boolean isArgumentDomain(String str) {
+        String domainPattern = "([a-z-0-9]{1,50})\\.(" + DOMAINS_REGEX.toLowerCase() + ")(?![a-z0-9])";
+        return Pattern.compile(domainPattern).matcher(str).find();
+    }
 
 
     public static boolean isSuppotedVersion(Server server) {
@@ -251,7 +281,7 @@ public class OtherUtils {
                         List<String> a = new ArrayList<>(Arrays.asList(StringUtils.substringBetween(pManConfig.getString("ignored-plugins"), "[", "]").split(",")));
                         if(a.contains("FunctionalServerControl")) return;
                         a.add("FunctionalServerControl");
-                        pManConfig.set("ignored-plugins", ("[" + String.join(",", a) + "]").replace(" ", ""));
+                        pManConfig.set("ignored-plugins", TextUtils.stringToMonolith("[" + String.join(",", a) + "]"));
                         pManConfig.save(pManConfigFile);
                     }
                 } catch (IOException ignored) {}
@@ -270,6 +300,40 @@ public class OtherUtils {
                 getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
             }
 
+        });
+    }
+
+    public static void clearChat(CommandSender initiator, Chat.ClearType clearType, @Nullable Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            if(clearType == Chat.ClearType.PLAYER) {
+                if(player.hasPermission("functionalservercontrol.clearchat.bypass") && !initiator.hasPermission("functionalservercontrol.bypass-break")) {
+                    initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.target-bypass").replace("%1$f", player.getName())));
+                    return;
+                }
+                for(int start = 0; start < 25; start++) {
+                    player.sendMessage("");
+                }
+                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.success").replace("%1$f", player.getName())));
+                player.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.target-notify").replace("%1$f", initiator.getName())));
+                return;
+            }
+            if(clearType == Chat.ClearType.ALL) {
+                if(initiator.hasPermission("functionalservercontrol.clearchat.all")) {
+                    for(Player target : Bukkit.getOnlinePlayers()) {
+                        if(!target.hasPermission("functionalservercontrol.clearchat.bypass") || (target.hasPermission("functionalservercontrol.clearchat.bypass") && initiator.hasPermission("functionalservercontrol.bypass-break"))) {
+                            for(int start = 0; start < 25; start++) {
+                                target.sendMessage("");
+                            }
+                            target.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.target-notify").replace("%1$f", initiator.getName())));
+                        }
+                    }
+                    initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.all-success")));
+                    return;
+                } else {
+                    initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.all-no-perms")));
+                    return;
+                }
+            }
         });
     }
 

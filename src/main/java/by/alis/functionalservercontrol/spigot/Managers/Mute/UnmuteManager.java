@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
-import by.alis.functionalservercontrol.API.Spigot.Events.AsyncUnmutePreprocessEvent;
+import by.alis.functionalservercontrol.api.Enums.StatsType;
+import by.alis.functionalservercontrol.api.Events.AsyncUnmutePreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -8,13 +9,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getDate;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
@@ -33,16 +35,10 @@ public class UnmuteManager {
             return;
         }
 
-        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteInitiator, unmuteReason, getConfigSettings().isApiEnabled());
+        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteInitiator, unmuteReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnmutePreprocessEvent.getApiPassword() != null && asyncUnmutePreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
         }
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
@@ -71,10 +67,10 @@ public class UnmuteManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-                    getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
+                    getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                    if(unmuteInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
                     break;
                 }
-                case MYSQL: {}
                 case H2: {}
             }
             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
@@ -98,7 +94,8 @@ public class UnmuteManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unmuteInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unmute player %player%".replace("%player%", player.getName())));
                     }
@@ -138,16 +135,10 @@ public class UnmuteManager {
             initiatorName = unmuteInitiator.getName();
         }
 
-        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteInitiator, unmuteReason, getConfigSettings().isApiEnabled());
+        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteInitiator, unmuteReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnmutePreprocessEvent.getApiPassword() != null && asyncUnmutePreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
         }
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
@@ -179,7 +170,8 @@ public class UnmuteManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unmuteInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
                         break;
                     }
                     case H2: {}
@@ -204,7 +196,8 @@ public class UnmuteManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unmuteInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unmute player %player%".replace("%player%", player)));
                     }
@@ -225,16 +218,10 @@ public class UnmuteManager {
     }
 
     public void preformUnmute(OfflinePlayer player, String unmuteReason) {
-        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason, getConfigSettings().isApiEnabled());
+        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnmutePreprocessEvent.getApiPassword() != null && asyncUnmutePreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
         }
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
@@ -244,6 +231,7 @@ public class UnmuteManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+
                         break;
                     }
                     case H2: {
@@ -281,16 +269,10 @@ public class UnmuteManager {
 
     public void preformUnmute(String player, String unmuteReason) { //Another
 
-        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason, getConfigSettings().isApiEnabled());
+        AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnmutePreprocessEvent.getApiPassword() != null && asyncUnmutePreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnmutePreprocessEvent);
         }
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
@@ -331,9 +313,14 @@ public class UnmuteManager {
         }
     }
 
-    public void preformGlobalUnmute(@Nullable CommandSender initiator, @Nullable boolean announceUnmute) {
+    public void preformGlobalUnmute(@NotNull CommandSender initiator, boolean announceUnmute) {
 
         String initiatorName = null;
+        if(initiator instanceof ConsoleCommandSender){
+            initiatorName = getGlobalVariables().getConsoleVariableName();
+        } else {
+            initiatorName = initiator.getName();
+        }
 
         if(!announceUnmute) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
@@ -360,6 +347,12 @@ public class UnmuteManager {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
                 getSQLiteManager().clearMutes();
+                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmuteall").replace("%1$f", initiatorName).replace("%2$f", getDate() + ", " + getTime()));
+                if(initiator instanceof Player) {
+                    for (int i = 0; i < count; i++) {
+                        getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_UNMUTES);
+                    }
+                }
                 break;
             }
             case H2: {

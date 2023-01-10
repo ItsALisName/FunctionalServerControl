@@ -20,11 +20,11 @@ public class EntityDamagesListener implements Listener {
                 Player damager = (Player) event.getDamager();
                 Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
                     if(getCheatCheckerManager().isPlayerChecking(damager)) {
-                        if(getConfigSettings().isPreventIflictDamageDuringCheck()) event.setCancelled(true);
+                        if(getConfigSettings().isPreventIflictDamageDuringCheatCheck()) event.setCancelled(true);
                         return;
                     }
                     if(getCheatCheckerManager().isPlayerChecking(player)) {
-                        if(getConfigSettings().isPreventTakingDamageDuringCheck()) event.setCancelled(true);
+                        if(getConfigSettings().isPreventTakingDamageDuringCheatCheck()) event.setCancelled(true);
                     }
                 });
             }

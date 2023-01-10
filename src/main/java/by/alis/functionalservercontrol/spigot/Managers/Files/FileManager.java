@@ -25,9 +25,10 @@ public class FileManager {
     protected File sqlFile;
     protected File commandLimiterFile;
     protected FileConfiguration commandLimiterConfig;
-
     protected File cooldownsFile;
     protected FileConfiguration cooldownsConfig;
+    protected File chatFile;
+    protected FileConfiguration chatConfig;
 
     public void initializeFiles() {
         File logsFolder = new File("plugins/FunctionalServerControl/logs");
@@ -45,6 +46,8 @@ public class FileManager {
         this.commandLimiterConfig = YamlConfiguration.loadConfiguration(this.commandLimiterFile);
         this.cooldownsFile = new File("plugins/FunctionalServerControl/", "global-cooldowns.yml");
         this.cooldownsConfig = YamlConfiguration.loadConfiguration(this.cooldownsFile);
+        this.chatFile = new File("plugins/FunctionalServerControl/", "chat-settings.yml");
+        this.chatConfig = YamlConfiguration.loadConfiguration(this.chatFile);
     }
 
     public void initializeAndCreateFilesIfNotExists() {
@@ -72,6 +75,10 @@ public class FileManager {
 
         if(!this.cooldownsFile.exists()) {
             FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("global-cooldowns.yml", false);
+        }
+
+        if(!this.chatFile.exists()) {
+            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("chat-settings.yml", false);
         }
 
     }

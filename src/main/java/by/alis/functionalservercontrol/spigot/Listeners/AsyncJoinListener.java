@@ -1,9 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Bans.UnbanManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -30,7 +32,7 @@ public class AsyncJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-
+        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(event.getUniqueId());
         if(getConfigSettings().isIpsControlEnabled()) {
             if(getConfigSettings().getBlockedIps().contains(event.getAddress().getHostAddress())) {
                 event.disallow(
@@ -38,7 +40,7 @@ public class AsyncJoinListener implements Listener {
                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("blocked-ip-kick-format")).replace("%1$f", event.getAddress().getHostAddress()))
                 );
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                if(getConfigSettings().notifyConsoleWhenNickNameBlocked()) {
+                if(getConfigSettings().notifyConsoleWhenIPBlocked()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.blocked-ip-notify").replace("%1$f", event.getAddress().getHostAddress())));
                 }
                 return;
@@ -121,9 +123,6 @@ public class AsyncJoinListener implements Listener {
                             getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                             break;
                         }
-                        case MYSQL: {
-                            break;
-                        }
                         case H2: {
                             break;
                         }
@@ -133,35 +132,12 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
 
                     if(banType != BanType.PERMANENT_IP){
                         if (System.currentTimeMillis() >= currentTime) {
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
                             this.unbanManager.preformUnban(player, "The Ban time has expired");
                             return;
                         }
@@ -172,29 +148,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
                 }
@@ -233,9 +187,6 @@ public class AsyncJoinListener implements Listener {
                             getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                             break;
                         }
-                         case MYSQL: {
-                             break;
-                         }
                         case H2: {
                             break;
                         }
@@ -244,7 +195,7 @@ public class AsyncJoinListener implements Listener {
 
                     if(banType != BanType.PERMANENT_IP){
                         if (System.currentTimeMillis() >= currentTime) {
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            
                             this.unbanManager.preformUnban(player, "The Ban time has expired");
                             event.allow();
                             return;
@@ -256,29 +207,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
                     if(banType == BanType.TIMED_IP) {
@@ -286,29 +215,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
                 }
@@ -317,7 +224,7 @@ public class AsyncJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
                     if (System.currentTimeMillis() >= currentTime) {
-                        OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                        
                         this.unbanManager.preformUnban(player, "The Ban time has expired");
                         event.allow();
                         return;
@@ -334,29 +241,7 @@ public class AsyncJoinListener implements Listener {
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
                     }
-                    if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                    }
-                    if(getConfigSettings().isPlayersNotification()) {
-                        for(Player admin : Bukkit.getOnlinePlayers()) {
-                            if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                    if (admin.hasPermission("functionalservercontrol.unban")) {
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
-                                                    MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                            ));
-                                        }
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                        }
-                                        continue;
-                                    }
-                                }
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                            }
-                        }
-                    }
+                    this.notifyAdmins(player, currentTime);
                     return;
                 }
                 if(banType == BanType.PERMANENT_IP) {
@@ -364,29 +249,7 @@ public class AsyncJoinListener implements Listener {
                             AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                             setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                     );
-                    if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                    }
-                    if(getConfigSettings().isPlayersNotification()) {
-                        for(Player admin : Bukkit.getOnlinePlayers()) {
-                            if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                    if (admin.hasPermission("functionalservercontrol.unban")) {
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                    MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                            ));
-                                        }
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                        }
-                                        continue;
-                                    }
-                                }
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                        }
-                    }
+                    this.notifyAdmins(player, currentTime);
                     return;
                 }
                 if(banType == BanType.TIMED_NOT_IP) {
@@ -396,29 +259,7 @@ public class AsyncJoinListener implements Listener {
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                         );
                     }
-                    if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                    }
-                    if(getConfigSettings().isPlayersNotification()) {
-                        for(Player admin : Bukkit.getOnlinePlayers()) {
-                            if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                    if (admin.hasPermission("functionalservercontrol.unban")) {
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
-                                                    MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                            ));
-                                        }
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                        }
-                                        continue;
-                                    }
-                                }
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                            }
-                        }
-                    }
+                    this.notifyAdmins(player, currentTime);
                     return;
                 }
                 if(banType == BanType.TIMED_IP) {
@@ -426,29 +267,7 @@ public class AsyncJoinListener implements Listener {
                             AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                             setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))
                     ));
-                    if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                    }
-                    if(getConfigSettings().isPlayersNotification()) {
-                        for(Player admin : Bukkit.getOnlinePlayers()) {
-                            if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                    if (admin.hasPermission("functionalservercontrol.unban")) {
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                    MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                            ));
-                                        }
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                        }
-                                        continue;
-                                    }
-                                }
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                        }
-                    }
+                    this.notifyAdmins(player, currentTime);
                     return;
                 }
                 return;
@@ -460,7 +279,7 @@ public class AsyncJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 long currentTime = getBannedPlayersContainer().getBanTimeContainer().get(indexOf);
                 if (banType != BanType.PERMANENT_IP && banType != BanType.PERMANENT_NOT_IP && System.currentTimeMillis() >= currentTime) {
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                    
                     this.unbanManager.preformUnban(player, "The Ban time has expired");
                     event.allow();
                     return;
@@ -475,29 +294,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
                     if(banType == BanType.TIMED_NOT_IP) {
@@ -505,29 +302,7 @@ public class AsyncJoinListener implements Listener {
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                 setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                         );
-                        if (getConfigSettings().isConsoleNotification()) {
-                            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                        }
-                        if(getConfigSettings().isPlayersNotification()) {
-                            for(Player admin : Bukkit.getOnlinePlayers()) {
-                                if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                    if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                        if (admin.hasPermission("functionalservercontrol.unban")) {
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
-                                                        MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                ));
-                                            }
-                                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                            }
-                                            continue;
-                                        }
-                                    }
-                                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                                }
-                            }
-                        }
+                        this.notifyAdmins(player, currentTime);
                         return;
                     }
                 }
@@ -546,7 +321,7 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    
                                     this.unbanManager.preformUnban(player, "The Ban time has expired");
                                     event.allow();
                                     return;
@@ -565,29 +340,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                             if(banType == BanType.TIMED_IP) {
@@ -595,29 +348,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                         }
@@ -633,7 +364,7 @@ public class AsyncJoinListener implements Listener {
                             BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                             if(banType != BanType.PERMANENT_IP){
                                 if (System.currentTimeMillis() >= currentTime) {
-                                    OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                    
                                     this.unbanManager.preformUnban(player, "The Ban time has expired");
                                     event.allow();
                                     return;
@@ -652,29 +383,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                             if(banType == BanType.TIMED_IP) {
@@ -682,29 +391,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                         }
@@ -713,7 +400,7 @@ public class AsyncJoinListener implements Listener {
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
                             if (System.currentTimeMillis() >= currentTime) {
-                                OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                                
                                 this.unbanManager.preformUnban(player, "The Ban time has expired");
                                 event.allow();
                                 return;
@@ -730,29 +417,7 @@ public class AsyncJoinListener implements Listener {
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
                             }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                            if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
-                                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                    ));
-                                                }
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                    admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                }
-                                                continue;
-                                            }
-                                        }
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                    }
-                                }
-                            }
+                            this.notifyAdmins(player, currentTime);
                             return;
                         }
                         if(banType == BanType.PERMANENT_IP) {
@@ -760,29 +425,7 @@ public class AsyncJoinListener implements Listener {
                                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                     setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                             );
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                            if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                    ));
-                                                }
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                    admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                }
-                                                continue;
-                                            }
-                                        }
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", event.getAddress().getHostAddress())));
-                                    }
-                                }
-                            }
+                            this.notifyAdmins(player, currentTime);
                             return;
                         }
                         if(banType == BanType.TIMED_NOT_IP) {
@@ -792,29 +435,7 @@ public class AsyncJoinListener implements Listener {
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                                 );
                             }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                            if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
-                                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                    ));
-                                                }
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                    admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                }
-                                                continue;
-                                            }
-                                        }
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                                    }
-                                }
-                            }
+                            this.notifyAdmins(player, currentTime);
                             return;
                         }
                         if(banType == BanType.TIMED_IP) {
@@ -822,29 +443,7 @@ public class AsyncJoinListener implements Listener {
                                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                     setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))
                                     ));
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                            }
-                            if(getConfigSettings().isPlayersNotification()) {
-                                for(Player admin : Bukkit.getOnlinePlayers()) {
-                                    if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                            if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))),
-                                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                    ));
-                                                }
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                    admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                }
-                                                continue;
-                                            }
-                                        }
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", event.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))).replace("%2$f", event.getAddress().getHostAddress())));
-                                    }
-                                }
-                            }
+                            this.notifyAdmins(player, currentTime);
                             return;
                         }
                         return;
@@ -856,7 +455,7 @@ public class AsyncJoinListener implements Listener {
                         BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
                         long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
                         if (System.currentTimeMillis() >= currentTime) {
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+                            
                             this.unbanManager.preformUnban(player, "The Ban time has expired");
                             event.allow();
                             return;
@@ -871,29 +470,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever()))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                             if(banType == BanType.TIMED_NOT_IP) {
@@ -901,29 +478,7 @@ public class AsyncJoinListener implements Listener {
                                         AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                                         setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
                                 );
-                                if (getConfigSettings().isConsoleNotification()) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                                }
-                                if(getConfigSettings().isPlayersNotification()) {
-                                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                                        if(admin.hasPermission("functionalservercontrol.notification.ban")) {
-                                            if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                                if (admin.hasPermission("functionalservercontrol.unban")) {
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                        admin.spigot().sendMessage(MD5TextUtils.appendTwo(MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))),
-                                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnban()), "/unban " + event.getName())
-                                                        ));
-                                                    }
-                                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                        admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))).append(AdventureApiUtils.createClickableSuggestCommandText(" " + setColors(getGlobalVariables().getButtonUnban()), "/unban " + event.getName())));
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", event.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))));
-                                        }
-                                    }
-                                }
+                                this.notifyAdmins(player, currentTime);
                                 return;
                             }
                         }
@@ -935,4 +490,50 @@ public class AsyncJoinListener implements Listener {
             }
         }
     }
+
+    private void notifyAdmins(OfflinePlayer player, long timeLeft) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            String convertedTime = getGlobalVariables().getVariableNever();
+            if(timeLeft > 0) {
+                convertedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(timeLeft));
+            }
+            if (getConfigSettings().isConsoleNotification()) {
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)));
+            }
+            if(getConfigSettings().isPlayersNotification()) {
+                for (Player admin : Bukkit.getOnlinePlayers()) {
+                    if (getConfigSettings().isServerSupportsHoverEvents()) {
+                        if(getConfigSettings().isButtonsOnNotifications()) {
+                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(
+                                        MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)), player),
+                                        MD5TextUtils.addPardonButtons(admin, player.getName())
+                                ));
+                                continue;
+                            }
+                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                admin.sendMessage(
+                                        AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)), player)
+                                                .append(AdventureApiUtils.addPardonButtons(admin, player.getName()))
+                                );
+                                continue;
+                            }
+                        } else {
+                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)), player));
+                                continue;
+                            }
+                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)), player));
+                                continue;
+                            }
+                        }
+                    } else {
+                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", convertedTime)));
+                    }
+                }
+            }
+        });
+    }
+
 }

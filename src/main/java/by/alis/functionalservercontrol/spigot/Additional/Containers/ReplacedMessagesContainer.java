@@ -1,7 +1,8 @@
 package by.alis.functionalservercontrol.spigot.Additional.Containers;
 
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class ReplacedMessagesContainer {
                 a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
                 for (String s : a) {
                     if (s != null) {
-                        this.replacedMessages.put(s.split(" -> ")[0].replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
+                        this.replacedMessages.put(TextUtils.stringToMonolith(s.split(" -> ")[0]).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
                     }
                 }
             } catch (RuntimeException ignored) {
@@ -42,7 +43,7 @@ public class ReplacedMessagesContainer {
             a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
             for (String s : a) {
                 if (s != null) {
-                    this.replacedMessages.put(s.split(" -> ")[0].replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
+                    this.replacedMessages.put(TextUtils.stringToMonolith(s.split(" -> ")[0]).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
                 }
             }
         } catch (RuntimeException ignored) {

@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
-import by.alis.functionalservercontrol.API.Spigot.Events.deprecated.ConsoleLogOutEvent;
+import by.alis.functionalservercontrol.api.Events.Deprecated.ConsoleLogOutEvent;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
@@ -39,13 +39,7 @@ public class EventConsoleLog implements Filter {
                     public void run() {
                         ConsoleLogOutEvent consoleLogEvent = new ConsoleLogOutEvent(consoleMessage, getConfigSettings().isApiEnabled());
                         if(consoleLogEvent.isApiEnabled()) {
-                            if(!getConfigSettings().isApiProtectedByPassword()) {
-                                Bukkit.getPluginManager().callEvent(consoleLogEvent);
-                            } else {
-                                if(consoleLogEvent.getApiPassword() != null && consoleLogEvent.getApiPassword().equalsIgnoreCase(accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                                    Bukkit.getPluginManager().callEvent(consoleLogEvent);
-                                }
-                            }
+                            Bukkit.getPluginManager().callEvent(consoleLogEvent);
                         } else {
                             cancel();
                         }

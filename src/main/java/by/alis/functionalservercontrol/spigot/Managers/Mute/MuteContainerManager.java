@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Managers.Mute;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -148,7 +148,7 @@ public class MuteContainerManager {
                                 sender.spigot().sendMessage(
                                         MD5TextUtils.appendTwo(
                                                 MD5TextUtils.createHoverText(setColors(
-                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
                                                                 .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
@@ -170,7 +170,7 @@ public class MuteContainerManager {
                             do {
                                 sender.spigot().sendMessage(
                                         MD5TextUtils.createHoverText(setColors(
-                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
@@ -190,7 +190,7 @@ public class MuteContainerManager {
                             do {
                                 sender.sendMessage(
                                         AdventureApiUtils.createHoverText(
-                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
@@ -211,7 +211,7 @@ public class MuteContainerManager {
                             do {
                                 sender.sendMessage(
                                         AdventureApiUtils.createHoverText(
-                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))),
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
@@ -228,7 +228,7 @@ public class MuteContainerManager {
                     }
                 } else {
                     do {
-                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start))));
+                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))));
                         start = start + 1;
                     } while (start < stop);
                     return;
@@ -262,7 +262,7 @@ public class MuteContainerManager {
                                         sender.spigot().sendMessage(
                                                 MD5TextUtils.appendTwo(
                                                         MD5TextUtils.createHoverText(setColors(
-                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getMutedIds().get(start))),
                                                                 setColors(hoverText
                                                                         .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
                                                                         .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
@@ -284,7 +284,7 @@ public class MuteContainerManager {
                                     do {
                                         sender.spigot().sendMessage(
                                                 MD5TextUtils.createHoverText(setColors(
-                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getMutedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
@@ -304,7 +304,7 @@ public class MuteContainerManager {
                                     do {
                                         sender.sendMessage(
                                                 AdventureApiUtils.createHoverText(
-                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getMutedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
@@ -325,7 +325,7 @@ public class MuteContainerManager {
                                     do {
                                         sender.sendMessage(
                                                 AdventureApiUtils.createHoverText(
-                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))),
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getMutedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getMuteInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getMutedPlayersNames().get(start)))
@@ -342,7 +342,7 @@ public class MuteContainerManager {
                             }
                         } else {
                             do {
-                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start))));
+                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getMutedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getMutedIds().get(start))));
                                 start = start + 1;
                             } while (start < stop);
                             return;

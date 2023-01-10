@@ -16,8 +16,8 @@ import static by.alis.functionalservercontrol.spigot.Additional.Containers.Stati
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
-import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getDate;
-import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getDate;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 /**

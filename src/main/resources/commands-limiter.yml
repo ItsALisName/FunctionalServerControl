@@ -1,7 +1,9 @@
 settings:
+  disable-reload-command: true #---> Version: v1.05
   enabled: true
   use-groups: false
   modify-tab-completions: true
+  notify-admins: true #---> Version: v1.05
 
   ##############################################################################
   #       Settings for checking the command entered by the players             #

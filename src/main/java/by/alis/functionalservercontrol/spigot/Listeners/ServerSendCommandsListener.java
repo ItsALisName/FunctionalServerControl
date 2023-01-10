@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +16,7 @@ public class ServerSendCommandsListener implements Listener {
     @EventHandler
     public void onServerSendCommand(PlayerCommandSendEvent event) {
         Player player = event.getPlayer();
-        if (getConfigSettings().hideMainCommand()) {
+        if (getConfigSettings().hideMainCommand() && !player.hasPermission("functionalservercontrol.commands.bypass")) {
             event.getCommands().removeIf(cmd -> cmd.contains("fsc") || cmd.contains("functionalservercontrol") || cmd.contains("fscontrol"));
         }
         if (getCommandLimiterSettings().isHideCompletionsFully()) {
@@ -27,12 +28,15 @@ public class ServerSendCommandsListener implements Listener {
                     String playerGroup = Expansions.getVaultManager().getPlayerGroup(player);
                     if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(playerGroup)) {
                         World world = player.getWorld();
-                        if (getCommandLimiterSettings().getPerWorldBlockedCommands().containsKey(world)) {
+                        
+                        
+                        if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
+                            int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
                             if (getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
                                 event.getCommands().clear();
-                                event.getCommands().addAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get(playerGroup));
+                                event.getCommands().addAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                             } else {
-                                event.getCommands().removeAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get(playerGroup));
+                                event.getCommands().removeAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                             }
                             return;
                         }
@@ -49,12 +53,14 @@ public class ServerSendCommandsListener implements Listener {
                     if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(Expansions.getLuckPermsManager().getPlayerGroup(player))) {
                         String playerGroup = Expansions.getLuckPermsManager().getPlayerGroup(player);
                         World world = player.getWorld();
-                        if (getCommandLimiterSettings().getPerWorldBlockedCommands().containsKey(world)) {
+                         
+                        if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
+                            int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
                             if (getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
                                 event.getCommands().clear();
-                                event.getCommands().addAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get(playerGroup));
+                                event.getCommands().addAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                             } else {
-                                event.getCommands().removeAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get(playerGroup));
+                                event.getCommands().removeAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                             }
                             return;
                         }
@@ -69,12 +75,13 @@ public class ServerSendCommandsListener implements Listener {
                 }
             }
             World world = player.getWorld();
-            if (getCommandLimiterSettings().getPerWorldBlockedCommands().containsKey(world)) {
+            if (getCommandLimiterSettings().getPerWorldGroups().contains("global") && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf("global")) == world) {
+                int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf("global");
                 if (getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
                     event.getCommands().clear();
-                    event.getCommands().addAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get("global"));
+                    event.getCommands().addAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                 } else {
-                    event.getCommands().removeAll(getCommandLimiterSettings().getPerWorldBlockedCommands().get(world).get("global"));
+                    event.getCommands().removeAll(getCommandLimiterSettings().getPerGroupCommands().get(indexOf));
                 }
                 return;
             }

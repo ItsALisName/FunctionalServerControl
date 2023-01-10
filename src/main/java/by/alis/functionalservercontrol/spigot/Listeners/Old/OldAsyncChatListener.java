@@ -1,11 +1,9 @@
 package by.alis.functionalservercontrol.spigot.Listeners.Old;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
-import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
-import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
+import by.alis.functionalservercontrol.spigot.Managers.AdvertiseManager;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -14,10 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
-import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
-import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getChatSettings;
+import static by.alis.functionalservercontrol.spigot.Managers.ChatManager.getChatManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker.isPlayerMuted;
 
 public class OldAsyncChatListener implements Listener, EventExecutor {
@@ -25,6 +22,7 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
+        String message = event.getMessage();
         if(isPlayerMuted(player)) {
             if(!event.isCancelled()) {
                 if(getConfigSettings().isAllowedUseRamAsContainer()){
@@ -37,35 +35,7 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
                     if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
                         translatedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
                     }
-                    if (getConfigSettings().isConsoleNotification()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
-                        );
-                    }
-                    if (getConfigSettings().isPlayersNotification() ) {
-                        for (Player admin : Bukkit.getOnlinePlayers()) {
-                            if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                    if (admin.hasPermission("functionalservercontrol.unmute")) {
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(
-                                                    MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))),
-                                                    MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName()))
-                                            );
-                                            continue;
-                                        }
-                                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                            admin.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))).append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));
-                                            continue;
-                                        }
-                                    }
-                                }
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
-                                );
-                            }
-                        }
-                    }
+                    getChatManager().notifyAdminsOnTryChat(player, message, translatedTime);
                 } else {
                     switch (getConfigSettings().getStorageType()) {
                         case SQLITE: {
@@ -78,40 +48,41 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
                             if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
                                 translatedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
                             }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                        .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
-                                );
-                            }
-                            if (getConfigSettings().isPlayersNotification()) {
-                                for (Player admin : Bukkit.getOnlinePlayers()) {
-                                    if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                                        if(getConfigSettings().isServerSupportsHoverEvents() && getConfigSettings().isButtonsOnNotifications()) {
-                                            if (admin.hasPermission("functionalservercontrol.unmute")) {
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(
-                                                            MD5TextUtils.stringToTextComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))),
-                                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName()))
-                                                    );
-                                                    continue;
-                                                }
-                                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                    player.sendMessage(AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))).append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonUnmute()), "/unmute " + player.getName())));
-                                                    continue;
-                                                }
-                                            }
-                                        }
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                                .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
-                                        );
-                                    }
-                                }
-                            }
+                            getChatManager().notifyAdminsOnTryChat(player, message, translatedTime);
                         }
                         case H2: {}
-                        case MYSQL: {}
                     }
                 }
+            }
+            return;
+        }
+        if(getChatSettings().isFunctionEnabled()) {
+            if(getChatManager().playerHasChatDelay(player)) {
+                event.setCancelled(true);
+                return;
+            } else {
+                getChatManager().setupChatDelay(player);
+            }
+            if(AdvertiseManager.isMessageContainsIp(player, message)) {
+                event.setCancelled(true);
+                return;
+            }
+            if(AdvertiseManager.isMessageContainsDomain(player, message)) {
+                event.setCancelled(true);
+                return;
+            }
+            if(getChatManager().isMessageContainsBlockedWord(player, message)) {
+                event.setCancelled(true);
+                return;
+            }
+            if(getChatManager().isRepeatingMessage(player, message)) {
+                event.setCancelled(true);
+                return;
+            } else {
+                getChatManager().setRepeatingMessage(player, message);
+            }
+            if(getChatSettings().isMessagesReplacerEnabled()) {
+                event.setMessage(getChatManager().replaceMessageIfNeed(player, message));
             }
         }
     }
@@ -124,4 +95,5 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
             onPlayerChat((AsyncPlayerChatEvent)event);
         }
     }
+
 }

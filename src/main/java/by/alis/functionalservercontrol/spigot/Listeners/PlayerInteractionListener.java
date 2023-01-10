@@ -13,7 +13,7 @@ public class PlayerInteractionListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
-                if(getConfigSettings().isPreventInteractionDuringCheck()) {
+                if(getConfigSettings().isPreventInteractionDuringCheatCheck()) {
                     if(getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
                 }
             }

@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.TimerTasks;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.UnmuteManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
@@ -58,7 +58,6 @@ public class MuteGlobalTask extends BukkitRunnable {
                             }
                         }
                         case H2: {}
-                        case MYSQL: {}
                     }
                 }
             }

@@ -21,9 +21,7 @@ public class MuteChecker {
                 case SQLITE: {
                     return getSQLiteManager().getMutedPlayersNames().contains(nullPlayerName);
                 }
-                case MYSQL: {
-                    return false;
-                }
+                
                 case H2: {
                     return false;
                 }
@@ -45,9 +43,7 @@ public class MuteChecker {
                 case SQLITE: {
                     return getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId())) && getSQLiteManager().getMutedPlayersNames().contains(player.getName());
                 }
-                case MYSQL: {
-                    return false;
-                }
+                
                 case H2: {
                     return false;
                 }
@@ -68,9 +64,6 @@ public class MuteChecker {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     return getSQLiteManager().getMutedIps().contains(ipAddress);
-                }
-                case MYSQL: {
-                    break;
                 }
                 case H2: {
                     break;
@@ -94,9 +87,7 @@ public class MuteChecker {
                 case SQLITE: {
                     return getSQLiteManager().getMutedIps().contains(getSQLiteManager().getIpByUUID(player.getUniqueId())) && getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
                 }
-                case MYSQL: {
-                    return false;
-                }
+                
                 case H2: {
                     return false;
                 }

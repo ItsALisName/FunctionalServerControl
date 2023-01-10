@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.CoreAdapters;
 
-import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.api.Enums.ProtocolVersions;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -21,8 +21,8 @@ import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.S
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils.generateRandomNumber;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
-import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getDate;
-import static by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getDate;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class ImportManager {
@@ -109,8 +109,8 @@ public class ImportManager {
                     }
                     UUID uuid;
                     if (OtherUtils.isArgumentIP(nameOrIp)) {
-                        if (OtherUtils.getPlayerByIP(nameOrIp) != null) {
-                            OfflinePlayer player = OtherUtils.getPlayerByIP(nameOrIp);
+                        if (OtherUtils.getOnlinePlayerByIP(nameOrIp) != null) {
+                            OfflinePlayer player = OtherUtils.getOnlinePlayerByIP(nameOrIp);
                             if(getSQLiteManager().getUuidByName(player.getName()).equalsIgnoreCase("null")) {
                                 uuid = player.getUniqueId();
                                 getSQLiteManager().insertIntoAllPlayers(player.getName(), uuid, generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber());

@@ -19,9 +19,9 @@ public class FileAccessor {
     }
 
     public FileConfiguration getLang() {
-        if(getConfigSettings().getGlobalLanguage().equalsIgnoreCase("ru_RU")) {
+        if(this.fileManager.configuration.getString("plugin-settings.global-language").equalsIgnoreCase("ru_RU")) {
             return this.fileManager.langRU;
-        } else if(getConfigSettings().getGlobalLanguage().equalsIgnoreCase("en_US")) {
+        } else if(this.fileManager.configuration.getString("plugin-settings.global-language").equalsIgnoreCase("en_US")) {
             return this.fileManager.langEN;
         } else {
             return this.fileManager.langEN;
@@ -81,6 +81,14 @@ public class FileAccessor {
 
     public void reloadCooldownsConfig() {
         this.fileManager.cooldownsConfig = YamlConfiguration.loadConfiguration(this.fileManager.cooldownsFile);
+    }
+
+    public FileConfiguration getChatConfig() {
+        return this.fileManager.chatConfig;
+    }
+
+    public void reloadChatConfig() {
+        this.fileManager.chatConfig = YamlConfiguration.loadConfiguration(this.fileManager.chatFile);
     }
 
 }

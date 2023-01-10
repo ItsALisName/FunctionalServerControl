@@ -13,7 +13,7 @@ public class PlayerMovingListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
-                if(getConfigSettings().isPreventMoveDuringCheck()) {
+                if(getConfigSettings().isPreventMoveDuringCheatCheck()) {
                     if(getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
                 }
             }

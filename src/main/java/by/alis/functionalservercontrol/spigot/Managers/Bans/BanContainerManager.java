@@ -1,15 +1,12 @@
 package by.alis.functionalservercontrol.spigot.Managers.Bans;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBannedPlayersContainer;
@@ -151,7 +148,7 @@ public class BanContainerManager {
                                 sender.spigot().sendMessage(
                                         MD5TextUtils.appendTwo(
                                                 MD5TextUtils.createHoverText(setColors(
-                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getBannedPlayersContainer().getIdsContainer().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
                                                                 .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
@@ -173,7 +170,7 @@ public class BanContainerManager {
                             do {
                                 sender.spigot().sendMessage(
                                         MD5TextUtils.createHoverText(setColors(
-                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getBannedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
@@ -193,7 +190,7 @@ public class BanContainerManager {
                             do {
                                 sender.sendMessage(
                                         AdventureApiUtils.createHoverText(
-                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getBannedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
@@ -214,7 +211,7 @@ public class BanContainerManager {
                             do {
                                 sender.sendMessage(
                                         AdventureApiUtils.createHoverText(
-                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))),
+                                                setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getBannedPlayersContainer().getIdsContainer().get(start))),
                                                 setColors(hoverText
                                                         .replace("%1$f", getBannedPlayersContainer().getInitiatorNameContainer().get(start))
                                                         .replace("%2$f", getBannedPlayersContainer().getNameContainer().get(start)))
@@ -231,7 +228,7 @@ public class BanContainerManager {
                     }
                 } else {
                     do {
-                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start))));
+                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getBannedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getBannedPlayersContainer().getIdsContainer().get(start))));
                         start = start + 1;
                     } while (start < stop);
                     return;
@@ -265,7 +262,7 @@ public class BanContainerManager {
                                         sender.spigot().sendMessage(
                                                 MD5TextUtils.appendTwo(
                                                         MD5TextUtils.createHoverText(setColors(
-                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
                                                                 setColors(hoverText
                                                                         .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
                                                                         .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
@@ -287,7 +284,7 @@ public class BanContainerManager {
                                     do {
                                         sender.spigot().sendMessage(
                                                 MD5TextUtils.createHoverText(setColors(
-                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                                "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
@@ -307,7 +304,7 @@ public class BanContainerManager {
                                     do {
                                         sender.sendMessage(
                                                 AdventureApiUtils.createHoverText(
-                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
@@ -328,7 +325,7 @@ public class BanContainerManager {
                                     do {
                                         sender.sendMessage(
                                                 AdventureApiUtils.createHoverText(
-                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))),
+                                                        setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
                                                         setColors(hoverText
                                                                 .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
                                                                 .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
@@ -345,7 +342,7 @@ public class BanContainerManager {
                             }
                         } else {
                             do {
-                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start))));
+                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))));
                                 start = start + 1;
                             } while (start < stop);
                             return;

@@ -24,7 +24,7 @@ public class CrazykickCompleter implements TabCompleter {
                     if (sender.hasPermission("functionalservercontrol.use.silently")) {
                         a.add("-s");
                     }
-                    a.addAll(TemporaryCache.getOnlinePlayerNames());
+                    if(!TemporaryCache.getOnlinePlayerNames().isEmpty()) a.addAll(TemporaryCache.getOnlinePlayerNames());
                     return TextUtils.sortList(a, args);
                 }
                 return Collections.singletonList("");

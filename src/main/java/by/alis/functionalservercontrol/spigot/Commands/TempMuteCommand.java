@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.TempMuteCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -107,14 +107,14 @@ public class TempMuteCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempmute");
+                                        muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempmute", false);
+                                        muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -122,7 +122,7 @@ public class TempMuteCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempmute", true);
+                                    muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -136,7 +136,7 @@ public class TempMuteCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                muteManager.preformMute(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempmute");
+                                muteManager.preformMute(args[0], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                             return true;
                         } else {
@@ -153,7 +153,7 @@ public class TempMuteCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempmute");
+                                muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                         }
 
@@ -186,8 +186,8 @@ public class TempMuteCommand implements CommandExecutor {
 
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                                     if(OtherUtils.isNotNullIp(args[1])) {
-                                        if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        if(OtherUtils.getPlayerByIP(args[0]) != null) {
+                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
                                             if(!player.isOnline()) {
                                                 if(!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -200,14 +200,14 @@ public class TempMuteCommand implements CommandExecutor {
                                                     return;
                                                 }
                                             }
-                                            muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempmute");
+                                            muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                             return;
                                         } else {
                                             if(!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                                 return;
                                             }
-                                            muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempmute", false);
+                                            muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, false);
                                             return;
                                         }
                                     } else {
@@ -215,7 +215,7 @@ public class TempMuteCommand implements CommandExecutor {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempmute", true);
+                                        muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, true);
                                         return;
                                     }
                                 });
@@ -229,7 +229,7 @@ public class TempMuteCommand implements CommandExecutor {
                                     return true;
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    muteManager.preformMute(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempmute");
+                                    muteManager.preformMute(args[1], MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                 });
                                 return true;
                             } else {
@@ -246,7 +246,7 @@ public class TempMuteCommand implements CommandExecutor {
                                     }
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempmute");
+                                    muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                 });
                             }
 
@@ -269,8 +269,8 @@ public class TempMuteCommand implements CommandExecutor {
 
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
                                     if(OtherUtils.isNotNullIp(args[1])) {
-                                        if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        if(OtherUtils.getPlayerByIP(args[0]) != null) {
+                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
                                             if (!player.isOnline()) {
                                                 if (!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -283,14 +283,14 @@ public class TempMuteCommand implements CommandExecutor {
                                                     return;
                                                 }
                                             }
-                                            muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "tempmute");
+                                            muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                                             return;
                                         } else {
                                             if (!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                                 return;
                                             }
-                                            muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "tempmute", false);
+                                            muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, false);
                                             return;
                                         }
                                     } else {
@@ -298,7 +298,7 @@ public class TempMuteCommand implements CommandExecutor {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "tempmute", true);
+                                        muteManager.preformMuteByIp(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, true);
                                         return;
                                     }
                                 });
@@ -312,7 +312,7 @@ public class TempMuteCommand implements CommandExecutor {
                                     return true;
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    muteManager.preformMute(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "tempmute");
+                                    muteManager.preformMute(args[1], MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                                 });
                                 return true;
                             } else {
@@ -329,7 +329,7 @@ public class TempMuteCommand implements CommandExecutor {
                                     }
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "tempmute");
+                                    muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                                 });
                             }
                             return true;
@@ -364,14 +364,14 @@ public class TempMuteCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "tempmute");
+                                        muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                                         return;
                                     } else {
                                         if (!sender.hasPermission("functionalservercontrol.tempmute.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "tempmute", false);
+                                        muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -379,7 +379,7 @@ public class TempMuteCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "tempmute", true);
+                                    muteManager.preformMuteByIp(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -393,7 +393,7 @@ public class TempMuteCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                muteManager.preformMute(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "tempmute");
+                                muteManager.preformMute(args[0], MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                             });
                             return true;
                         } else {
@@ -410,7 +410,7 @@ public class TempMuteCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "tempmute");
+                                muteManager.preformMute(player, MuteType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                             });
                         }
                         return true;

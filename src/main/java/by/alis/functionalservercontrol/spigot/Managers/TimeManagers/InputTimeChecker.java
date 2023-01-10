@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Managers.TimeManagers;
 
-import by.alis.functionalservercontrol.API.Enums.TimeUnit;
+import by.alis.functionalservercontrol.api.Enums.TimeUnit;
 
 public class InputTimeChecker {
 

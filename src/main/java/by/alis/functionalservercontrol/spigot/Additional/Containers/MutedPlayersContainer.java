@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.Containers;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
 
 import java.util.ArrayList;
 import java.util.List;

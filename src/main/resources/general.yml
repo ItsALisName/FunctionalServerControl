@@ -72,13 +72,13 @@ plugin-settings:
 
     ##############################################################################
     #     Will the console be notified when a blocked player tries to log in     #
-    #               or a gagged player tries to write to the chat?               #
+    #               or a muted player tries to write to the chat?                #
     ##############################################################################
     console: true
 
     ##############################################################################
     #  Will players with a certain permission be notified when a blocked player  #
-    #       tries to log in or a gagged player tries to write to the chat?       #
+    #       tries to log in or a muted player tries to write to the chat?        #
     ##############################################################################
     players: true
 
@@ -106,22 +106,9 @@ plugin-settings:
   show-examples: true
 
   ##############################################################################
-  #       Settings for using the API of this plugin by other plugins           #
+  #                           Is the API enabled?                              #
   ##############################################################################
-  api:
-    spigot:
-
-      ##############################################################################
-      #                         Is the Spigot API enabled?                         #
-      ##############################################################################
-      enabled: true
-
-      ##############################################################################
-      # If the API is enabled, you can configure the use of a password for the API #
-      ##############################################################################
-      password:
-        enabled: false
-        password: "SpigotAPICustomPassword"
+  api: true
 
   logger:
     enabled: true
@@ -507,6 +494,7 @@ plugin-settings:
       interact: true #Is it forbidden to interact?
       item-drop: true
       item-pickup: true
+      teleport: true # ---> Version: v1.05
 
     ################################################################################
     #         The list of ignored commands during the check, if the value          #
@@ -571,5 +559,9 @@ global-variables:
   banned: "Забанен"
   muted: "Заткнут"
   buttons:
+    ban: "&a[Забанить]" #---> Version: v1.05
+    mute: "&a[Заткнуть]" #---> Version: v1.05
     unban: "&e[Разбанить]"
     unmute: "&e[Размутить]"
+    kick: "&e[Кикнуть]" #---> Version: v1.05
+

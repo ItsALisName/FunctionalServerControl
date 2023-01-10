@@ -24,6 +24,8 @@ public class TemporaryCache {
     private static final UnbanManager unbanManager = new UnbanManager();
     private static final List<String> checkingPlayersNames = new ArrayList<>();
     private static final HashMap<Player, String> clientBrands = new HashMap<>();
+    private static final HashMap<UUID, Integer> chatDelays = new HashMap<>();
+    private static final HashMap<UUID, String> repeatingMessages = new HashMap<>();
 
 
     public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
@@ -95,7 +97,9 @@ public class TemporaryCache {
      * @param player Player whose name will be removed
      */
     public static void unsetOnlinePlayerName(Player player) {
-        TemporaryCache.onlinePlayerNames.remove(player.getName());
+        if(onlinePlayerNames.contains(player.getName())) {
+            onlinePlayerNames.remove(player.getName());
+        }
     }
 
     public static Map<Player, String> getOnlineIps() {
@@ -131,5 +135,16 @@ public class TemporaryCache {
     public static void unsetClientBrand(Player player) {
         clientBrands.remove(player);
     }
-
+    public static HashMap<UUID, Integer> getChatDelays() {
+        return chatDelays;
+    }
+    public static void addChatDelay(Player player, int time) {
+        chatDelays.put(player.getUniqueId(), time);
+    }
+    public static HashMap<UUID, String> getRepeatingMessages() {
+        return repeatingMessages;
+    }
+    public static void addRepeatingMessage(Player player, String message) {
+        repeatingMessages.put(player.getUniqueId(), message);
+    }
 }

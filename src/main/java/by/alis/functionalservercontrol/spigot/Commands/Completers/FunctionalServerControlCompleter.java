@@ -1,5 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands.Completers;
 
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,6 +23,7 @@ public class FunctionalServerControlCompleter implements TabCompleter {
             if (sender.hasPermission("functionalservercontrol.reload")) a.add("reload");
             if(sender.hasPermission("functionalservercontrol.import")) a.add("import");
             if(sender.hasPermission("functionalservercontrol.history")) a.add("history");
+            if(sender.hasPermission("functionalservercontrol.getstatistic")) a.add("getstatistic");
             return TextUtils.sortList(a, args);
         }
 
@@ -31,7 +33,7 @@ public class FunctionalServerControlCompleter implements TabCompleter {
 
         if (args[0].equalsIgnoreCase("reload") && args.length == 2) {
             if (sender.hasPermission("functionalservercontrol.reload")) {
-                return TextUtils.sortList(Arrays.asList("all", "globalvariables", "settings", "commandlimiter", "cooldowns"), args);
+                return TextUtils.sortList(Arrays.asList("all", "globalvariables", "settings", "commandlimiter", "cooldowns", "chatsettings"), args);
             }
             return Collections.singletonList("");
         }
@@ -46,6 +48,17 @@ public class FunctionalServerControlCompleter implements TabCompleter {
             }
             if(args.length == 3) {
                 if(sender.hasPermission("functionalservercontrol.history")) return Collections.singletonList("attribute");
+            }
+        }
+
+        if(args[0].equalsIgnoreCase("getstatistic")) {
+            if(sender.hasPermission("functionalservercontrol.getstatistic")) {
+                if(args.length == 2) {
+                    return TextUtils.sortList(Arrays.asList("admin", "player"), args);
+                }
+                if(args.length == 3 && (args[1].equalsIgnoreCase("admin") || args[1].equalsIgnoreCase("player"))) {
+                    return TextUtils.sortList(TemporaryCache.getOnlinePlayerNames(), args);
+                }
             }
         }
 

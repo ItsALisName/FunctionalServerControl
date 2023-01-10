@@ -1,9 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Listeners;
 
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.Chat;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
+import by.alis.functionalservercontrol.spigot.Managers.AdvertiseManager;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteChecker;
 import by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager;
-import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
+import by.alis.functionalservercontrol.spigot.Managers.GlobalCommandManager;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,30 +17,48 @@ import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManag
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns.getCooldowns;
-import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Managers.ChatManager.getChatManager;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
 public class PlayerCommandsListener implements Listener {
 
-    private final PlayerCommandManager commandManager = new PlayerCommandManager();
+    private final GlobalCommandManager commandManager = new GlobalCommandManager();
 
     @EventHandler
     public void onPlayerSendCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String command = event.getMessage();
         String[] args = command.split(" ");
+
+
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(getCheatCheckerManager().isPlayerChecking(player)) {
-                if (getConfigSettings().isPreventCommandsDuringCheck()) {
-                    if (!getConfigSettings().getIgnoredCommandsDuruingCheck().contains(command.split(" ")[0])) {
+                if (getConfigSettings().isPreventCommandsDuringCheatCheck()) {
+                    if (!getConfigSettings().getIgnoredCommandsDuruingCheatCheck().contains(command.split(" ")[0])) {
                         if (!event.isCancelled()) {
                             event.setCancelled(true);
+                            return;
                         }
                     }
                 }
             }
+        }
+
+        if(getChatManager().isCommandContainsBlockedWord(player, command)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if(AdvertiseManager.isCommandContainsAdvertise(player, command)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if(commandManager.preventReloadCommand(player, command)) {
+            event.setCancelled(true);
+            return;
         }
 
         if(getCooldowns().playerHasCooldown(player, command.split(" ")[0].substring(1))) {
@@ -125,8 +145,6 @@ public class PlayerCommandsListener implements Listener {
                             }
                         }
                         case H2: {
-                        }
-                        case MYSQL: {
                         }
                     }
                 }

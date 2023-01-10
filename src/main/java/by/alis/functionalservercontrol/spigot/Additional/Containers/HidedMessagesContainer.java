@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.Containers;
 
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;

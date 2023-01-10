@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot;
 
-import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.api.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
 import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.L4JFilter;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
@@ -43,13 +43,22 @@ public final class FunctionalServerControl extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        String version = OtherUtils.getServerVersion(getServer()).toString();
         if(OtherUtils.isSuppotedVersion(getServer()) && !OtherUtils.getServerCoreName(getServer()).toLowerCase().contains("bukkit")) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + OtherUtils.getServerVersion(getServer()).toString + " server version &a(Supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &a(Supported)"));
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + OtherUtils.getServerVersion(getServer()).toString + " server version &c(Not supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &c(Not supported)"));
             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Disabling..."));
             Bukkit.getPluginManager().disablePlugin(this);
             return;
+        }
+        if(version.startsWith("1.8") || version.startsWith("1.9") || version.startsWith("1.10") || version.startsWith("1.11") || version.startsWith("1.12") || version.startsWith("1.13") || version.startsWith("1.14") || version.startsWith("1.15")) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] You are using an old version of the Minecraft server!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] This version greatly limits the capabilities of the plugin"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Please update the Minecraft server version!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] You can download the new version of the server by following the links"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Spigot: &6https://getbukkit.org/download/spigot"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Paper: &6https://papermc.io/downloads"));
         }
         OtherUtils.plugmanInjection();
         if(!CoreAdapter.setAdapter()) {
@@ -70,6 +79,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         StaticSettingsAccessor.getConfigSettings().loadConfigSettings();
         StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
         StaticSettingsAccessor.getLanguage().loadLanguage();
+        StaticSettingsAccessor.getChatSettings().loadChatSettings();
         StaticSettingsAccessor.getCommandLimiterSettings().loadCommandLimiterSettings();
         //Settings initializer
 
@@ -110,6 +120,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         new GetInfoCommand(this);
         new BanListCommand(this);
         new MuteListCommand(this);
+        new ClearChatCommand(this);
         //Commands registering
 
         //Loaders
@@ -143,18 +154,21 @@ public final class FunctionalServerControl extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerDropItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new ConsoleSendCommandListener(), this);
         Bukkit.getPluginManager().registerEvents(new RemoteCommandsListener(), this);
-        if(OtherUtils.isClassExists("org.bukkit.event.player.AsyncPlayerChatEvent")) {
-            OldAsyncChatListener chatListener = new OldAsyncChatListener();
-            Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, getConfigSettings().getChatListenerPriority(), chatListener, this, true);
-        } else {
+        if(OtherUtils.isClassExists("io.papermc.paper.event.player.AsyncChatEvent")) {
             AsyncChatListener asyncChatListener = new AsyncChatListener();
             Bukkit.getPluginManager().registerEvent(AsyncChatEvent.class, asyncChatListener, getConfigSettings().getChatListenerPriority(), asyncChatListener, this, true);
+        } else {
+            OldAsyncChatListener chatListener = new OldAsyncChatListener();
+            Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, chatListener, getConfigSettings().getChatListenerPriority(), chatListener, this, true);
         }
         if(OtherUtils.isClassExists("com.destroystokyo.paper.event.server.AsyncTabCompleteEvent")) {
             Bukkit.getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
         } else {
             Bukkit.getPluginManager().registerEvents(new TabCompleteListener(), this);
         }
+        Bukkit.getPluginManager().registerEvents(new PlayerTeleportationListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SignChangeListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerEditBooksListener(), this);
         //Listeners registering
 
         this.registerPluginChannels();

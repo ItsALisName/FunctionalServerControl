@@ -1,11 +1,10 @@
 package by.alis.functionalservercontrol.spigot.Managers.TimeManagers;
 
-import by.alis.functionalservercontrol.API.Enums.TimeRestrictionType;
-import by.alis.functionalservercontrol.API.Enums.TimeUnit;
+import by.alis.functionalservercontrol.api.Enums.TimeRestrictionType;
+import by.alis.functionalservercontrol.api.Enums.TimeUnit;
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 

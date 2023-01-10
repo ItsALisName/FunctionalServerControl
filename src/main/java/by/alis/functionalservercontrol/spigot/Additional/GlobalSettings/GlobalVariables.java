@@ -37,6 +37,9 @@ public class GlobalVariables {
 
     private String BUTTON_UNBAN;
     private String BUTTON_UNMUTE;
+    private String BUTTON_BAN;
+    private String BUTTON_MUTE;
+    private String BUTTON_KICK;
 
 
     public String getVariableId() {
@@ -63,6 +66,12 @@ public class GlobalVariables {
     }
     public String getButtonUnmute() {
         return BUTTON_UNMUTE;
+    }
+    public String getButtonKick() {
+        return BUTTON_KICK;
+    }
+    public String getButtonMute() {
+        return BUTTON_MUTE;
     }
     public String getConsoleVariableName() {
         return VAR_REPLACED_CONSOLE_NAME;
@@ -114,10 +123,17 @@ public class GlobalVariables {
         return VAR_UNMUTED;
     }
 
+    public String getButtonBan() {
+        return BUTTON_BAN;
+    }
+
     public void reloadGlobalVariables() {
             try {
+                BUTTON_BAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.ban");
                 BUTTON_UNBAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unban");
                 BUTTON_UNMUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unmute");
+                BUTTON_KICK = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.kick");
+                BUTTON_MUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.mute");
                 VAR_STATUS_BANNED = getFileAccessor().getGeneralConfig().getString("global-variables.banned");
                 VAR_STATUS_MUTED = getFileAccessor().getGeneralConfig().getString("global-variables.muted");
                 VAR_NAME = getFileAccessor().getGeneralConfig().getString("global-variables.name");
@@ -146,8 +162,11 @@ public class GlobalVariables {
     public void loadGlobalVariables() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             try {
+                BUTTON_BAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.ban");
                 BUTTON_UNBAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unban");
                 BUTTON_UNMUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unmute");
+                BUTTON_KICK = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.kick");
+                BUTTON_MUTE = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.mute");
                 VAR_STATUS_BANNED = getFileAccessor().getGeneralConfig().getString("global-variables.banned");
                 VAR_STATUS_MUTED = getFileAccessor().getGeneralConfig().getString("global-variables.muted");
                 VAR_ID = getFileAccessor().getGeneralConfig().getString("global-variables.id");

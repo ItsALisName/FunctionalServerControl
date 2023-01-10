@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 
 import java.util.*;
 
@@ -10,7 +11,7 @@ public class ConsoleFilterHelper {
 
     private final List<String> functionalServerControlCommands = new ArrayList<>(Arrays.asList("/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
             "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall", "/getver", "/gv", "/getversion",
-            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation", "/banlist", "/banslist", "/mutelist", "/muteslist"));
+            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation", "/banlist", "/banslist", "/mutelist", "/muteslist", "/cleanchat", "/clearchat"));
     private final String ISSUED_COMMAND_TEXT = "issued server command: ";
 
     public boolean isFunctionalServerControlCommand(String consoleMessage) {
@@ -37,14 +38,13 @@ public class ConsoleFilterHelper {
     }
 
     public String getUsedFunctionalServerControlCommand(String consoleMessage) {
-        if(consoleMessage == null) return "Could not identify the command";;
-        return consoleMessage.split(ISSUED_COMMAND_TEXT)[1];
+        return consoleMessage == null ? "Could not identify the command" : consoleMessage.split(ISSUED_COMMAND_TEXT)[1];
     }
 
     public boolean isMessageToReplace(String consoleMessage) {
         for(Map.Entry<String, String> e : getReplacedMessagesContainer().getReplacedMessages().entrySet()) {
             if(e.getKey() != null) {
-                if(consoleMessage.replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", "").equals(e.getKey())) {
+                if(TextUtils.stringToMonolith(consoleMessage).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", "").equals(e.getKey())) {
                     return true;
                 }
             }
@@ -53,7 +53,7 @@ public class ConsoleFilterHelper {
     }
 
     public String replaceConsoleMessage(String consoleMessage) {
-        return getReplacedMessagesContainer().getReplacedMessages().get(consoleMessage.replace(":", "").replace("=", "").replace(" ", "").replace("/", "").replace("{", "").replace("}", ""));
+        return getReplacedMessagesContainer().getReplacedMessages().get(TextUtils.stringToMonolith(consoleMessage).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", ""));
     }
 
 }

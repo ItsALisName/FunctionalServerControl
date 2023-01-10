@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapters;
 
-import by.alis.functionalservercontrol.API.Enums.ProtocolVersions;
+import by.alis.functionalservercontrol.api.Enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.Adapter;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;

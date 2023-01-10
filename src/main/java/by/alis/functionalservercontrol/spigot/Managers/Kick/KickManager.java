@@ -1,12 +1,14 @@
 package by.alis.functionalservercontrol.spigot.Managers.Kick;
 
-import by.alis.functionalservercontrol.API.Enums.KickType;
-import by.alis.functionalservercontrol.API.Spigot.Events.KickPreprocessEvent;
+import by.alis.functionalservercontrol.api.Enums.KickType;
+import by.alis.functionalservercontrol.api.Enums.StatsType;
+import by.alis.functionalservercontrol.api.Events.KickPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +17,8 @@ import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManag
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getDate;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -45,15 +49,9 @@ public class KickManager {
             finalReason = reason;
         }
 
-        KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(false, player, initiator, finalReason, KickType.SINGLE, getConfigSettings().isApiEnabled());
+        KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(false, player, initiator, finalReason, KickType.SINGLE);
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
         }
 
         if(kickPreprocessEvent.isCancelled()) return;
@@ -85,7 +83,7 @@ public class KickManager {
         finalReason = kickPreprocessEvent.getReason();
 
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
-            if(getCheatCheckerManager().isPlayerChecking(player) && getConfigSettings().isPreventKickDuringCheck()) {
+            if(getCheatCheckerManager().isPlayerChecking(player) && getConfigSettings().isPreventKickDuringCheatCheck()) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.kick-player-on-check")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
@@ -103,7 +101,11 @@ public class KickManager {
             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
         }
         switch (getConfigSettings().getStorageType()) {
-            case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
+            case SQLITE: {
+                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
+                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
+                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+            }
             case H2: {}
         }
         return;
@@ -119,10 +121,10 @@ public class KickManager {
     public void preformGlobalKick(@NotNull CommandSender initiator, @Nullable String reason, boolean announceKick) {
         String initiatorName = null;
         String finalReason = getGlobalVariables().getDefaultReason();
-        if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getName();
-        } else {
+        if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
+        } else {
+            initiatorName = initiator.getName();
         }
 
         if(reason != null && !reason.equalsIgnoreCase("")) {
@@ -132,15 +134,9 @@ public class KickManager {
         int count = 0;
 
         for(Player player : Bukkit.getOnlinePlayers()) {
-            KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(true, player, initiator, finalReason, KickType.GLOBAL, getConfigSettings().isApiEnabled());
+            KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(true, player, initiator, finalReason, KickType.GLOBAL);
             if(getConfigSettings().isApiEnabled()) {
-                if(getConfigSettings().isApiProtectedByPassword()) {
-                    if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                        Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-                    }
-                } else {
-                    Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-                }
+                Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
             }
 
             if(kickPreprocessEvent.isCancelled()) return;
@@ -184,7 +180,12 @@ public class KickManager {
                 CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
             }
             switch (getConfigSettings().getStorageType()) {
-                case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason));
+                case SQLITE: {
+                    getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
+                    getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+                    break;
+                }
                 case H2: {}
             }
         }
@@ -202,16 +203,10 @@ public class KickManager {
         }
 
 
-        KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(player, initiator, KickType.CRAZY_KICK, getConfigSettings().isApiEnabled());
+        KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(player, initiator, KickType.CRAZY_KICK);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(kickPreprocessEvent.getApiPassword() != null && kickPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
         }
 
         if(kickPreprocessEvent.isCancelled()) return;

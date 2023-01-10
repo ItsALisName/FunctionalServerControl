@@ -1,9 +1,11 @@
 package by.alis.functionalservercontrol.databases.SQLite;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
-import by.alis.functionalservercontrol.API.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.MuteType;
+import by.alis.functionalservercontrol.api.Enums.StatsType;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -54,12 +56,12 @@ public class SQLManager extends SQLCore {
                     Class.forName("org.sqlite.JDBC");
                     sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
                     Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalServerControl] Connection to the database was successful."));
-                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
-                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
-                    String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
-                    String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
+                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
+                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
+                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
+                    String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
+                    String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
                     String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
                     sqlStatement = sqlConnection.createStatement();
                     sqlStatement.executeUpdate(queryTableOne);
@@ -91,12 +93,12 @@ public class SQLManager extends SQLCore {
     @Override
     public void setupTables() {
         sqlConnection = getSQLConnection();
-        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), banType varchar(255), banDate varchar(255), banTime varchar(255), uuid varchar(255), unbanTime varchar(255));";
-        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(255), uuid varchar(255), ip varchar(255));";
-        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(255), ip varchar(255) , name varchar(255), initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
-        String queryTableFive = "CREATE TABLE IF NOT EXISTS Cooldowns (PlayerAndCommand varchar(255), Time varchar(255));";
-        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(255), ip varchar(255), name varchar(255) , initiatorName varchar(255), reason varchar(255), muteType varchar(255), muteDate varchar(255), muteTime varchar(255), uuid varchar(255), unmuteTime varchar(255));";
+        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
+        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
+        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
+        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
+        String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
+        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
         String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
         try {
             sqlStatement = sqlConnection.createStatement();
@@ -133,9 +135,219 @@ public class SQLManager extends SQLCore {
         }
     }
 
+    public void insertIntoPlayersPunishInfo(UUID uuid) {
+        sqlConnection = getSQLConnection();
+        String getUUID = "SELECT uuid FROM playersStats;";
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery(getUUID);
+            while (sqlResultSet.next()) {
+                String rUuid = sqlResultSet.getString("uuid");
+                if(rUuid == null || rUuid.equalsIgnoreCase(String.valueOf(uuid))) return;
+            }
+            String insertInfo = "INSERT INTO playersStats (uuid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + String.valueOf(uuid) + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
+            sqlConnection.createStatement().executeUpdate(insertInfo);
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
+        }
+    }
+
+    public String getPlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+        sqlConnection = getSQLConnection();
+        try {
+            String a = "";
+            switch (statsType) {
+                case STATS_BANS: a = "SELECT totalBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_KICKS: a = "SELECT totalKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_MUTES: a = "SELECT totalMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case BLOCKED_WORDS_USED: a = "SELECT blockedWordsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case BLOCKED_COMMANDS_USED: a = "SELECT blockedCommandsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case ADVERTISE_ATTEMPTS: a = "SELECT advertiseAttempts FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+            }
+            sqlResultSet = sqlConnection.createStatement().executeQuery(a);
+            String info = "null";
+            while (sqlResultSet.next()) {
+                switch (statsType) {
+                    case STATS_MUTES: info = sqlResultSet.getString("totalMutes"); break;
+                    case STATS_KICKS: info = sqlResultSet.getString("totalKicks"); break;
+                    case STATS_BANS: info = sqlResultSet.getString("totalBans"); break;
+                    case BLOCKED_WORDS_USED: info = sqlResultSet.getString("blockedWordsUsed"); break;
+                    case BLOCKED_COMMANDS_USED: info = sqlResultSet.getString("blockedCommandsUsed"); break;
+                    case ADVERTISE_ATTEMPTS: info = sqlResultSet.getString("advertiseAttempts"); break;
+                }
+                if(info != null) {
+                    return info;
+                }
+            }
+            sqlConnection.close();
+            return info.equalsIgnoreCase("null") ? null : info;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
+        }
+    }
+
+    public String getAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
+        sqlConnection = getSQLConnection();
+        try {
+            String a = "";
+            switch (statsType) {
+                case STATS_BANS: a = "SELECT didBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_KICKS: a = "SELECT didKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_MUTES: a = "SELECT didMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_UNBANS: a = "SELECT didUnbans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_UNMUTES: a = "SELECT didUnmutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+            }
+            if(sqlConnection == null) sqlConnection = getSQLConnection();
+            sqlResultSet = sqlConnection.createStatement().executeQuery(a);
+            String info = "null";
+            while (sqlResultSet.next()) {
+                switch (statsType) {
+                    case STATS_MUTES: info = sqlResultSet.getString("didMutes"); break;
+                    case STATS_KICKS: info = sqlResultSet.getString("didKicks"); break;
+                    case STATS_BANS: info = sqlResultSet.getString("didBans"); break;
+                    case STATS_UNBANS: info = sqlResultSet.getString("didUnbans"); break;
+                    case STATS_UNMUTES: info = sqlResultSet.getString("didUnmutes"); break;
+                }
+                if(info != null) {
+                    return info;
+                }
+            }
+            sqlConnection.close();
+            return info.equalsIgnoreCase("null") ? null : info;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if(sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {}
+            try {
+                if(sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
+        }
+    }
+
+    public void updatePlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+        if (getPlayerStatsInfo(player, statsType) != null) {
+            int total = Integer.parseInt(getPlayerStatsInfo(player, statsType));
+            sqlConnection = getSQLConnection();
+            try {
+                String a = "null";
+                switch (statsType) {
+                    case STATS_BANS: a = "UPDATE playersStats SET totalBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET totalKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET totalMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case BLOCKED_COMMANDS_USED: a = "UPDATE playersStats SET blockedCommandsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case BLOCKED_WORDS_USED: a = "UPDATE playersStats SET blockedWordsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case ADVERTISE_ATTEMPTS: a = "UPDATE playersStats SET advertiseAttempts='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                }
+                sqlConnection.createStatement().executeUpdate(a);
+                sqlConnection.close();
+            } catch (SQLException ex) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+                throw new RuntimeException(ex);
+            } finally {
+                try {
+                    if(sqlConnection != null) {
+                        sqlConnection.close();
+                    }
+                } catch (SQLException ex) {}
+                try {
+                    if(sqlStatement != null) {
+                        sqlStatement.close();
+                    }
+                } catch (SQLException ex) {}
+                try {
+                    if(sqlResultSet != null) {
+                        sqlResultSet.close();
+                    }
+                } catch (SQLException ex) {}
+            }
+        }
+    }
+
+    public void updateAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
+        if (getAdminStatsInfo(player, statsType) != null) {
+            int total = Integer.parseInt(getAdminStatsInfo(player, statsType));
+            sqlConnection = getSQLConnection();
+            try {
+                String a = "null";
+                switch (statsType) {
+                    case STATS_BANS: a = "UPDATE playersStats SET didBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET didKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET didMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_UNBANS: a = "UPDATE playersStats SET didUnbans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_UNMUTES: a = "UPDATE playersStats SET didUnmutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                }
+                sqlConnection.createStatement().executeUpdate(a);
+                sqlConnection.close();
+            } catch (SQLException ex) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
+                throw new RuntimeException(ex);
+            } finally {
+                try {
+                    if(sqlConnection != null) {
+                        sqlConnection.close();
+                    }
+                } catch (SQLException ex) {}
+                try {
+                    if(sqlStatement != null) {
+                        sqlStatement.close();
+                    }
+                } catch (SQLException ex) {}
+                try {
+                    if(sqlResultSet != null) {
+                        sqlResultSet.close();
+                    }
+                } catch (SQLException ex) {}
+            }
+        }
+    }
+
     public void insertIntoHistory(String message) {
         sqlConnection = getSQLConnection();
-        String getUUID = "SELECT uuid FROM allPlayers;";
         try {
             String a = "INSERT INTO History (history) VALUES ('" + message + "');";
             sqlConnection.createStatement().executeUpdate(a);
@@ -214,11 +426,9 @@ public class SQLManager extends SQLCore {
     }
 
     public void clearHistory() {
-        sqlConnection = getSQLConnection();
         try {
             String a = "DELETE FROM History;";
-            sqlConnection.createStatement().executeUpdate(a);
-            sqlConnection.close();
+            getSQLConnection().createStatement().executeUpdate(a);
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
@@ -319,6 +529,7 @@ public class SQLManager extends SQLCore {
     }
 
 
+    @Nullable
     public String getUuidByName(String playerName) {
         sqlConnection = getSQLConnection();
         try {
@@ -331,7 +542,45 @@ public class SQLManager extends SQLCore {
                     return uuid;
                 }
             }
-            return uuid;
+            return uuid.equalsIgnoreCase("null") ? null : uuid;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if (sqlConnection != null) {
+                    sqlConnection.close();
+                }
+            } catch (SQLException ex) {
+            }
+            try {
+                if (sqlStatement != null) {
+                    sqlStatement.close();
+                }
+            } catch (SQLException ex) {
+            }
+            try {
+                if (sqlResultSet != null) {
+                    sqlResultSet.close();
+                }
+            } catch (SQLException ex) {}
+        }
+    }
+
+
+    public UUID getUUIDByIp(String ip) {
+        sqlConnection = getSQLConnection();
+        try {
+            String a = "SELECT uuid FROM allPlayers WHERE ip = '" + ip + "';";
+            sqlResultSet = sqlConnection.createStatement().executeQuery(a);
+            String uuid = "null";
+            while (sqlResultSet.next()) {
+                uuid = sqlResultSet.getString("uuid");
+                if(uuid != null) {
+                    return UUID.fromString(uuid);
+                }
+            }
+            return uuid.equalsIgnoreCase("null") ? null : UUID.fromString(uuid);
         } catch (SQLException ex) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);

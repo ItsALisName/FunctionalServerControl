@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.BanCompleter;
@@ -62,11 +62,11 @@ public class BanCommand implements CommandExecutor {
                                     TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan((target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                            banManager.preformBan((target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                         });
                                     } else {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban");
+                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                         });
                                     }
                                 } else if(target.hasPermission("functionalservercontrol.ban.bypass")) {
@@ -75,11 +75,11 @@ public class BanCommand implements CommandExecutor {
                                         TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                             });
                                         } else {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                             });
                                         }
                                     }
@@ -106,11 +106,11 @@ public class BanCommand implements CommandExecutor {
                                     TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                            banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                         });
                                     } else {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true, "ban");
+                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                         });
                                     }
                                 } else if(target.hasPermission("functionalservercontrol.ban.bypass")) {
@@ -119,11 +119,11 @@ public class BanCommand implements CommandExecutor {
                                         TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer) target), sender);
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                             });
                                         } else {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                             });
                                         }
                                     }
@@ -167,11 +167,11 @@ public class BanCommand implements CommandExecutor {
                                     TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer)target), sender);
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                            banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                         });
                                     } else {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true, "ban");
+                                            banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                         });
                                     }
                                 } else if(target.hasPermission("functionalservercontrol.ban.bypass")) {
@@ -180,11 +180,11 @@ public class BanCommand implements CommandExecutor {
                                         TemporaryCache.setUnsafeBannedPlayers(((OfflinePlayer)target), sender);
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                             });
                                         } else {
                                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true, "ban");
+                                                banManager.preformBan(((OfflinePlayer) target), BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, true);
                                             });
                                         }
                                     }
@@ -220,9 +220,9 @@ public class BanCommand implements CommandExecutor {
                                         }
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                     } else {
-                                        banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, "ban");
+                                        banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                                     }
                                     return;
                                 } else {
@@ -232,10 +232,10 @@ public class BanCommand implements CommandExecutor {
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                            banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban", false);
+                                            banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, false);
                                         });
                                     } else {
-                                        banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, "ban", false);
+                                        banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, false);
                                     }
                                     return;
                                 }
@@ -245,9 +245,9 @@ public class BanCommand implements CommandExecutor {
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, true);
                                 } else {
-                                    banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, true);
                                 }
                             }
                         });
@@ -262,11 +262,11 @@ public class BanCommand implements CommandExecutor {
                         }
                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                             });
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, "ban");
+                                banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                             });
                         }
                     } else {
@@ -284,11 +284,11 @@ public class BanCommand implements CommandExecutor {
                         }
                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                             });
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, "ban");
+                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                             });
                         }
                     }
@@ -324,9 +324,9 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                         } else {
-                                            banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, "ban");
+                                            banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                         }
                                         return;
                                     } else {
@@ -335,9 +335,9 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban", false);
+                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, false);
                                         } else {
-                                            banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, "ban", false);
+                                            banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, false);
                                         }
                                         return;
                                     }
@@ -347,9 +347,9 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban", true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, true);
                                     } else {
-                                        banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, "ban", true);
+                                        banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, true);
                                     }
                                     return;
                                 }
@@ -365,11 +365,11 @@ public class BanCommand implements CommandExecutor {
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                 });
                             } else {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, "ban");
+                                    banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                 });
                             }
                         } else {
@@ -391,11 +391,11 @@ public class BanCommand implements CommandExecutor {
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                 });
                             } else {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, "ban");
+                                    banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                 });
                             }
                         }
@@ -428,9 +428,9 @@ public class BanCommand implements CommandExecutor {
                                             }
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                         } else {
-                                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban");
+                                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                         }
                                         return;
                                     } else {
@@ -439,9 +439,9 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                                banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban", false);
+                                                banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, false);
                                         } else {
-                                                banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban", false);
+                                                banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, false);
                                         }
                                         return;
                                     }
@@ -451,9 +451,9 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban", true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, true);
                                     } else {
-                                        banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban", true);
+                                        banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, true);
                                     }
                                     return;
                                 }
@@ -469,11 +469,11 @@ public class BanCommand implements CommandExecutor {
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                 });
                             } else {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban");
+                                    banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                 });
                             }
                         } else {
@@ -491,11 +491,11 @@ public class BanCommand implements CommandExecutor {
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, "ban");
+                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
                                 });
                             } else {
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, "ban");
+                                    banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                 });
                             }
                         }
@@ -528,14 +528,14 @@ public class BanCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "ban");
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "ban", false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -543,7 +543,7 @@ public class BanCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -557,7 +557,7 @@ public class BanCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "ban");
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                             return true;
                         } else {
@@ -574,7 +574,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                         }
                         return true;
@@ -605,14 +605,14 @@ public class BanCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "ban");
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "ban", false);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, false);
                                         return;
                                     }
                                 } else {
@@ -620,7 +620,7 @@ public class BanCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "ban", true);
+                                    banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, true);
                                     return;
                                 }
                             });
@@ -634,7 +634,7 @@ public class BanCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "ban");
+                                banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                             });
                             return true;
                         } else {
@@ -651,7 +651,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                             });
                             return true;
                         }
@@ -683,14 +683,14 @@ public class BanCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "ban");
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "ban", false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -698,7 +698,7 @@ public class BanCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -712,7 +712,7 @@ public class BanCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "ban");
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                             });
                             return true;
                         } else {
@@ -729,7 +729,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                             });
                             return true;
                         }
@@ -760,14 +760,14 @@ public class BanCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "ban");
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "ban", false);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, false);
                                         return;
                                     }
                                 } else {
@@ -775,7 +775,7 @@ public class BanCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "ban", true);
+                                    banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, true);
                                     return;
                                 }
                             });
@@ -789,7 +789,7 @@ public class BanCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "ban");
+                                banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                             });
                             return true;
                         } else {
@@ -806,7 +806,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                             });
                             return true;
                         }
@@ -833,9 +833,9 @@ public class BanCommand implements CommandExecutor {
                                         }
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                                     } else {
-                                            banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, "ban");
+                                            banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                                     }
                                     return;
                                 } else {
@@ -844,9 +844,9 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban", false);
+                                            banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, false);
                                     } else {
-                                            banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, "ban", false);
+                                            banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, false);
                                     }
                                     return;
                                 }
@@ -856,9 +856,9 @@ public class BanCommand implements CommandExecutor {
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, true);
                                 } else {
-                                    banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, "ban", true);
+                                    banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, true);
                                 }
                                 return;
                             }
@@ -874,11 +874,11 @@ public class BanCommand implements CommandExecutor {
                         }
                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                             });
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, "ban");
+                                banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                             });
                         }
                         return true;
@@ -897,11 +897,11 @@ public class BanCommand implements CommandExecutor {
                         }
                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, "ban");
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
                             });
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, "ban");
+                                banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                             });
                         }
                         return true;

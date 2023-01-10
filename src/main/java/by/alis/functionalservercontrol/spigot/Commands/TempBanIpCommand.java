@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.Commands;
 
-import by.alis.functionalservercontrol.API.Enums.BanType;
+import by.alis.functionalservercontrol.api.Enums.BanType;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Commands.Completers.TempBanIpCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -107,14 +107,14 @@ public class TempBanIpCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempbanip");
+                                        banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                                         return;
                                     } else {
                                         if(!sender.hasPermission("functionalservercontrol.tempban-ip.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempbanip", false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -122,7 +122,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempbanip", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -136,7 +136,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempbanip");
+                                banManager.preformBan(args[0], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                             return true;
                         } else {
@@ -153,7 +153,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true, "tempbanip");
+                                banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                             });
                         }
 
@@ -200,14 +200,14 @@ public class TempBanIpCommand implements CommandExecutor {
                                                     return;
                                                 }
                                             }
-                                            banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempbanip");
+                                            banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                             return;
                                         } else {
                                             if(!sender.hasPermission("functionalservercontrol.tempban-ip.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                                 return;
                                             }
-                                            banManager.preformBanByIp(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempbanip", false);
+                                            banManager.preformBanByIp(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, false);
                                             return;
                                         }
                                     } else {
@@ -215,7 +215,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempbanip", true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, true);
                                         return;
                                     }
                                 });
@@ -229,7 +229,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                     return true;
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempbanip");
+                                    banManager.preformBan(args[1], BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                 });
                                 return true;
                             } else {
@@ -246,7 +246,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                     }
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false, "tempbanip");
+                                    banManager.preformBan(player, BanType.TIMED_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                 });
                             }
 
@@ -283,14 +283,14 @@ public class TempBanIpCommand implements CommandExecutor {
                                                     return;
                                                 }
                                             }
-                                            banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 3), sender, time, false, "tempbanip");
+                                            banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 3), sender, time, false);
                                             return;
                                         } else {
                                             if (!sender.hasPermission("functionalservercontrol.tempban-ip.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                                 return;
                                             }
-                                            banManager.preformBanByIp(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false, "tempbanip", false);
+                                            banManager.preformBanByIp(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false, false);
                                             return;
                                         }
                                     } else {
@@ -298,7 +298,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false, "tempbanip", true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false, true);
                                         return;
                                     }
                                 });
@@ -312,7 +312,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                     return true;
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false, "tempbanip");
+                                    banManager.preformBan(args[1], BanType.TIMED_IP, getReason(args, 3), sender, time, false);
                                 });
                                 return true;
                             } else {
@@ -329,7 +329,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                     }
                                 }
                                 Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                    banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 3), sender, time, false, "tempbanip");
+                                    banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 3), sender, time, false);
                                 });
                             }
                             return true;
@@ -364,14 +364,14 @@ public class TempBanIpCommand implements CommandExecutor {
                                                 return;
                                             }
                                         }
-                                        banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 2), sender, time, true, "tempbanip");
+                                        banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 2), sender, time, true);
                                         return;
                                     } else {
                                         if (!sender.hasPermission("functionalservercontrol.tempban-ip.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                             return;
                                         }
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true, "tempbanip", false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true, false);
                                         return;
                                     }
                                 } else {
@@ -379,7 +379,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                         return;
                                     }
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true, "tempbanip", true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true, true);
                                     return;
                                 }
                             });
@@ -393,7 +393,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                 return true;
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true, "tempbanip");
+                                banManager.preformBan(args[0], BanType.TIMED_IP, getReason(args, 2), sender, time, true);
                             });
                             return true;
                         } else {
@@ -410,7 +410,7 @@ public class TempBanIpCommand implements CommandExecutor {
                                 }
                             }
                             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                                banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 2), sender, time, true, "tempbanip");
+                                banManager.preformBan(player, BanType.TIMED_IP, getReason(args, 2), sender, time, true);
                             });
                         }
                         return true;

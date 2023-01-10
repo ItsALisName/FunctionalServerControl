@@ -18,7 +18,6 @@ public class IdsManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: return !getSQLiteManager().getBannedIds().contains(String.valueOf((int)Math.round(id))) && !getSQLiteManager().getMutedIds().contains(String.valueOf((int)Math.round(id)));
                 case H2: return true;
-                case MYSQL: return true;
             }
         }
         return true;

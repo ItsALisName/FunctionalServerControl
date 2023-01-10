@@ -1,17 +1,18 @@
 package by.alis.functionalservercontrol.spigot.Additional.GlobalSettings;
 
 import by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers;
-import by.alis.functionalservercontrol.API.Enums.StorageType;
+import by.alis.functionalservercontrol.api.Enums.StorageType;
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.Additional.TimerTasks.*;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getBanContainerManager;
+import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getChatSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.Managers.Mute.MuteManager.getMuteContainerManager;
@@ -39,7 +40,6 @@ public class GeneralConfigSettings {
     private Set<String> timeRestrictionGroups = new HashSet<>();
     //API settings start
     private boolean isApiEnabled = true;
-    private boolean isApiProtectedByPassword = false;
     //API settings end
     private boolean isProhibitYourselfInteraction = false;
     //Notification settings start
@@ -54,32 +54,33 @@ public class GeneralConfigSettings {
     private int autoPurgerDelay = 600;
     private boolean sendTitleWhenMuted = true;
     private boolean sendTitleWhenUnmuted = true;
-    private boolean serverSupportsHoverEvents = false;
+    private boolean serverSupportsHoverEvents;
     private String supportedHoverEvents = "MD5";
     private EventPriority chatListenerPriority = EventPriority.NORMAL;
-    private List<String> disabledCommandsWhenMuted = new ArrayList<>();
+    private final List<String> disabledCommandsWhenMuted = new ArrayList<>();
     private boolean sendActionbarWhileMuted = true;
     private boolean blockWorldDownloader = true;
-    private List<String> actionsOnWDL = new ArrayList<>();
+    private final List<String> actionsOnWDL = new ArrayList<>();
     private boolean isCheatCheckFunctionEnabled = true;
-    private boolean isPreventBlockPlaceDuringCheck;
-    private boolean isPreventBlockBreakDuringCheck;
-    private boolean isPreventIflictDamageDuringCheck;
-    private boolean isPreventTakingDamageDuringCheck;
-    private boolean isPreventMoveDuringCheck;
-    private boolean isPreventCommandsDuringCheck;
-    private boolean isPreventInteractionDuringCheck;
-    private boolean isPreventDropItemDuringCheck;
-    private boolean isPreventPickupItemDuringCheck;
-    private List<String> ignoredCommandsDuruingCheck = new ArrayList<>();
+    private boolean isPreventBlockPlaceDuringCheatCheck;
+    private boolean isPreventBlockBreakDuringCheatCheck;
+    private boolean isPreventIflictDamageDuringCheatCheck;
+    private boolean isPreventTakingDamageDuringCheatCheck;
+    private boolean isPreventMoveDuringCheatCheck;
+    private boolean isPreventCommandsDuringCheatCheck;
+    private boolean isPreventInteractionDuringCheatCheck;
+    private boolean isPreventDropItemDuringCheatCheck;
+    private boolean isPreventPickupItemDuringCheatCheck;
+    private boolean isPreventTeleportDuringCheatCheck;
+    private final List<String> ignoredCommandsDuruingCheatCheck = new ArrayList<>();
     private int defaultCheatCheckTime;
-    private final List<String> actionIfQuitDuringCheck = new ArrayList<>();
+    private final List<String> actionIfQuitDuringCheatCheck = new ArrayList<>();
     private final List<String> actionIfValidCheatCheck = new ArrayList<>();
     private final List<String> actionIfFailedCheatCheck = new ArrayList<>();
-    private final List<String> actionIfTimeLeft = new ArrayList<>();
-    private boolean sendTitleOnCheck;
-    private boolean preventKickDuringCheck;
-    private boolean preventMuteDuringCheck;
+    private final List<String> actionIfTimeLeftOnCheatCheck = new ArrayList<>();
+    private boolean sendTitleOnCheatCheck;
+    private boolean preventKickDuringCheatCheck;
+    private boolean preventMuteDuringCheatCheck;
     private boolean isLoggerEnabled = false;
     private String logFormat = "[FunctionalBans <-> %1$f] %2$f";
     private final List<String> messagesToLog = new ArrayList<>();
@@ -302,62 +303,62 @@ public class GeneralConfigSettings {
     private void setCheatCheckFunctionEnabled(boolean cheatCheckFunctionEnabled) {
         isCheatCheckFunctionEnabled = cheatCheckFunctionEnabled;
     }
-    public boolean isPreventBlockPlaceDuringCheck() {
-        return isPreventBlockPlaceDuringCheck;
+    public boolean isPreventBlockPlaceDuringCheatCheck() {
+        return isPreventBlockPlaceDuringCheatCheck;
     }
-    private void setPreventBlockPlaceDuringCheck(boolean preventBlockPlaceDuringCheck) {
-        isPreventBlockPlaceDuringCheck = preventBlockPlaceDuringCheck;
+    private void setPreventBlockPlaceDuringCheatCheck(boolean preventBlockPlaceDuringCheatCheck) {
+        isPreventBlockPlaceDuringCheatCheck = preventBlockPlaceDuringCheatCheck;
     }
-    public boolean isPreventBlockBreakDuringCheck() {
-        return isPreventBlockBreakDuringCheck;
+    public boolean isPreventBlockBreakDuringCheatCheck() {
+        return isPreventBlockBreakDuringCheatCheck;
     }
-    private void setPreventBlockBreakDuringCheck(boolean preventBlockBreakDuringCheck) {
-        isPreventBlockBreakDuringCheck = preventBlockBreakDuringCheck;
+    private void setPreventBlockBreakDuringCheatCheck(boolean preventBlockBreakDuringCheatCheck) {
+        isPreventBlockBreakDuringCheatCheck = preventBlockBreakDuringCheatCheck;
     }
-    public boolean isPreventIflictDamageDuringCheck() {
-        return isPreventIflictDamageDuringCheck;
+    public boolean isPreventIflictDamageDuringCheatCheck() {
+        return isPreventIflictDamageDuringCheatCheck;
     }
-    private void setPreventIflictDamageDuringCheck(boolean preventIflictDamageDuringCheck) {
-        isPreventIflictDamageDuringCheck = preventIflictDamageDuringCheck;
+    private void setPreventIflictDamageDuringCheatCheck(boolean preventIflictDamageDuringCheatCheck) {
+        isPreventIflictDamageDuringCheatCheck = preventIflictDamageDuringCheatCheck;
     }
-    public boolean isPreventTakingDamageDuringCheck() {
-        return isPreventTakingDamageDuringCheck;
+    public boolean isPreventTakingDamageDuringCheatCheck() {
+        return isPreventTakingDamageDuringCheatCheck;
     }
-    private void setPreventTakingDamageDuringCheck(boolean preventTakingDamageDuringCheck) {
-        isPreventTakingDamageDuringCheck = preventTakingDamageDuringCheck;
+    private void setPreventTakingDamageDuringCheatCheck(boolean preventTakingDamageDuringCheatCheck) {
+        isPreventTakingDamageDuringCheatCheck = preventTakingDamageDuringCheatCheck;
     }
-    public boolean isPreventMoveDuringCheck() {
-        return isPreventMoveDuringCheck;
+    public boolean isPreventMoveDuringCheatCheck() {
+        return isPreventMoveDuringCheatCheck;
     }
-    private void setPreventMoveDuringCheck(boolean preventMoveDuringCheck) {
-        isPreventMoveDuringCheck = preventMoveDuringCheck;
+    private void setPreventMoveDuringCheatCheck(boolean preventMoveDuringCheatCheck) {
+        isPreventMoveDuringCheatCheck = preventMoveDuringCheatCheck;
     }
-    public boolean isPreventCommandsDuringCheck() {
-        return isPreventCommandsDuringCheck;
+    public boolean isPreventCommandsDuringCheatCheck() {
+        return isPreventCommandsDuringCheatCheck;
     }
-    private void setPreventCommandsDuringCheck(boolean preventCommandsDuringCheck) {
-        isPreventCommandsDuringCheck = preventCommandsDuringCheck;
+    private void setPreventCommandsDuringCheatCheck(boolean preventCommandsDuringCheatCheck) {
+        isPreventCommandsDuringCheatCheck = preventCommandsDuringCheatCheck;
     }
-    public boolean isPreventDropItemDuringCheck() {
-        return isPreventDropItemDuringCheck;
+    public boolean isPreventDropItemDuringCheatCheck() {
+        return isPreventDropItemDuringCheatCheck;
     }
-    private void setPreventDropItemDuringCheck(boolean preventDropItemDuringCheck) {
-        isPreventDropItemDuringCheck = preventDropItemDuringCheck;
+    private void setPreventDropItemDuringCheatCheck(boolean preventDropItemDuringCheatCheck) {
+        isPreventDropItemDuringCheatCheck = preventDropItemDuringCheatCheck;
     }
-    public boolean isPreventPickupItemDuringCheck() {
-        return isPreventPickupItemDuringCheck;
+    public boolean isPreventPickupItemDuringCheatCheck() {
+        return isPreventPickupItemDuringCheatCheck;
     }
-    private void setPreventPickupItemDuringCheck(boolean preventPickupItemDuringCheck) {
-        isPreventPickupItemDuringCheck = preventPickupItemDuringCheck;
+    private void setPreventPickupItemDuringCheatCheck(boolean preventPickupItemDuringCheatCheck) {
+        isPreventPickupItemDuringCheatCheck = preventPickupItemDuringCheatCheck;
     }
-    public List<String> getIgnoredCommandsDuruingCheck() {
-        return ignoredCommandsDuruingCheck;
+    public List<String> getIgnoredCommandsDuruingCheatCheck() {
+        return ignoredCommandsDuruingCheatCheck;
     }
-    private void setIgnoredCommandsDuruingCheck(List<String> ignoredCommandsDuruingCheck) {
+    private void setIgnoredCommandsDuruingCheatCheck(List<String> ignoredCommandsDuruingCheatCheck) {
         try {
-            this.ignoredCommandsDuruingCheck.clear();
+            this.ignoredCommandsDuruingCheatCheck.clear();
         }catch (NullPointerException ignored) {}
-        this.ignoredCommandsDuruingCheck.addAll(ignoredCommandsDuruingCheck);
+        this.ignoredCommandsDuruingCheatCheck.addAll(ignoredCommandsDuruingCheatCheck);
     }
     public int getDefaultCheatCheckTime() {
         return defaultCheatCheckTime;
@@ -365,12 +366,12 @@ public class GeneralConfigSettings {
     private void setDefaultCheatCheckTime(int defaultCheatCheckTime) {
         this.defaultCheatCheckTime = defaultCheatCheckTime;
     }
-    public List<String> getActionIfQuitDuringCheck() {
-        return actionIfQuitDuringCheck;
+    public List<String> getActionIfQuitDuringCheatCheck() {
+        return actionIfQuitDuringCheatCheck;
     }
-    private void setActionIfQuitDuringCheck(List<String> actionIfQuitDuringCheck) {
-        this.actionIfQuitDuringCheck.clear();
-        this.actionIfQuitDuringCheck.addAll(actionIfQuitDuringCheck);
+    private void setActionIfQuitDuringCheatCheck(List<String> actionIfQuitDuringCheatCheck) {
+        this.actionIfQuitDuringCheatCheck.clear();
+        this.actionIfQuitDuringCheatCheck.addAll(actionIfQuitDuringCheatCheck);
     }
     public List<String> getActionIfValidCheatCheck() {
         return actionIfValidCheatCheck;
@@ -386,36 +387,42 @@ public class GeneralConfigSettings {
         this.actionIfFailedCheatCheck.clear();
         this.actionIfFailedCheatCheck.addAll(actionIfFailedCheatCheck);
     }
-    private void setSendTitleOnCheck(boolean sendTitleOnCheck) {
-        this.sendTitleOnCheck = sendTitleOnCheck;
+    private void setSendTitleOnCheatCheck(boolean sendTitleOnCheatCheck) {
+        this.sendTitleOnCheatCheck = sendTitleOnCheatCheck;
     }
-    public boolean isSendTitleOnCheck() {
-        return sendTitleOnCheck;
+    public boolean isSendTitleOnCheatCheck() {
+        return sendTitleOnCheatCheck;
     }
-    public List<String> getActionIfTimeLeft() {
-        return actionIfTimeLeft;
+    public List<String> getActionIfTimeLeftOnCheatCheck() {
+        return actionIfTimeLeftOnCheatCheck;
     }
-    private void setActionIfTimeLeft(List<String> actionIfTimeLeft) {
-        this.actionIfTimeLeft.clear();
-        this.actionIfTimeLeft.addAll(actionIfTimeLeft);
+    private void setActionIfTimeLeftOnCheatCheck(List<String> actionIfTimeLeftOnCheatCheck) {
+        this.actionIfTimeLeftOnCheatCheck.clear();
+        this.actionIfTimeLeftOnCheatCheck.addAll(actionIfTimeLeftOnCheatCheck);
     }
-    private void setPreventInteractionDuringCheck(boolean preventInteractionDuringCheck) {
-        isPreventInteractionDuringCheck = preventInteractionDuringCheck;
+    private void setPreventInteractionDuringCheatCheck(boolean preventInteractionDuringCheatCheck) {
+        isPreventInteractionDuringCheatCheck = preventInteractionDuringCheatCheck;
     }
-    public boolean isPreventInteractionDuringCheck() {
-        return isPreventInteractionDuringCheck;
+    public boolean isPreventInteractionDuringCheatCheck() {
+        return isPreventInteractionDuringCheatCheck;
     }
-    private void setPreventKickDuringCheck(boolean preventKickDuringCheck) {
-        this.preventKickDuringCheck = preventKickDuringCheck;
+    private void setPreventKickDuringCheatCheck(boolean preventKickDuringCheatCheck) {
+        this.preventKickDuringCheatCheck = preventKickDuringCheatCheck;
     }
-    public boolean isPreventKickDuringCheck() {
-        return preventKickDuringCheck;
+    public boolean isPreventKickDuringCheatCheck() {
+        return preventKickDuringCheatCheck;
     }
-    private void setPreventMuteDuringCheck(boolean preventMuteDuringCheck) {
-        this.preventMuteDuringCheck = preventMuteDuringCheck;
+    private void setPreventMuteDuringCheatCheck(boolean preventMuteDuringCheatCheck) {
+        this.preventMuteDuringCheatCheck = preventMuteDuringCheatCheck;
     }
-    public boolean isPreventMuteDuringCheck() {
-        return preventMuteDuringCheck;
+    public boolean isPreventMuteDuringCheatCheck() {
+        return preventMuteDuringCheatCheck;
+    }
+    public boolean isPreventTeleportDuringCheatCheck() {
+        return isPreventTeleportDuringCheatCheck;
+    }
+    private void setPreventTeleportDuringCheatCheck(boolean preventTeleportDuringCheatCheck) {
+        isPreventTeleportDuringCheatCheck = preventTeleportDuringCheatCheck;
     }
     public boolean isDupeIdModeEnabled() {
         return this.dupeIdModeEnabled;
@@ -508,12 +515,6 @@ public class GeneralConfigSettings {
     }
     private void setPurgeConfirmation(boolean purgeConfirmation) {
         this.purgeConfirmation = purgeConfirmation;
-    }
-    public boolean isApiProtectedByPassword() {
-        return this.isApiProtectedByPassword;
-    }
-    private void setApiProtectedByPassword(boolean apiProtectedByPassword) {
-        isApiProtectedByPassword = apiProtectedByPassword;
     }
     public boolean isBanAllowedWithoutReason() {
         return isBanAllowedWithoutReason;
@@ -751,13 +752,6 @@ public class GeneralConfigSettings {
                     }
                     break;
                 }
-                case "mysql": {
-                    setStorageType(StorageType.MYSQL);
-                    if(!isLessInformation()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                    }
-                    break;
-                }
                 case "h2": {
                     setStorageType(StorageType.H2);
                     if(!isLessInformation()) {
@@ -887,24 +881,25 @@ public class GeneralConfigSettings {
             }
             setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
             if(isCheatCheckFunctionEnabled()) {
-                setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
-                setPreventBlockBreakDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
-                setPreventIflictDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
-                setPreventTakingDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
-                setPreventMoveDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
-                setPreventInteractionDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
-                setPreventCommandsDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
-                setPreventDropItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-drop"));
-                setPreventPickupItemDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-pickup"));
-                setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
-                setPreventMuteDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
-                setIgnoredCommandsDuruingCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
+                setPreventBlockPlaceDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
+                setPreventBlockBreakDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
+                setPreventIflictDamageDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
+                setPreventTakingDamageDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
+                setPreventMoveDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
+                setPreventInteractionDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
+                setPreventCommandsDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
+                setPreventDropItemDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-drop"));
+                setPreventPickupItemDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.item-pickup"));
+                setPreventKickDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+                setPreventMuteDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
+                setIgnoredCommandsDuruingCheatCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
                 setDefaultCheatCheckTime(getFileAccessor().getGeneralConfig().getInt("plugin-settings.cheat-checks-settings.default-check-time"));
-                setActionIfQuitDuringCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
+                setActionIfQuitDuringCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
                 setActionIfFailedCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-fails"));
                 setActionIfValidCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-is-valid"));
-                setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
-                setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
+                setActionIfTimeLeftOnCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
+                setSendTitleOnCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
+                setPreventTeleportDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.teleport"));
             }
             setAllowedUseRamAsContainer(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.allow-use-ram"));
             //Bases
@@ -925,12 +920,6 @@ public class GeneralConfigSettings {
             if(!isLessInformation()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalServerControl | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalServerControl | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
             }
-            setApiProtectedByPassword(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api.spigot.password.enabled"));
-            if(isApiEnabled()) {
-                if (!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(isApiProtectedByPassword() ? "&a[FunctionalServerControl | API Loading] Password protection is set for API" : "&c[FunctionalServerControl | API Loading] Password protection is not installed for the API (This is not an error)"));
-                }
-            }
             //Tasks
             if (isAutoPurgerEnabled()) {
                 if (getAutoPurgerDelay() > 5) {
@@ -946,6 +935,9 @@ public class GeneralConfigSettings {
             new CooldownsTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             if(isPermissionsProtectionEnabled()) {
                 new PermissionsControlTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getPermissionsProtectionDelay() * 20L);
+            }
+            if(getChatSettings().isFunctionEnabled()) {
+                new ChatTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             }
             //Tasks
             OtherUtils.loadCachedPlayers();
@@ -1000,22 +992,23 @@ public class GeneralConfigSettings {
         StaticContainers.getHidedMessagesContainer().reloadHidedMessages();
         setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
         if(isCheatCheckFunctionEnabled()) {
-            setPreventBlockPlaceDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
-            setPreventBlockBreakDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
-            setPreventIflictDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
-            setPreventTakingDamageDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
-            setPreventMoveDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
-            setPreventCommandsDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
-            setPreventInteractionDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
-            setIgnoredCommandsDuruingCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
+            setPreventBlockPlaceDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
+            setPreventBlockBreakDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-break"));
+            setPreventIflictDamageDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.inflict-damage"));
+            setPreventTakingDamageDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.take-damage"));
+            setPreventMoveDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.move"));
+            setPreventCommandsDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.use-commands"));
+            setPreventInteractionDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.interact"));
+            setIgnoredCommandsDuruingCheatCheck(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.cheat-checks-settings.whitelisted-commands"), "[", "]").split(", ")));
             setDefaultCheatCheckTime(getFileAccessor().getGeneralConfig().getInt("plugin-settings.cheat-checks-settings.default-check-time"));
-            setActionIfQuitDuringCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
+            setActionIfQuitDuringCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-player-quit"));
             setActionIfFailedCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-fails"));
             setActionIfValidCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-check-is-valid"));
-            setActionIfTimeLeft(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
-            setSendTitleOnCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
-            setPreventKickDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
-            setPreventMuteDuringCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
+            setActionIfTimeLeftOnCheatCheck(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.cheat-checks-settings.actions.if-time-left"));
+            setSendTitleOnCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.send-title"));
+            setPreventKickDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-kick"));
+            setPreventMuteDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevent-player-mute"));
+            setPreventTeleportDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.teleport"));
         }
         setNicksControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.enabled"));
         setNotifyConsoleWhenNickNameBlocked(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.notify-console"));

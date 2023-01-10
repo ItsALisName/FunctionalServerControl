@@ -1,8 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter;
 
-import by.alis.functionalservercontrol.API.Spigot.Events.AsyncConsoleLogOutEvent;
+import by.alis.functionalservercontrol.api.Events.AsyncConsoleLogOutEvent;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import by.alis.functionalservercontrol.spigot.Managers.Files.FileAccessor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -16,29 +15,14 @@ import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.S
 
 public class EventAsyncConsoleLog implements Filter {
 
-    FileAccessor accessor = new FileAccessor();
-
 
     public Filter.Result checkMessage(String message) {
-        AsyncConsoleLogOutEvent asyncConsoleLogOutEvent = new AsyncConsoleLogOutEvent(message, getConfigSettings().isApiEnabled());
-        if(!getConfigSettings().isApiEnabled()) return Result.NEUTRAL;
-        if(!getConfigSettings().isApiProtectedByPassword()) {
-            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
-                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                    Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
-                });
-            }
-        } else {
-            if(asyncConsoleLogOutEvent.getApiPassword() != null && asyncConsoleLogOutEvent.getApiPassword().equalsIgnoreCase(accessor.getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
-                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                        Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent);
-                    });
-                }
-            }
+        AsyncConsoleLogOutEvent asyncConsoleLogOutEvent = new AsyncConsoleLogOutEvent(message);
+        if(getConfigSettings().isApiEnabled()) {
+            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent));
         }
         if(asyncConsoleLogOutEvent.isCancelled()) return Result.DENY;
-        if(!asyncConsoleLogOutEvent.getMessage().equalsIgnoreCase(message) || !message.equalsIgnoreCase(asyncConsoleLogOutEvent.getMessage())) {
+        if(!asyncConsoleLogOutEvent.getMessage().equalsIgnoreCase(message)) {
             Bukkit.getConsoleSender().sendMessage(asyncConsoleLogOutEvent.getMessage());
             return Result.DENY;
         }

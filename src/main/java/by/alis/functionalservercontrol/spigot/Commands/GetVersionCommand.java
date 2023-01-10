@@ -47,7 +47,7 @@ public class GetVersionCommand implements CommandExecutor {
                 sender.sendMessage(setColors(
                         getFileAccessor().getLang().getString("commands.getversion.success")
                                 .replace("%1$f", target.getName())
-                                .replace("%2$f", CoreAdapter.getAdapter().getPlayerVersion(target).toString)
+                                .replace("%2$f", CoreAdapter.getAdapter().getPlayerVersion(target).toString())
                 ));
             });
         } else {

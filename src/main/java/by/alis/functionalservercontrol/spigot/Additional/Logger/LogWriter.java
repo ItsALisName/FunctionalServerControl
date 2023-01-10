@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Additional.Logger;
 
 import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
-import by.alis.functionalservercontrol.spigot.Additional.WorldDate.WorldTimeAndDateClass;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 import org.bukkit.Bukkit;

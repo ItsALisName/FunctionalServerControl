@@ -41,11 +41,11 @@ public class ClientBrandListener implements PluginMessageListener {
                 }
             }
             if(getConfigSettings().isAnnounceConsoleAboutBrand()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", CoreAdapter.getAdapter().getPlayerVersion(player).toString));
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", CoreAdapter.getAdapter().getPlayerVersion(player).toString()));
             }
             for(Player admin : Bukkit.getOnlinePlayers()) {
                 if(admin.hasPermission("functionalservercontrol.notification.clients")) {
-                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", CoreAdapter.getAdapter().getPlayerVersion(player).toString));
+                    admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.client.player-brand-notify").replace("%1$f", player.getName())).replace("%2$f", clientName).replace("%3$f", CoreAdapter.getAdapter().getPlayerVersion(player).toString()));
                 }
             }
             TemporaryCache.setClientBrands(player, clientName);
@@ -53,4 +53,7 @@ public class ClientBrandListener implements PluginMessageListener {
             CoreAdapter.getAdapter().broadcast(setColors("&c[FunctionalServerControl] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
         }
     }
+
+
+
 }

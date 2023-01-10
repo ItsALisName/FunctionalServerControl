@@ -1,10 +1,11 @@
 package by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns;
 
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
+import by.alis.functionalservercontrol.spigot.Additional.Libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils;
 import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ public class Cooldowns {
     private boolean functionEnabled;
     private boolean useGroups;
 
-    private List<TrackedCommand> trackedCommands = new ArrayList<>();
+    private final List<TrackedCommand> trackedCommands = new ArrayList<>();
 
     public void loadCooldowns() {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
@@ -74,7 +75,7 @@ public class Cooldowns {
                             getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".expire-message-as-title"),
                             getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".deny-message-as-title"),
                             getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".check-aliases"),
-                            Arrays.asList(StringUtils.substringBetween(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases").replace(" ", ""), "[", "]").split(",")),
+                            Arrays.asList(StringUtils.substringBetween(TextUtils.stringToMonolith(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases")), "[", "]").split(",")),
                             getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".deny-message"),
                             getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".notify-on-expire"),
                             groups,
@@ -141,7 +142,7 @@ public class Cooldowns {
                         trackedCommand.setExpireMessageAsTitle(getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".expire-message-as-title"));
                         trackedCommand.setDenyMessageAsTitle(getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".deny-message-as-title"));
                         trackedCommand.setCheckAliases(getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".check-aliases"));
-                        trackedCommand.setAliases(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases").replace(" ", ""), "[", "]").split(",")));
+                        trackedCommand.setAliases(Arrays.asList(StringUtils.substringBetween(TextUtils.stringToMonolith(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases")), "[", "]").split(",")));
                         trackedCommand.setDenyMessage(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".deny-message"));
                         trackedCommand.setSendExpireMessage(getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".notify-on-expire"));
                         trackedCommand.setGroupsTime(groups);
@@ -199,7 +200,7 @@ public class Cooldowns {
                         getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".expire-message-as-title"),
                         getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".deny-message-as-title"),
                         getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".check-aliases"),
-                        Arrays.asList(StringUtils.substringBetween(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases").replace(" ", ""), "[", "]").split(",")),
+                        Arrays.asList(StringUtils.substringBetween(TextUtils.stringToMonolith(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".aliases")), "[", "]").split(",")),
                         getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".deny-message"),
                         getFileAccessor().getCooldownsConfig().getBoolean("commands." + cmd + ".notify-on-expire"),
                         groups,

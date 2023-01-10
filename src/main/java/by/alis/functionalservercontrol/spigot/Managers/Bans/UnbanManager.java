@@ -1,6 +1,7 @@
 package by.alis.functionalservercontrol.spigot.Managers.Bans;
 
-import by.alis.functionalservercontrol.API.Spigot.Events.AsyncUnbanPreprocessEvent;
+import by.alis.functionalservercontrol.api.Enums.StatsType;
+import by.alis.functionalservercontrol.api.Events.AsyncUnbanPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -16,6 +17,8 @@ import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.S
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getDate;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.WorldTimeAndDateClass.getTime;
 import static by.alis.functionalservercontrol.spigot.Managers.Bans.BanChecker.isPlayerBanned;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -33,16 +36,10 @@ public class UnbanManager {
             return;
         }
 
-        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason, getConfigSettings().isApiEnabled());
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
         }
 
         if(asyncUnbanPreprocessEvent.isCancelled()) return;
@@ -72,7 +69,8 @@ public class UnbanManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                         break;
                     }
                     case H2: {
@@ -99,7 +97,8 @@ public class UnbanManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
                     }
@@ -136,16 +135,10 @@ public class UnbanManager {
             initiatorName = unbanInitiator.getName();
         }
 
-        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason, getConfigSettings().isApiEnabled());
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanInitiator, unbanReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
         }
 
         if(asyncUnbanPreprocessEvent.isCancelled()) return;
@@ -177,7 +170,8 @@ public class UnbanManager {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
                         getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                         break;
                     }
                     
@@ -205,7 +199,8 @@ public class UnbanManager {
                 case SQLITE: {
                     try {
                         getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()));
+                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player)));
                     }
@@ -228,16 +223,10 @@ public class UnbanManager {
     }
 
     public void preformUnban(OfflinePlayer player, String unbanReason) {
-        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason, getConfigSettings().isApiEnabled());
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
         }
 
         if(asyncUnbanPreprocessEvent.isCancelled()) return;
@@ -279,16 +268,10 @@ public class UnbanManager {
 
     public void preformUnban(String player, String unbanReason) {
 
-        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason, getConfigSettings().isApiEnabled());
+        AsyncUnbanPreprocessEvent asyncUnbanPreprocessEvent = new AsyncUnbanPreprocessEvent(player, unbanReason);
 
         if(getConfigSettings().isApiEnabled()) {
-            if(getConfigSettings().isApiProtectedByPassword()) {
-                if(asyncUnbanPreprocessEvent.getApiPassword() != null && asyncUnbanPreprocessEvent.getApiPassword().equalsIgnoreCase(getFileAccessor().getGeneralConfig().getString("plugin-settings.api.spigot.password.password"))) {
-                    Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-                }
-            } else {
-                Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
-            }
+            Bukkit.getPluginManager().callEvent(asyncUnbanPreprocessEvent);
         }
 
         if(asyncUnbanPreprocessEvent.isCancelled()) return;
@@ -333,6 +316,11 @@ public class UnbanManager {
     public void preformGlobalUnban(CommandSender initiator, boolean announceUnban) {
 
         String initiatorName = null;
+        if(initiator instanceof ConsoleCommandSender) {
+            initiatorName = getGlobalVariables().getConsoleVariableName();
+        } else {
+            initiatorName = initiator.getName();
+        }
 
         if(!announceUnban) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
@@ -359,6 +347,10 @@ public class UnbanManager {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
                 getSQLiteManager().clearBans();
+                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unbanall").replace("%1$f", initiatorName).replace("%2$f", getDate() + ", " + getTime()));
+                for(int i = 0; i < count; i++) {
+                    if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_UNBANS);
+                }
                 break;
             }
             case H2: {

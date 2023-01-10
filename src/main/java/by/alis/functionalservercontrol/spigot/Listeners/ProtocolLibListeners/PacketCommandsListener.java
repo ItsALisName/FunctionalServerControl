@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners;
 
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
-import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
+import by.alis.functionalservercontrol.spigot.Managers.GlobalCommandManager;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.*;
 
@@ -31,7 +31,7 @@ public class PacketCommandsListener {
                         Player player = e.getPlayer();
                         String[] completions = e.getPacket().getStringArrays().read(0);
                         if (!player.hasPermission("functionalservercontrol.tab-complete.bypass")) {
-                            PlayerCommandManager commandManager = new PlayerCommandManager();
+                            GlobalCommandManager commandManager = new GlobalCommandManager();
                             e.getPacket().getStringArrays().write(0, commandManager.getCommandsToFullyHide(player, Arrays.asList(completions)).toArray(new String[0]));
                         }
                     }

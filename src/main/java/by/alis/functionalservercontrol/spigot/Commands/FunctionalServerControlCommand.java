@@ -34,9 +34,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
         plugin.getCommand("functionalservercontrol").setTabCompleter(new FunctionalServerControlCompleter());
     }
 
-
-    private boolean purgeConfirmation = false;
-    private Map<CommandSender, Integer> confirmation = new HashMap<>();
+    private final Map<CommandSender, Integer> confirmation = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -83,6 +81,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                         getCommandLimiterSettings().reloadCommandLimiterSettings();
                         getLanguage().reloadLanguage();
                         Cooldowns.getCooldowns().reloadCooldowns(sender);
+                        getChatSettings().reloadChatSettings();
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", getGlobalVariables().getVariableAll()).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
                     });
                     return true;
@@ -152,6 +151,21 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                 }
             }
 
+            if(args[1].equalsIgnoreCase("chatsettings")) {
+                try{
+                    long start = System.currentTimeMillis();
+                    SFAccessor.reloadFiles();
+                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        getChatSettings().reloadChatSettings();
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.done").replace("%1$f", args[1]).replace("%2$f", String.valueOf(System.currentTimeMillis() - start) + "ms.")));
+                    });
+                    return true;
+                } catch (RuntimeException ingored) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.failed")));
+                    return true;
+                }
+            }
+
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.reload.unknown-type").replace("%1$f", args[1])));
             return true;
 
@@ -212,7 +226,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.history.cleared")));
                     return true;
                 }
-                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.unknown-type").replace("%1$f", "cache")));
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.unknown-type").replace("%1$f", args[1])));
                 return true;
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
@@ -285,6 +299,29 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     InformationManager.sendHistory(sender, lines, args[3]);
                     return true;
                 }
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+            }
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("getstatistic")) {
+            if(sender.hasPermission("functionalservercontrol.getstatistic")) {
+                if(args.length != 3) {
+                    if(getConfigSettings().showDescription()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.description").replace("%1$f", label + " getstatistic")));
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.usage").replace("%1$f", label + " getstatistic")));
+                    if(getConfigSettings().showExamples()) sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.example").replace("%1$f", label + " getstatistic")));
+                    return true;
+                }
+                if(args[1].equalsIgnoreCase("player")) {
+                    InformationManager.sendStatistic(sender, "player", args[2]);
+                    return true;
+                }
+                if(args[1].equalsIgnoreCase("admin")) {
+                    InformationManager.sendStatistic(sender, "admin", args[2]);
+                    return true;
+                }
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.unknown-type").replace("%1$f", args[1])));
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             }

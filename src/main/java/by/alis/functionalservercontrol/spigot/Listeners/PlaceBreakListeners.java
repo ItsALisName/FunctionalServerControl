@@ -14,7 +14,7 @@ public class PlaceBreakListeners implements Listener {
     public void onPlayerBlockBreak(BlockBreakEvent event) {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
-                if(getConfigSettings().isPreventBlockBreakDuringCheck()) {
+                if(getConfigSettings().isPreventBlockBreakDuringCheatCheck()) {
                     if(getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
                 }
             }
@@ -25,7 +25,7 @@ public class PlaceBreakListeners implements Listener {
     public void onPlayerBlockPlace(BlockPlaceEvent event) {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
-                if(getConfigSettings().isPreventBlockPlaceDuringCheck()) {
+                if(getConfigSettings().isPreventBlockPlaceDuringCheatCheck()) {
                     if(getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
                 }
             }

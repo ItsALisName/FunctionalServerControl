@@ -1,10 +1,14 @@
 package by.alis.functionalservercontrol.spigot.Managers;
 
+import by.alis.functionalservercontrol.api.Enums.StatsType;
+import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.Additional.Misc.MD5TextUtils;
+import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.Managers.TimeManagers.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +18,7 @@ import static by.alis.functionalservercontrol.spigot.Additional.Containers.Stati
 import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.Managers.Files.SFAccessor.getFileAccessor;
 
@@ -680,6 +685,63 @@ public class InformationManager {
                     ));
                     case H2: {}
                 }
+            }
+        });
+    }
+
+    public static void sendStatistic(CommandSender sender, String like, String playerName) {
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(playerName);
+            if(player != null && OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                if (like.equalsIgnoreCase("admin")) {
+                    String adminBans = null, adminMutes = null, adminKicks = null, adminUnbans = null, adminUnmutes = null;
+                    switch (getConfigSettings().getStorageType()) {
+                        case SQLITE: {
+                            adminBans = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_BANS);
+                            adminKicks = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_KICKS);
+                            adminMutes = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_MUTES);
+                            adminUnbans = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNBANS);
+                            adminUnmutes = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNMUTES);
+                        }
+                        case H2: {}
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.admin-info-format")
+                            .replace("%1$f", playerName)
+                            .replace("%2$f", isTextNotNull(adminBans) ? adminBans : "0")
+                            .replace("%3$f", isTextNotNull(adminMutes) ? adminMutes : "0")
+                            .replace("%4$f", isTextNotNull(adminKicks) ? adminKicks : "0")
+                            .replace("%5$f", isTextNotNull(adminUnbans) ? adminUnbans : "0")
+                            .replace("%6$f", isTextNotNull(adminUnmutes) ? adminUnmutes : "0")
+                    ));
+                    return;
+                }
+                if (like.equalsIgnoreCase("player")) {
+                    String playerBans = null, playerMutes = null, playerKicks = null, playerBlockedCommand = null, playerBlockedWords = null, playerAdvertiseAttempts = null;
+                    switch (getConfigSettings().getStorageType()) {
+                        case SQLITE: {
+                            playerBans = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                            playerKicks = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+                            playerMutes = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                            playerBlockedCommand = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
+                            playerBlockedWords = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+                            playerAdvertiseAttempts = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
+                        }
+                        case H2: {}
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.player-info-format")
+                            .replace("%1$f", playerName)
+                            .replace("%2$f", isTextNotNull(playerKicks) ? playerKicks : "0")
+                            .replace("%3$f", isTextNotNull(playerBans) ? playerBans : "0")
+                            .replace("%4$f", isTextNotNull(playerMutes) ? playerMutes : "0")
+                            .replace("%5$f", isTextNotNull(playerBlockedCommand) ? playerBlockedCommand : "0")
+                            .replace("%6$f", isTextNotNull(playerBlockedWords) ? playerBlockedWords : "0")
+                            .replace("%7$f", isTextNotNull(playerAdvertiseAttempts) ? playerAdvertiseAttempts : "0")
+                    ));
+                    return;
+                }
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.no-info").replace("%1$f", playerName)));
+                return;
             }
         });
     }

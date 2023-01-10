@@ -1,14 +1,13 @@
 package by.alis.functionalservercontrol.spigot.Listeners.Old;
 
-import by.alis.functionalservercontrol.spigot.Managers.PlayerCommandManager;
-import org.bukkit.command.CommandSender;
+import by.alis.functionalservercontrol.spigot.Managers.GlobalCommandManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.TabCompleteEvent;
 
 public class TabCompleteListener implements Listener {
-    private final PlayerCommandManager commandManager = new PlayerCommandManager();
+    private final GlobalCommandManager commandManager = new GlobalCommandManager();
     @EventHandler
     public void onTabComplete(TabCompleteEvent event) {
         if (event.getSender() instanceof Player) {
