@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.databases;
 
-import by.alis.functionalservercontrol.databases.SQLite.SQLManager;
+import by.alis.functionalservercontrol.databases.sqlite.SQLManager;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 
 public class DataBases {

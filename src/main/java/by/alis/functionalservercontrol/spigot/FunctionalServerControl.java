@@ -1,24 +1,26 @@
 package by.alis.functionalservercontrol.spigot;
 
-import by.alis.functionalservercontrol.api.Enums.ProtocolVersions;
-import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.ConsoleFilterCore;
-import by.alis.functionalservercontrol.spigot.Additional.ConsoleFilter.L4JFilter;
-import by.alis.functionalservercontrol.spigot.Additional.CoreAdapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.Additional.Logger.LogWriter;
-import by.alis.functionalservercontrol.spigot.Additional.Misc.Cooldowns.Cooldowns;
-import by.alis.functionalservercontrol.spigot.Additional.Misc.Metrics;
-import by.alis.functionalservercontrol.spigot.Additional.Misc.OtherUtils;
-import by.alis.functionalservercontrol.spigot.Commands.*;
-import by.alis.functionalservercontrol.spigot.Expansions.Expansions;
-import by.alis.functionalservercontrol.spigot.Listeners.*;
-import by.alis.functionalservercontrol.spigot.Listeners.Old.OldAsyncChatListener;
-import by.alis.functionalservercontrol.spigot.Listeners.Old.PlayerItemPickupEvent;
-import by.alis.functionalservercontrol.spigot.Listeners.Old.TabCompleteListener;
-import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.ClientBrandListener;
-import by.alis.functionalservercontrol.spigot.Listeners.PluginMessages.WorldDownloaderChannelListener;
-import by.alis.functionalservercontrol.spigot.Listeners.ProtocolLibListeners.PacketCommandsListener;
-import by.alis.functionalservercontrol.spigot.Managers.Files.FileManager;
-import by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor;
+import by.alis.functionalservercontrol.api.FunctionalApi;
+import by.alis.functionalservercontrol.api.enums.ProtocolVersions;
+import by.alis.functionalservercontrol.spigot.additional.consolefilter.ConsoleFilterCore;
+import by.alis.functionalservercontrol.spigot.additional.consolefilter.L4JFilter;
+import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import by.alis.functionalservercontrol.spigot.additional.logger.LogWriter;
+import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.ApiCore;
+import by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.Cooldowns;
+import by.alis.functionalservercontrol.spigot.additional.misc.Metrics;
+import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
+import by.alis.functionalservercontrol.spigot.commands.*;
+import by.alis.functionalservercontrol.spigot.expansions.Expansions;
+import by.alis.functionalservercontrol.spigot.listeners.*;
+import by.alis.functionalservercontrol.spigot.listeners.outdated.OldAsyncChatListener;
+import by.alis.functionalservercontrol.spigot.listeners.outdated.PlayerItemPickupEvent;
+import by.alis.functionalservercontrol.spigot.listeners.outdated.TabCompleteListener;
+import by.alis.functionalservercontrol.spigot.listeners.pluginmessages.ClientBrandListener;
+import by.alis.functionalservercontrol.spigot.listeners.pluginmessages.WorldDownloaderChannelListener;
+import by.alis.functionalservercontrol.spigot.listeners.packetlisteners.PacketCommandsListener;
+import by.alis.functionalservercontrol.spigot.managers.file.FileManager;
+import by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -26,10 +28,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.Additional.Containers.StaticContainers.*;
-import static by.alis.functionalservercontrol.spigot.Additional.GlobalSettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.Additional.Misc.TextUtils.setColors;
-import static by.alis.functionalservercontrol.spigot.Expansions.Expansions.getProtocolLibManager;
+import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.expansions.Expansions.getProtocolLibManager;
 
 /**
  * Plugin main class
@@ -180,6 +182,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         getConsoleFilterCore().replaceMessage();
         getConsoleFilterCore().hideMessage();
         //Console filters
+        if(getConfigSettings().isApiEnabled()) FunctionalApi.ApiGetter.setApi(new ApiCore());
     }
 
     @Override
