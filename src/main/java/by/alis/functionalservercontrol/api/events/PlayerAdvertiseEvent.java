@@ -14,7 +14,6 @@ public class PlayerAdvertiseEvent extends PlayerEvent {
 
     public PlayerAdvertiseEvent(Player player, Chat.AdvertiseMethod advertiseMethod, String message) {
         super(player);
-        this.player = player;
         this.advertiseMethod = advertiseMethod;
         this.message = message;
     }

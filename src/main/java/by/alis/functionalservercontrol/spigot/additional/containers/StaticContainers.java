@@ -30,7 +30,6 @@ public class StaticContainers {
     public static BanContainerManager getBanContainerManager() {
         return banContainerManager;
     }
-
     public static MutedPlayersContainer getMutedPlayersContainer() {
         return mutedPlayersContainer;
     }

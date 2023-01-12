@@ -11,8 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 
 public class JoinListener implements Listener {
 
@@ -21,14 +20,9 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         DupeIpManager.checkDupeIpOnJoin(player);
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
-                    getSQLiteManager().insertIntoPlayersPunishInfo(player.getUniqueId());
-                    getSQLiteManager().updateAllPlayers(player);
-                }
-                case H2: {}
-            }
+            getBaseManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
+            getBaseManager().insertIntoPlayersPunishInfo(player.getUniqueId());
+            getBaseManager().updateAllPlayers(player);
             TemporaryCache.setOnlinePlayerNames(player);
             TemporaryCache.setOnlineIps(player);
             MuteManager muteManager = new MuteManager();

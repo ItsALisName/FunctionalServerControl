@@ -16,11 +16,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBanContainerManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.ban.BanChecker.isIpBanned;
 import static by.alis.functionalservercontrol.spigot.managers.ban.BanChecker.isPlayerBanned;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
@@ -113,26 +113,15 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         if(player.isOnline()) {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));                            }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
@@ -141,23 +130,11 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(player.isOnline()) {
                             player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
@@ -172,22 +149,12 @@ public class BanManager {
                     return;
                 }
             } else {
-
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -199,20 +166,11 @@ public class BanManager {
                         });
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -231,26 +189,15 @@ public class BanManager {
             if(isIpBanned(player)) {
                 if(initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
@@ -263,23 +210,12 @@ public class BanManager {
                             });
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
@@ -299,20 +235,11 @@ public class BanManager {
                 }
             } else {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban-ip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -324,19 +251,10 @@ public class BanManager {
                         });
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban-ip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -356,26 +274,15 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
                         if(player.isOnline()) {
                             String finalInitiatorName = initiatorName;
                             String finalReason = reason;
@@ -389,23 +296,12 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(player.isOnline()) {
                             String finalReason = reason;
@@ -426,20 +322,11 @@ public class BanManager {
             } else {
 
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
@@ -451,19 +338,10 @@ public class BanManager {
                         });
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
@@ -483,26 +361,15 @@ public class BanManager {
             if(isIpBanned(player)) {
                 if(initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
@@ -515,23 +382,12 @@ public class BanManager {
                             });
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromBannedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
@@ -551,20 +407,11 @@ public class BanManager {
                 }
             } else {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getBanContainerManager().addToBanContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
@@ -576,19 +423,10 @@ public class BanManager {
                         });
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoBannedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof  Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                     if(announceBan) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
@@ -677,22 +515,13 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         getBanContainerManager().removeFromBanContainer("-n", player);
                         getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -703,24 +532,13 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player)));
@@ -735,23 +553,12 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -760,23 +567,12 @@ public class BanManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceBan) {
@@ -791,24 +587,13 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         getBanContainerManager().removeFromBanContainer("-n", player);
                         getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", banPlayerEvent.getBanTime());
@@ -819,24 +604,13 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player)));
@@ -851,23 +625,12 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", banPlayerEvent.getBanTime());
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -876,23 +639,12 @@ public class BanManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceBan) {
@@ -907,24 +659,13 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         getBanContainerManager().removeFromBanContainer("-n", player);
                         getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -934,24 +675,13 @@ public class BanManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player)));
@@ -965,23 +695,12 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -989,23 +708,12 @@ public class BanManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceBan) {
@@ -1019,24 +727,13 @@ public class BanManager {
             if (isPlayerBanned(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         getBanContainerManager().removeFromBanContainer("-n", player);
                         getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -1046,24 +743,13 @@ public class BanManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromBannedPlayers("-n", player);
+                        getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player)));
@@ -1077,23 +763,12 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     banContainerManager.addToBanContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -1101,23 +776,12 @@ public class BanManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                break;
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullBannedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_BANS);
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceBan) {
@@ -1205,25 +869,15 @@ public class BanManager {
             if (isIpBanned(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         getBanContainerManager().removeFromBanContainer("-ip", ip);
@@ -1237,25 +891,15 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         if(isNull) {
@@ -1273,24 +917,14 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     getBanContainerManager().addToBanContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1302,24 +936,14 @@ public class BanManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     if(isNull) {
@@ -1337,25 +961,15 @@ public class BanManager {
             if (isIpBanned(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         getBanContainerManager().removeFromBanContainer("-ip", ip);
@@ -1369,25 +983,15 @@ public class BanManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         if(isNull) {
@@ -1405,24 +1009,14 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     getBanContainerManager().addToBanContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", banPlayerEvent.getBanTime());
@@ -1434,24 +1028,14 @@ public class BanManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     if(isNull) {
@@ -1469,25 +1053,15 @@ public class BanManager {
             if (isIpBanned(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         getBanContainerManager().removeFromBanContainer("-ip", ip);
@@ -1500,25 +1074,15 @@ public class BanManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         if(isNull) {
@@ -1535,24 +1099,14 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     getBanContainerManager().addToBanContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1563,24 +1117,14 @@ public class BanManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     if(isNull) {
@@ -1597,25 +1141,15 @@ public class BanManager {
             if (isIpBanned(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-ban")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         getBanContainerManager().removeFromBanContainer("-ip", ip);
@@ -1628,25 +1162,15 @@ public class BanManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromBannedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromBannedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                             }
                         }
                         if(isNull) {
@@ -1663,24 +1187,14 @@ public class BanManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     banContainerManager.addToBanContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1691,24 +1205,14 @@ public class BanManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_BANS);
                         }
                     }
                     if(isNull) {

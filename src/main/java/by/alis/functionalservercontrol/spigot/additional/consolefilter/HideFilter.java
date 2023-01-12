@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.additional.consolefilter;
 
-import by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor;
+import by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -11,6 +11,8 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
 
+import static by.alis.functionalservercontrol.spigot.additional.consolefilter.ConsoleFilterHelper.getConsoleFilterHelper;
+
 public class HideFilter implements Filter {
 
     public Filter.Result checkMessage(String message) {
@@ -20,8 +22,8 @@ public class HideFilter implements Filter {
         if(message.contains("鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵")) {
             return Filter.Result.DENY;
         }
-        if(StaticConsoleFilterHelper.getConsoleFilterHelper().isHidedMessage(message)) {
-            if(StaticSettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
+        if(getConsoleFilterHelper().isHidedMessage(message)) {
+            if(SettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
                 Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl | Log] The incoming message to the console is safely hidden"));
             }
             return Filter.Result.DENY;

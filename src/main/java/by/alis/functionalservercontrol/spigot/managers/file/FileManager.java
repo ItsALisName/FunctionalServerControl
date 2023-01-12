@@ -65,10 +65,6 @@ public class FileManager {
             FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_en.yml", false);
         }
 
-        if(!this.sqlFile.exists()) {
-            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("sqlite.db", false);
-        }
-
         if(!this.commandLimiterFile.exists()) {
             FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("commands-limiter.yml", false);
         }

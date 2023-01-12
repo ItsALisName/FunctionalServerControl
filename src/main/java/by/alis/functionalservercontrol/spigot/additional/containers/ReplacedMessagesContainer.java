@@ -46,7 +46,9 @@ public class ReplacedMessagesContainer {
                     this.replacedMessages.put(TextUtils.stringToMonolith(s.split(" -> ")[0]).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", ""), s.split(" -> ")[1].replace("{", "").replace("}", ""));
                 }
             }
-        } catch (RuntimeException ignored) {
+        } catch (RuntimeException exception) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Failed to reload the list of commands to replace in the console"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4" + exception.fillInStackTrace().getMessage()));
             Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Failed to reload the list of commands to replace in the console"));
         }
     }

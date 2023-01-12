@@ -1,4 +1,4 @@
-package by.alis.functionalservercontrol.spigot.additional.misc.apiutils;
+package by.alis.functionalservercontrol.api.interfaces;
 
 import by.alis.functionalservercontrol.api.enums.MuteType;
 import org.jetbrains.annotations.NotNull;

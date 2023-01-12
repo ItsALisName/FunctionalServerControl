@@ -13,12 +13,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
@@ -100,14 +100,9 @@ public class KickManager {
         if(announceKick) {
             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
         }
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
-                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
-                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
-            }
-            case H2: {}
-        }
+        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
+        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
+        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
         return;
 
     }
@@ -179,15 +174,9 @@ public class KickManager {
             if(announceKick) {
                 CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
             }
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
-                    if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
-                    getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
-                    break;
-                }
-                case H2: {}
-            }
+            getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
+            if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
+            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
         }
         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.kick-all.success")).replace("%1$f", String.valueOf(count)));
         return;

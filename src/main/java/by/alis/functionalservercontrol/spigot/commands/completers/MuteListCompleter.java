@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 
 public class MuteListCompleter implements TabCompleter {
 

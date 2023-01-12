@@ -6,18 +6,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public abstract class SQLCore {
+public abstract class SQLiteCore {
 
 
     FunctionalServerControl plugin;
-    public SQLCore(FunctionalServerControl plugin) {
+    public SQLiteCore(FunctionalServerControl plugin) {
         this.plugin = plugin;
     }
     Connection sqlConnection;
     Statement sqlStatement;
     ResultSet sqlResultSet;
 
-    protected abstract Connection getSQLConnection();
+    protected abstract Connection getSQLiteConnection();
 
     protected abstract void setupTables();
 

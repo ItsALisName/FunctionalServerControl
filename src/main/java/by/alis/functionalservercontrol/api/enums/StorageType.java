@@ -10,6 +10,7 @@ public enum StorageType {
     /**
      * An open cross-platform DBMS written entirely in Java
      */
-    H2
+    H2,
+    MYSQL
 
 }

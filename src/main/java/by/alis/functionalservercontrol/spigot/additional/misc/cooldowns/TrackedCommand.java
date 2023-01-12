@@ -10,11 +10,11 @@ import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.i
 
 public class TrackedCommand {
 
-    private @NotNull String commandName;
+    private final @NotNull String commandName;
 
     private boolean checkAliases;
 
-    private TreeMap<UUID, Long> players = new TreeMap<>();
+    private final TreeMap<UUID, Long> players = new TreeMap<>();
 
     private @Nullable List<String> aliases;
 

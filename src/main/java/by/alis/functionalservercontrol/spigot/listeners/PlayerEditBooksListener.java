@@ -8,17 +8,19 @@ import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEditBookEvent;
+
 import org.jetbrains.annotations.Nullable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getChatSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getChatSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class PlayerEditBooksListener implements Listener {
@@ -35,13 +37,7 @@ public class PlayerEditBooksListener implements Listener {
                             for (String blockedWord : getChatSettings().getBlockedWords()) {
                                 if(pageWord.equalsIgnoreCase(blockedWord)) {
                                     event.setCancelled(true);
-                                    switch (getConfigSettings().getStorageType()) {
-                                        case SQLITE:
-                                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                                            break;
-                                        case H2: {
-                                        }
-                                    }
+                                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
                                     player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-book").replace("%1$f", blockedWord)));
                                     notifyAdmins(player, pageText, blockedWord, false);
                                     if(getChatSettings().isPunishEnabledForBlockedWords()) {
@@ -59,10 +55,7 @@ public class PlayerEditBooksListener implements Listener {
             if(getChatSettings().isBookIpProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.books.bypass")) {
                 for(String pageText : event.getNewBookMeta().getPages()) {
                     if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(pageText))) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                            case H2: {}
-                        }
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-book")));
                         notifyAdmins(player, pageText, null, true);
                         for(String action : getChatSettings().getBookIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", pageText));
@@ -76,10 +69,7 @@ public class PlayerEditBooksListener implements Listener {
             if(getChatSettings().isBookDomainsProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.books.bypass")) {
                 for(String pageText : event.getNewBookMeta().getPages()) {
                     if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(pageText))) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                            case H2: {}
-                        }
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-book")));
                         notifyAdmins(player, pageText, null, true);
                         for(String action : getChatSettings().getBookDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", pageText));

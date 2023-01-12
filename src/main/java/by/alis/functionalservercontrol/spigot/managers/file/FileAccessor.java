@@ -53,11 +53,11 @@ public class FileAccessor {
         this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
     }
 
-    //SQL_File
+    //Base files
     public File getSQLiteFile() {
         return this.fileManager.sqlFile;
     }
-    //SQL_File
+    //Base files
 
     public FileConfiguration getCommandsLimiterConfig() {
         return this.fileManager.commandLimiterConfig;

@@ -11,9 +11,9 @@ import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class AdvertiseManager {
@@ -28,10 +28,7 @@ public class AdvertiseManager {
         if(player.hasPermission("functionalservercontrol.advertise.bypass") || player.hasPermission("functionalservercontrol.advertise.chat.bypass")) return false;
         if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(message))) {
             player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-chat")));
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                case H2: {}
-            }
+            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
             notifyAdminAboutAdvertiseInChat(player, message);
             PlayerAdvertiseEvent asyncPlayerAdvertiseEvent = new PlayerAdvertiseEvent(player, Chat.AdvertiseMethod.CHAT, message);
             if(getConfigSettings().isApiEnabled()) {
@@ -52,10 +49,7 @@ public class AdvertiseManager {
         if(player.hasPermission("functionalservercontrol.advertise.bypass") || player.hasPermission("functionalservercontrol.advertise.chat.bypass")) return false;
         if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(message))) {
             player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-chat")));
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                case H2: {}
-            }
+            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
             notifyAdminAboutAdvertiseInChat(player, message);
             PlayerAdvertiseEvent asyncPlayerAdvertiseEvent = new PlayerAdvertiseEvent(player, Chat.AdvertiseMethod.CHAT, message);
             if(getConfigSettings().isApiEnabled()) {
@@ -77,10 +71,7 @@ public class AdvertiseManager {
         if(player.hasPermission("functionalservercontrol.advertise.bypass") || player.hasPermission("functionalservercontrol.advertise.commands.bypass")) return false;
         if(getChatSettings().isCommandsIpProtectionEnabled()) {
             if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(command))) {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                    case H2: {}
-                }
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-command")));
                 notifyAdminsAboutAdvertiseInCommand(player, command);
                 for(String action : getChatSettings().getSignsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));
@@ -91,10 +82,7 @@ public class AdvertiseManager {
         }
         if(getChatSettings().isCommandsDomainsProtectionEnabled()) {
             if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(command))) {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                    case H2: {}
-                }
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-command")));
                 notifyAdminsAboutAdvertiseInCommand(player, command);
                 for(String action : getChatSettings().getSignsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));

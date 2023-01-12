@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class ChatManager {
@@ -125,12 +125,7 @@ public class ChatManager {
     }
 
     private void notifyAdminsAboutBlockedWord(Player player, String word, String message) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-            }
-            case H2: {}
-        }
+        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)));
@@ -211,12 +206,7 @@ public class ChatManager {
     }
 
     private void notifyAdminsAboutBlockedWordInCommand(Player player, String word, String command) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-            }
-            case H2: {}
-        }
+        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)));

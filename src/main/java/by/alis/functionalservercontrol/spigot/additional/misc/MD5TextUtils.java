@@ -10,11 +10,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class MD5TextUtils {
@@ -64,19 +64,12 @@ public class MD5TextUtils {
     }
 
     public static TextComponent createPlayerInfoHoverText(String message, OfflinePlayer player) {
-        String playerBans = "0", playerMutes = "0", playerKicks = "0", playerBlockedCommand = "0", playerBlockedWords = "0", playerAdvertiseAttempts = "0";
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                playerBans = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                playerKicks = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
-                playerMutes = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                playerBlockedCommand = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
-                playerBlockedWords = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                playerAdvertiseAttempts = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
-            }
-            case H2: {
-            }
-        }
+        String playerBans = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+        String playerKicks = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+        String playerMutes = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+        String playerBlockedCommand = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
+        String playerBlockedWords = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+        String playerAdvertiseAttempts = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
         return createHoverText(setColors(message), setColors(getFileAccessor().getLang().getString("other.notifications.player-info-hover-text").replace("%1$f", player.getName()).replace("%2$f", isTextNotNull(playerKicks) ? playerKicks : "0").replace("%3$f", isTextNotNull(playerBans) ? playerBans : "0").replace("%4$f", isTextNotNull(playerMutes) ? playerMutes : "0").replace("%5$f", isTextNotNull(playerBlockedCommand) ? playerBlockedCommand : "0").replace("%6$f", isTextNotNull(playerBlockedWords) ? playerBlockedWords : "0").replace("%7$f", isTextNotNull(playerAdvertiseAttempts) ? playerAdvertiseAttempts : "0")));
     }
 

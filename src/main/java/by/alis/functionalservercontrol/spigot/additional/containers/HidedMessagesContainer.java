@@ -24,7 +24,6 @@ public class HidedMessagesContainer {
             this.hidedMessages.clear();
             try {
                 Collections.addAll(this.hidedMessages, a);
-                int size = this.hidedMessages.size();
             } catch (RuntimeException ignored) {
                 Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to load the list of messages hidden in the console ✘"));
             }

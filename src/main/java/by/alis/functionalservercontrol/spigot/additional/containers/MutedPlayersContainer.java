@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.additional.containers;
 
 import by.alis.functionalservercontrol.api.enums.MuteType;
-import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.FunctionalMuteEntry;
+import by.alis.functionalservercontrol.api.interfaces.FunctionalMuteEntry;
 import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.MuteEntry;
 
 import java.util.*;

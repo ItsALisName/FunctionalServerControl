@@ -26,7 +26,6 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
 
 
     public AsyncMutePreprocessEvent(String muteId, OfflinePlayer player, CommandSender initiator, MuteType muteType, long time, String reason, String realTime, String realDate, String translatedTime) {
-
         super(true);
         this.player = player;
         this.time = time;
@@ -37,11 +36,9 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
         this.initiator = initiator;
         this.realTime = realTime;
         this.realDate = realDate;
-
     }
 
     public AsyncMutePreprocessEvent(String muteId, String player, CommandSender initiator, MuteType muteType, long time, String reason, String realTime, String realDate, String translatedTime) {
-
         super(true);
         this.muteId = muteId;
         this.muteType = muteType;
@@ -52,7 +49,6 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
         this.realTime = realTime;
         this.realDate = realDate;
         this.translatedTime = translatedTime;
-
     }
 
     public String getMuteId() {
@@ -60,10 +56,7 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
     }
 
     public String getNullPlayer() {
-        if(this.player != null) {
-            return "There is no need to use it now";
-        }
-        return nullPlayer;
+        return player != null ? "There is no need to use it now" : nullPlayer;
     }
 
     public OfflinePlayer getPlayer() {

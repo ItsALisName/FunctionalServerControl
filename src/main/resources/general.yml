@@ -26,15 +26,22 @@ plugin-settings:
   #                          Data storage methods                              #
   #  Available storage methods:                                                #
   #  "sqlite" - fast and easy embedded single-file DBMS                        #
+  #  "mysql" - free relational database management system                      #
   #  "h2" - coming soon...                                                     #
   ##############################################################################
   storage-method: "sqlite"
+  mysql:
+    host: "127.0.0.1"
+    port: "3306"
+    username: "root"
+    password: "password"
+    database_name: "name"
 
   ##############################################################################
   #          Hide the command "/functionalservercontrol" from the              #
   #                 list when the player presses Tab?                          #
   #       (Incorrect operation is possible when using ProtocolSupport)         #
-  #      (When using Minecraft version lower than 1.13 - does not work)        #
+  #      (When using Minecraft version lower than 1.13 - need ProtocolLib)     #
   ##############################################################################
   hide-main-command: true
 

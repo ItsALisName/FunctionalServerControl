@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class OtherUtils {
@@ -31,6 +31,15 @@ public class OtherUtils {
     public static boolean isArgumentIP(String str) {
         String ipPattern = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
         return Pattern.compile(ipPattern).matcher(str).find();
+    }
+
+    public static String getPlayerIPByUUID(UUID uuid) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: return getBaseManager().getIpByUUID(uuid);
+            case MYSQL: return getBaseManager().getIpByUUID(uuid);
+            case H2: {}
+        }
+        return "Cannot resolve ip";
     }
 
     public static boolean isClassExists(String className) {
@@ -47,39 +56,15 @@ public class OtherUtils {
     }
 
     public static boolean isNotNullPlayer(String name) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                return getSQLiteManager().getNamesFromAllPlayers().contains(name);
-            }
-            case H2: {
-                return false;
-            }
-        }
-        return false;
+        return getBaseManager().getNamesFromAllPlayers().contains(name);
     }
 
     public static boolean isNotNullPlayer(UUID uuid) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                return getSQLiteManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
-            }
-            case H2: {
-                return true;
-            }
-        }
-        return false;
+        return getBaseManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
     }
 
     public static boolean isNotNullIp(String ip) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                return getSQLiteManager().getIpsFromAllPlayers().contains(ip);
-            }
-            case H2: {
-                return true;
-            }
-        }
-        return false;
+        return getBaseManager().getIpsFromAllPlayers().contains(ip);
     }
 
     public static boolean isNumber(String arg) {
@@ -147,30 +132,13 @@ public class OtherUtils {
 
     @Nullable
     public static OfflinePlayer getOfflinePlayerByName(String name) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                if(getSQLiteManager().getUuidByName(name) != null) {
-                    OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(UUID.fromString(getSQLiteManager().getUuidByName(name)));
-                    return player == null ? null : player;
-                }
-            }
-            case H2: return null;
-        }
-        return null;
+        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(UUID.fromString(getBaseManager().getUuidByName(name)));
+        return player == null ? null : player;
     }
 
     public static OfflinePlayer getPlayerByIP(String ip) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                if(getOnlinePlayerByIP(ip) != null) return getOnlinePlayerByIP(ip);
-                if(getSQLiteManager().getUUIDByIp(ip) != null) {
-                    OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(getSQLiteManager().getUUIDByIp(ip));
-                    return player == null ? null : player;
-                }
-            }
-            case H2: {}
-        }
-        return null;
+        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(getBaseManager().getUUIDByIp(ip));
+        return player == null ? null : player;
     }
 
 
@@ -297,7 +265,7 @@ public class OtherUtils {
         Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                 String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
-                getSQLiteManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
+                getBaseManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
             }
 
         });

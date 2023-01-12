@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.additional.consolefilter;
 
-public interface ConsoleFilterCore {
+public interface Filter {
 
     void eventLog();
 

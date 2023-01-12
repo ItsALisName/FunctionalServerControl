@@ -2,9 +2,9 @@ package by.alis.functionalservercontrol.spigot.managers.mute;
 
 import org.bukkit.OfflinePlayer;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 
 public class MuteChecker {
 
@@ -17,17 +17,8 @@ public class MuteChecker {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getMutedPlayersContainer().getNameContainer().contains(nullPlayerName);
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getMutedPlayersNames().contains(nullPlayerName);
-                }
-                
-                case H2: {
-                    return false;
-                }
-            }
+            return getBaseManager().getMutedPlayersNames().contains(nullPlayerName);
         }
-        return false;
     }
 
     /**
@@ -39,17 +30,8 @@ public class MuteChecker {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getMutedPlayersContainer().getNameContainer().contains(player.getName()) && getMutedPlayersContainer().getUUIDContainer().contains(String.valueOf(player.getUniqueId()));
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId())) && getSQLiteManager().getMutedPlayersNames().contains(player.getName());
-                }
-                
-                case H2: {
-                    return false;
-                }
-            }
+            return getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
         }
-        return false;
     }
 
     /**
@@ -61,16 +43,8 @@ public class MuteChecker {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getMutedPlayersContainer().getIpContainer().contains(ipAddress);
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getMutedIps().contains(ipAddress);
-                }
-                case H2: {
-                    break;
-                }
-            }
+            return getBaseManager().getMutedIps().contains(ipAddress);
         }
-        return false;
     }
 
     /**
@@ -79,21 +53,11 @@ public class MuteChecker {
      * @return true if player ip is muted
      */
     public static boolean isIpMuted(OfflinePlayer player) {
-
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getMutedPlayersContainer().getIpContainer().contains(getSQLiteManager().getIpByUUID(player.getUniqueId()));
+            return getMutedPlayersContainer().getIpContainer().contains(getBaseManager().getIpByUUID(player.getUniqueId()));
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getMutedIps().contains(getSQLiteManager().getIpByUUID(player.getUniqueId())) && getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
-                }
-                
-                case H2: {
-                    return false;
-                }
-            }
+            return getBaseManager().getMutedIps().contains(getBaseManager().getIpByUUID(player.getUniqueId())) && getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
         }
-        return false;
     }
 
 }

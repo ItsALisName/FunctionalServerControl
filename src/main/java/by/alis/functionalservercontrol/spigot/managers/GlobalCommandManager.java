@@ -14,9 +14,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class GlobalCommandManager {
@@ -438,7 +438,7 @@ public class GlobalCommandManager {
     }
 
     private void notifyAdminsAboutBlockedCommand(Player player, String command) {
-        this.updatePlayerCommandsStats(player);
+        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
         if(getCommandLimiterSettings().isNotifyAdmins()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)));
                 for(Player admin : Bukkit.getOnlinePlayers()) {
@@ -475,15 +475,6 @@ public class GlobalCommandManager {
                     }
                 }
         }
-    }
-
-    private void updatePlayerCommandsStats(Player player) {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
-                }
-                case H2: {}
-            }
     }
 
 }

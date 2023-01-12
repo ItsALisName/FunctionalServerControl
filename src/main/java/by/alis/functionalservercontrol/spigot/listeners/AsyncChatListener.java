@@ -14,9 +14,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.jetbrains.annotations.NotNull;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.ChatManager.getChatManager;
 import static by.alis.functionalservercontrol.spigot.managers.mute.MuteChecker.isPlayerMuted;
 
@@ -41,21 +41,16 @@ public class AsyncChatListener implements Listener, EventExecutor {
                     }
                     getChatManager().notifyAdminsOnTryChat(player, AdventureApiUtils.componentToString(message), translatedTime);
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            MuteType muteType = getSQLiteManager().getMuteTypes().get(getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
-                            long unmuteTime = getSQLiteManager().getUnmuteTimes().get(getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
-                            event.setCancelled(true);
-                            MuteManager muteManager = new MuteManager();
-                            muteManager.notifyAboutMuteOnChat(player);
-                            String translatedTime = getGlobalVariables().getVariableNever();
-                            if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                                translatedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
-                            }
-                            getChatManager().notifyAdminsOnTryChat(player, AdventureApiUtils.componentToString(message), translatedTime);
-                        }
-                        case H2: {}
+                    MuteType muteType = getBaseManager().getMuteTypes().get(getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
+                    long unmuteTime = getBaseManager().getUnmuteTimes().get(getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
+                    event.setCancelled(true);
+                    MuteManager muteManager = new MuteManager();
+                    muteManager.notifyAboutMuteOnChat(player);
+                    String translatedTime = getGlobalVariables().getVariableNever();
+                    if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                        translatedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
                     }
+                    getChatManager().notifyAdminsOnTryChat(player, AdventureApiUtils.componentToString(message), translatedTime);
                 }
             }
             return;

@@ -3,8 +3,7 @@ package by.alis.functionalservercontrol.spigot.additional.misc.apiutils;
 import by.alis.functionalservercontrol.api.enums.StatsType;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 
 public class FunctionalStatistics {
 
@@ -23,31 +22,19 @@ public class FunctionalStatistics {
         }
 
         public String get(StatsType.Administrator administratorStats) {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getAdminStatsInfo(admin, administratorStats);
-                }
-                case H2: {}
-            }
-            return "0";
+            return getBaseManager().getAdminStatsInfo(admin, administratorStats);
         }
 
     }
 
     public static class PlayerStats {
         private final Player player;
-        public PlayerStats(Player player) {
+        PlayerStats(Player player) {
             this.player = player;
         }
 
         public String get(StatsType.Player playerStats) {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getPlayerStatsInfo(player, playerStats);
-                }
-                case H2: {}
-            }
-            return "0";
+            return getBaseManager().getPlayerStatsInfo(player, playerStats);
         }
     }
 

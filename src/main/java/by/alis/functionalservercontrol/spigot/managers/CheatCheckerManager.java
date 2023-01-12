@@ -1,5 +1,6 @@
 package by.alis.functionalservercontrol.spigot.managers;
 
+import by.alis.functionalservercontrol.api.events.PlayerCheatCheckPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
@@ -15,14 +16,14 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getCheckingCheatsPlayers;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class CheatCheckerManager {
@@ -58,23 +59,34 @@ public class CheatCheckerManager {
             reason = getGlobalVariables().getDefaultReason();
         }
 
+        PlayerCheatCheckPreprocessEvent cheatCheckPreprocessEvent = new PlayerCheatCheckPreprocessEvent(player, initiator, reason);
+        if(getConfigSettings().isApiEnabled()) {
+            Bukkit.getPluginManager().callEvent(cheatCheckPreprocessEvent);
+        }
+
+        if(cheatCheckPreprocessEvent.isCancelled()) return;
+
         if(reason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
             if(!getConfigSettings().isCheatsCheckAllowedWithoutReason() && !initiator.hasPermission("functionalservercontrol.use.no-reason")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
+                cheatCheckPreprocessEvent.setCancelled(true);
                 return;
             }
         }
+
+        reason = isTextNotNull(cheatCheckPreprocessEvent.getReason()) ? cheatCheckPreprocessEvent.getReason() : reason;
 
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player.getName())) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
+                cheatCheckPreprocessEvent.setCancelled(true);
                 return;
             }
         }
 
-        String initiatorName = null;
+        String initiatorName;
         if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getName();
+            initiatorName = (initiator).getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -96,10 +108,7 @@ public class CheatCheckerManager {
         }
         this.countdown.put(player, checkTime);
         TemporaryCache.setCheckingPlayersNames(player.getName());
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.cheatcheck").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-            case H2: {}
-        }
+        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.cheatcheck").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
         runCountdownTimer(player);
     }
     

@@ -1,15 +1,16 @@
 package by.alis.functionalservercontrol.spigot.additional.misc.apiutils;
 
 import by.alis.functionalservercontrol.api.enums.BanType;
+import by.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBanContainerManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 
 public class BanEntry implements FunctionalBanEntry {
 
@@ -89,14 +90,8 @@ public class BanEntry implements FunctionalBanEntry {
 
     @Override
     public void unban() {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                getSQLiteManager().deleteFromBannedPlayers("-id", getId());
-                getSQLiteManager().deleteFromNullBannedPlayers("-id", getId());
-                break;
-            }
-            case H2: {}
-        }
+        getBaseManager().deleteFromBannedPlayers("-id", getId());
+        getBaseManager().deleteFromNullBannedPlayers("-id", getId());
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             getBanContainerManager().removeFromBanContainer("-id", getId());
             getBannedPlayersContainer().getBanEntries().remove(this);

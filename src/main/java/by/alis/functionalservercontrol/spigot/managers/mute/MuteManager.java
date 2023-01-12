@@ -20,12 +20,12 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.managers.mute.MuteChecker.isIpMuted;
 import static by.alis.functionalservercontrol.spigot.managers.mute.MuteChecker.isPlayerMuted;
@@ -115,22 +115,14 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: { }
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                        getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
@@ -143,20 +135,12 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {}
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
@@ -175,17 +159,11 @@ public class MuteManager {
             } else {
 
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {}
-                    }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -196,17 +174,11 @@ public class MuteManager {
                         }
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: { }
-                    }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.mute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -224,25 +196,17 @@ public class MuteManager {
             if(isIpMuted(player)) {
                 if(initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {}
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
@@ -254,20 +218,12 @@ public class MuteManager {
                             }
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {}
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason)));
@@ -286,17 +242,11 @@ public class MuteManager {
                 }
             } else {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {}
-                    }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -308,16 +258,10 @@ public class MuteManager {
                         }
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {}
-                    }
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.muteip.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
                     }
@@ -337,25 +281,17 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: { }
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
@@ -368,20 +304,12 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {}
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
@@ -401,19 +329,11 @@ public class MuteManager {
             } else {
 
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
@@ -424,18 +344,10 @@ public class MuteManager {
                         }
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
@@ -454,27 +366,17 @@ public class MuteManager {
             if(isIpMuted(player)) {
                 if(initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         try {
                             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
                         try {
-                            getMuteContainerManager().removeFromMuteContainer("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                            getMuteContainerManager().removeFromMuteContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
@@ -486,22 +388,12 @@ public class MuteManager {
                             }
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));} catch (NullPointerException ignored) {}
-                                try {
-                                    getSQLiteManager().deleteFromMutedPlayers("-ip", getSQLiteManager().getIpByUUID(player.getUniqueId()));} catch (NullPointerException ingored) {}
-                                getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
-                        }
+                        getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromMutedPlayers("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
+                        getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player.getName())));
                         if(announceMute) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
@@ -520,19 +412,11 @@ public class MuteManager {
                 }
             } else {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-                    }
-                    getMuteContainerManager().addToMuteContainer(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    getMuteContainerManager().addToMuteContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), asyncMutePreprocessEvent.getMuteTime());
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
@@ -543,18 +427,10 @@ public class MuteManager {
                         }
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoMutedPlayers(id, getSQLiteManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().insertIntoMutedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), asyncMutePreprocessEvent.getMuteTime());
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
                     if(announceMute) {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(asyncMutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
@@ -642,22 +518,13 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
                         }
                         getMuteContainerManager().removeFromMuteContainer("-n", player);
                         getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -668,23 +535,13 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
@@ -699,22 +556,14 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -723,22 +572,14 @@ public class MuteManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.mute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
@@ -753,23 +594,15 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         getMuteContainerManager().removeFromMuteContainer("-n", player);
                         getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", mutePreprocessEvent.getMuteTime());
@@ -780,23 +613,15 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
@@ -811,22 +636,14 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", mutePreprocessEvent.getMuteTime());
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -835,22 +652,14 @@ public class MuteManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
@@ -865,23 +674,15 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         getMuteContainerManager().removeFromMuteContainer("-n", player);
                         getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -891,23 +692,15 @@ public class MuteManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
@@ -921,22 +714,14 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -944,22 +729,14 @@ public class MuteManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
@@ -973,23 +750,15 @@ public class MuteManager {
             if (isPlayerMuted(player)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         getMuteContainerManager().removeFromMuteContainer("-n", player);
                         getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
@@ -999,23 +768,15 @@ public class MuteManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-n", player);
-                                getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                                
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
-                            }
+                        getBaseManager().deleteFromNullMutedPlayers("-n", player);
+                        getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-mute-removed").replace("%1$f", player)));
@@ -1029,22 +790,14 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     getMuteContainerManager().addToMuteContainer(id, "NULL_PLAYER", player, initiatorName, reason, type, realDate, realTime, String.valueOf(offlinePlayer.getUniqueId()), time);
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
@@ -1052,22 +805,14 @@ public class MuteManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if (initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
-                            
-                            if (offlinePlayer != null) {
-                                getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                break;
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
+                    getBaseManager().insertIntoNullMutedPlayers(id, player, initiatorName, reason, type, realDate, realTime, offlinePlayer.getUniqueId(), time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if (initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_MUTES);
+
+                    if (offlinePlayer != null) {
+                        getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                        getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                        
                     }
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.unknown-player").replace("%1$f", player)));
                     if (announceMute) {
@@ -1154,24 +899,16 @@ public class MuteManager {
             if (isIpMuted(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         getMuteContainerManager().removeFromMuteContainer("-ip", ip);
@@ -1185,24 +922,16 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         if(isNull) {
@@ -1220,23 +949,15 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     getMuteContainerManager().addToMuteContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1248,23 +969,15 @@ public class MuteManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip,  initiatorName, reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     if(isNull) {
@@ -1282,24 +995,16 @@ public class MuteManager {
             if (isIpMuted(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         getMuteContainerManager().removeFromMuteContainer("-ip", ip);
@@ -1313,24 +1018,16 @@ public class MuteManager {
                         }
                         return;
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         if(isNull) {
@@ -1348,23 +1045,15 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     getMuteContainerManager().addToMuteContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", mutePreprocessEvent.getMuteTime());
@@ -1376,23 +1065,15 @@ public class MuteManager {
                     }
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.muteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     if(isNull) {
@@ -1410,24 +1091,16 @@ public class MuteManager {
             if (isIpMuted(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         getMuteContainerManager().removeFromMuteContainer("-ip", ip);
@@ -1440,24 +1113,16 @@ public class MuteManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         if(isNull) {
@@ -1474,23 +1139,15 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     getMuteContainerManager().addToMuteContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1501,23 +1158,15 @@ public class MuteManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmuteip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     if(isNull) {
@@ -1534,24 +1183,16 @@ public class MuteManager {
             if (isIpMuted(ip)) {
                 if (initiator.hasPermission("functionalservercontrol.use.re-mute")) {
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         getMuteContainerManager().removeFromMuteContainer("-ip", ip);
@@ -1564,24 +1205,16 @@ public class MuteManager {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                         }
                     } else {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: {
-                                getSQLiteManager().deleteFromNullMutedPlayers("-ip", ip);
-                                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                                if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                                if(!isNull) {
-                                    OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                    if (offlinePlayer != null) {
-                                        getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                        getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                            case H2: {
-                                break;
+                        getBaseManager().deleteFromNullMutedPlayers("-ip", ip);
+                        getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                        if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                        if(!isNull) {
+                            OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                            if (offlinePlayer != null) {
+                                getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                                getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                                
                             }
                         }
                         if(isNull) {
@@ -1598,23 +1231,15 @@ public class MuteManager {
                 }
             } else {
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     getMuteContainerManager().addToMuteContainer(id, ip, "NULL_PLAYER", initiatorName, reason, type, realDate, realTime, "NULL_PLAYER", time);
@@ -1625,23 +1250,15 @@ public class MuteManager {
                         CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempmute.ip-broadcast-message").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(mutePreprocessEvent.getMuteTime()))).replace("%4$f", reason)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
-                            getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
-                            if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
-                            if(!isNull) {
-                                OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
-                                if (offlinePlayer != null) {
-                                    getSQLiteManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
-                                    getSQLiteManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case H2: {
-                            break;
+                    getBaseManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName,  reason, type, realDate, realTime, time);
+                    getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempmuteip").replace("%1$f", initiatorName).replace("%2$f", ip).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_MUTES);
+                    if(!isNull) {
+                        OfflinePlayer offlinePlayer = OtherUtils.getPlayerByIP(ip);
+                        if (offlinePlayer != null) {
+                            getBaseManager().insertIntoPlayersPunishInfo(offlinePlayer.getUniqueId());
+                            getBaseManager().updatePlayerStatsInfo(offlinePlayer, StatsType.Player.STATS_MUTES);
+                            
                         }
                     }
                     if(isNull) {
@@ -1674,14 +1291,10 @@ public class MuteManager {
                 long unmuteTime = getMutedPlayersContainer().getMuteTimeContainer().get(indexOf);
                 getMuteContainerManager().removeFromMuteContainer("-n", name);
 
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: {
-                        getSQLiteManager().deleteFromNullMutedPlayers("-id", id);
-                        getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
-                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                    }
-                    case H2: {}
-                }
+                getBaseManager().deleteFromNullMutedPlayers("-id", id);
+                getBaseManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                
 
                 getMuteContainerManager().addToMuteContainer(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime);
                 return;
@@ -1703,15 +1316,10 @@ public class MuteManager {
                 long unmuteTime = getMutedPlayersContainer().getMuteTimeContainer().get(indexOf);
                 getMuteContainerManager().removeFromMuteContainer("-ip", ip);
 
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: {
-                        getSQLiteManager().deleteFromNullMutedPlayers("-id", id);
-                        getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
-                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                    }
-                    
-                    case H2: {}
-                }
+                getBaseManager().deleteFromNullMutedPlayers("-id", id);
+                getBaseManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                
 
                 getMuteContainerManager().addToMuteContainer(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime);
                 return;
@@ -1719,55 +1327,46 @@ public class MuteManager {
             }
 
         } else {
+            if(getBaseManager().getMutedPlayersNames().contains(player.getName())
+                    && getBaseManager().getMutedIps().get(getBaseManager().getMutedPlayersNames().indexOf(player.getName())).equalsIgnoreCase("NULL_PLAYER")) {
+                int indexOf = getBaseManager().getMutedPlayersNames().indexOf(player.getName());
+                String id = getBaseManager().getMutedIds().get(indexOf);
+                String ip = player.getAddress().getAddress().getHostAddress();
+                String name = player.getName();
+                String initiatorName = getBaseManager().getMuteInitiators().get(indexOf);
+                String reason = getBaseManager().getMuteReasons().get(indexOf);
+                MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+                String muteDate = getBaseManager().getMuteDates().get(indexOf);
+                String muteTime = getBaseManager().getMuteTimes().get(indexOf);
+                String uuid = String.valueOf(player.getUniqueId());
+                long unmuteTime = getBaseManager().getUnmuteTimes().get(indexOf);
 
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    if(getSQLiteManager().getMutedPlayersNames().contains(player.getName())
-                            && getSQLiteManager().getMutedIps().get(getSQLiteManager().getMutedPlayersNames().indexOf(player.getName())).equalsIgnoreCase("NULL_PLAYER")) {
-                        int indexOf = getSQLiteManager().getMutedPlayersNames().indexOf(player.getName());
-                        String id = getSQLiteManager().getMutedIds().get(indexOf);
-                        String ip = player.getAddress().getAddress().getHostAddress();
-                        String name = player.getName();
-                        String initiatorName = getSQLiteManager().getMuteInitiators().get(indexOf);
-                        String reason = getSQLiteManager().getMuteReasons().get(indexOf);
-                        MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                        String muteDate = getSQLiteManager().getMuteDates().get(indexOf);
-                        String muteTime = getSQLiteManager().getMuteTimes().get(indexOf);
-                        String uuid = String.valueOf(player.getUniqueId());
-                        long unmuteTime = getSQLiteManager().getUnmuteTimes().get(indexOf);
+                getBaseManager().deleteFromNullMutedPlayers("-id", id);
+                getBaseManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
 
-                        getSQLiteManager().deleteFromNullMutedPlayers("-id", id);
-                        getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
-                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-
-                        return;
-                    }
-
-                    if(getSQLiteManager().getMutedIps().contains(player.getAddress().getAddress().getHostAddress())
-                            && getSQLiteManager().getMutedUUIDs().get(getSQLiteManager().getMutedIps().indexOf(player.getAddress().getAddress().getHostAddress())).equalsIgnoreCase("NULL_PLAYER")) {
-
-                        int indexOf = getSQLiteManager().getMutedIps().indexOf(player.getAddress().getAddress().getHostAddress());
-                        String id = getSQLiteManager().getMutedIds().get(indexOf);
-                        String ip = player.getAddress().getAddress().getHostAddress();
-                        String name = player.getName();
-                        String initiatorName = getSQLiteManager().getMuteInitiators().get(indexOf);
-                        String reason = getSQLiteManager().getMuteReasons().get(indexOf);
-                        MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                        String muteDate = getSQLiteManager().getMuteDates().get(indexOf);
-                        String muteTime = getSQLiteManager().getMuteTimes().get(indexOf);
-                        String uuid = String.valueOf(player.getUniqueId());
-                        long unmuteTime = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                        getSQLiteManager().deleteFromNullMutedPlayers("-id", id);
-                        getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
-                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                        return;
-                    }
-
-                }
-                case H2: {}
-                
+                return;
             }
 
+            if(getBaseManager().getMutedIps().contains(player.getAddress().getAddress().getHostAddress())
+                    && getBaseManager().getMutedUUIDs().get(getBaseManager().getMutedIps().indexOf(player.getAddress().getAddress().getHostAddress())).equalsIgnoreCase("NULL_PLAYER")) {
+
+                int indexOf = getBaseManager().getMutedIps().indexOf(player.getAddress().getAddress().getHostAddress());
+                String id = getBaseManager().getMutedIds().get(indexOf);
+                String ip = player.getAddress().getAddress().getHostAddress();
+                String name = player.getName();
+                String initiatorName = getBaseManager().getMuteInitiators().get(indexOf);
+                String reason = getBaseManager().getMuteReasons().get(indexOf);
+                MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+                String muteDate = getBaseManager().getMuteDates().get(indexOf);
+                String muteTime = getBaseManager().getMuteTimes().get(indexOf);
+                String uuid = String.valueOf(player.getUniqueId());
+                long unmuteTime = getBaseManager().getUnmuteTimes().get(indexOf);
+                getBaseManager().deleteFromNullMutedPlayers("-id", id);
+                getBaseManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, UUID.fromString(uuid), unmuteTime);
+                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                return;
+            }
         }
     }
 
@@ -1806,45 +1405,37 @@ public class MuteManager {
                 }
             }
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    if(getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()))) {
-                        int indexOf = getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
-                        MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                        String translatedUnmuteTime = getGlobalVariables().getVariableNever();
-                        if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                            if(System.currentTimeMillis() >= getSQLiteManager().getUnmuteTimes().get(indexOf)) return;
-                            TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
-                            translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getSQLiteManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
-                        }
-                        if(getConfigSettings().isServerSupportsHoverEvents()) {
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                player.spigot().sendMessage(MD5TextUtils.createHoverText(
-                                        getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime)),
-                                        getFileAccessor().getLang().getString("other.join.muted.hover-text")
-                                                .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                                .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                                .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                                .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                                .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
-                                ));
-                            } else {
-                                player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
-                                        .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                        .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))));
-                            }
-                        } else {
-                            player.sendMessage(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                        }
+            if(getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()))) {
+                int indexOf = getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
+                MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+                String translatedUnmuteTime = getGlobalVariables().getVariableNever();
+                if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                    if(System.currentTimeMillis() >= getBaseManager().getUnmuteTimes().get(indexOf)) return;
+                    TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
+                    translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getBaseManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
+                }
+                if(getConfigSettings().isServerSupportsHoverEvents()) {
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                        player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                                getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                                getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                                        .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                        .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                                        .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                                        .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                        .replace("%5$f", getBaseManager().getMutedIds().get(indexOf))
+                        ));
+                    } else {
+                        player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.join.muted.hover-text")
+                                .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                                .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                                .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                .replace("%5$f", getBaseManager().getMutedIds().get(indexOf)))));
                     }
+                } else {
+                    player.sendMessage(setColors(getFileAccessor().getLang().getString("other.join.muted.text").replace("%1$f", setColors(translatedUnmuteTime))));
                 }
-                case H2: {
-
-                }
-                
             }
         }
     }
@@ -1881,42 +1472,34 @@ public class MuteManager {
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))));
             }
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    int indexOf = getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
-                    MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                    String translatedUnmuteTime = getGlobalVariables().getVariableNever();
-                    if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                        TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
-                        translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getSQLiteManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
-                    }
-                    if(getConfigSettings().isServerSupportsHoverEvents()) {
-                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                            player.spigot().sendMessage(MD5TextUtils.createHoverText(
-                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime)),
-                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
-                                            .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                            .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                            .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                            .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                            .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
-                            ));
-                        } else {
-                            player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
-                                    .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                    .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                    .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                    .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                    .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))));
-                        }
-                    } else {
-                        player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                    }
+            int indexOf = getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
+            MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+            String translatedUnmuteTime = getGlobalVariables().getVariableNever();
+            if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
+                translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getBaseManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
+            }
+            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                    player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                                    .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                    .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                                    .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                                    .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                    .replace("%5$f", getBaseManager().getMutedIds().get(indexOf))
+                    ));
+                } else {
+                    player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.hover-text")
+                            .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                            .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                            .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                            .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                            .replace("%5$f", getBaseManager().getMutedIds().get(indexOf)))));
                 }
-                case H2: {
-
-                }
-                
+            } else {
+                player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.command.text").replace("%1$f", setColors(translatedUnmuteTime))));
             }
         }
     }
@@ -1953,42 +1536,34 @@ public class MuteManager {
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))));
             }
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    int indexOf = getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
-                    MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                    String translatedUnmuteTime = getGlobalVariables().getVariableNever();
-                    if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                        TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
-                        translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getSQLiteManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
-                    }
-                    if(getConfigSettings().isServerSupportsHoverEvents()) {
-                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                            player.spigot().sendMessage(MD5TextUtils.createHoverText(
-                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime)),
-                                    getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
-                                            .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                            .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                            .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                            .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                            .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf))
-                            ));
-                        } else {
-                            player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
-                                    .replace("%1$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                    .replace("%2$f", getSQLiteManager().getMuteDates().get(indexOf))
-                                    .replace("%3$f", getSQLiteManager().getMuteTimes().get(indexOf))
-                                    .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                    .replace("%5$f", getSQLiteManager().getMutedIds().get(indexOf)))));
-                        }
-                    } else {
-                        player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))));
-                    }
+            int indexOf = getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
+            MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+            String translatedUnmuteTime = getGlobalVariables().getVariableNever();
+            if(muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
+                translatedUnmuteTime = timeSettingsAccessor.getTimeManager().convertFromMillis(getBaseManager().getUnmuteTimes().get(indexOf) - System.currentTimeMillis());
+            }
+            if(getConfigSettings().isServerSupportsHoverEvents()) {
+                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                    player.spigot().sendMessage(MD5TextUtils.createHoverText(
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime)),
+                            getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                                    .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                    .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                                    .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                                    .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                    .replace("%5$f", getBaseManager().getMutedIds().get(indexOf))
+                    ));
+                } else {
+                    player.sendMessage(AdventureApiUtils.createHoverText(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))), setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.hover-text")
+                            .replace("%1$f", getBaseManager().getMuteInitiators().get(indexOf))
+                            .replace("%2$f", getBaseManager().getMuteDates().get(indexOf))
+                            .replace("%3$f", getBaseManager().getMuteTimes().get(indexOf))
+                            .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                            .replace("%5$f", getBaseManager().getMutedIds().get(indexOf)))));
                 }
-                case H2: {
-
-                }
-                
+            } else {
+                player.sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.chat.text").replace("%1$f", setColors(translatedUnmuteTime))));
             }
         }
     }

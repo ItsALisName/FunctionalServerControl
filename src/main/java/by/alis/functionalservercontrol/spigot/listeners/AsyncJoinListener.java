@@ -15,11 +15,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.*;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 /**
@@ -117,16 +117,8 @@ public class AsyncJoinListener implements Listener {
                             String.valueOf(event.getUniqueId()),
                             currentTime
                     );
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-                    }
+                    getBaseManager().deleteFromBannedPlayers("-id", id);
+                    getBaseManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                     if(banType == BanType.PERMANENT_IP) {
                         event.disallow(
                                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
@@ -181,18 +173,8 @@ public class AsyncJoinListener implements Listener {
                             String.valueOf(event.getUniqueId()),
                             currentTime
                     );
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            break;
-                        }
-                        case H2: {
-                            break;
-                        }
-
-                    }
-
+                    getBaseManager().deleteFromBannedPlayers("-id", id);
+                    getBaseManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
                     if(banType != BanType.PERMANENT_IP){
                         if (System.currentTimeMillis() >= currentTime) {
                             
@@ -307,185 +289,176 @@ public class AsyncJoinListener implements Listener {
                     }
                 }
             }
-        }
-
-        else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    if(getSQLiteManager().getBannedPlayersNames().contains(event.getName()) && getSQLiteManager().getBannedUUIDs().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(String.valueOf(event.getUniqueId()))) {
-                        if((getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.TIMED_IP
-                                || getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.PERMANENT_IP)
-                                && !getSQLiteManager().getBannedIps().get(getSQLiteManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(event.getAddress().getHostAddress())) {
-                            int indexOf = getSQLiteManager().getBannedPlayersNames().indexOf(event.getName());
-                            long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                            BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                            if(banType != BanType.PERMANENT_IP){
-                                if (System.currentTimeMillis() >= currentTime) {
-                                    
-                                    this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                    event.allow();
-                                    return;
-                                }
-                            }
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            String realDate = getSQLiteManager().getBansDates().get(indexOf);
-                            String realTime = getSQLiteManager().getBansTimes().get(indexOf);
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            if(banType == BanType.PERMANENT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                            if(banType == BanType.TIMED_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                        }
-                    }
-
-                    if(getSQLiteManager().getBannedIps().contains(event.getAddress().getHostAddress())) {
-
-                        if((getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.PERMANENT_IP
-                                || getSQLiteManager().getBanTypes().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.TIMED_IP)
-                                && !getSQLiteManager().getBannedPlayersNames().get(getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress())).equalsIgnoreCase(event.getName())) {
-                            int indexOf = getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
-                            long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                            BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                            if(banType != BanType.PERMANENT_IP){
-                                if (System.currentTimeMillis() >= currentTime) {
-                                    
-                                    this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                    event.allow();
-                                    return;
-                                }
-                            }
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            String realDate = getSQLiteManager().getBansDates().get(indexOf);
-                            String realTime = getSQLiteManager().getBansTimes().get(indexOf);
-                            getSQLiteManager().deleteFromBannedPlayers("-id", id);
-                            getSQLiteManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
-                            if(banType == BanType.PERMANENT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                            if(banType == BanType.TIMED_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                        }
-                        int indexOf = getSQLiteManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
-                        long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
-                        BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                        if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
-                            if (System.currentTimeMillis() >= currentTime) {
-                                
-                                this.unbanManager.preformUnban(player, "The Ban time has expired");
-                                event.allow();
-                                return;
-                            }
-                        }
-                        String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                        String id = getSQLiteManager().getBannedIds().get(indexOf);
-                        String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                        String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                        if(banType == BanType.PERMANENT_NOT_IP) {
-                            if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                            }
-                            this.notifyAdmins(player, currentTime);
-                            return;
-                        }
-                        if(banType == BanType.PERMANENT_IP) {
-                            event.disallow(
-                                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                            );
-                            this.notifyAdmins(player, currentTime);
-                            return;
-                        }
-                        if(banType == BanType.TIMED_NOT_IP) {
-                            if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
-                                );
-                            }
-                            this.notifyAdmins(player, currentTime);
-                            return;
-                        }
-                        if(banType == BanType.TIMED_IP) {
-                            event.disallow(
-                                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                    setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))
-                                    ));
-                            this.notifyAdmins(player, currentTime);
-                            return;
-                        }
-                        return;
-                    }
-
-
-                    if(getSQLiteManager().getBannedUUIDs().contains(String.valueOf(event.getUniqueId()))) {
-                        int indexOf = getSQLiteManager().getBannedUUIDs().indexOf(String.valueOf(event.getUniqueId()));
-                        BanType banType = getSQLiteManager().getBanTypes().get(indexOf);
-                        long currentTime = getSQLiteManager().getUnbanTimes().get(indexOf);
+        } else {
+            if(getBaseManager().getBannedPlayersNames().contains(event.getName()) && getBaseManager().getBannedUUIDs().get(getBaseManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(String.valueOf(event.getUniqueId()))) {
+                if((getBaseManager().getBanTypes().get(getBaseManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.TIMED_IP
+                        || getBaseManager().getBanTypes().get(getBaseManager().getBannedPlayersNames().indexOf(event.getName())) == BanType.PERMANENT_IP)
+                        && !getBaseManager().getBannedIps().get(getBaseManager().getBannedPlayersNames().indexOf(event.getName())).equalsIgnoreCase(event.getAddress().getHostAddress())) {
+                    int indexOf = getBaseManager().getBannedPlayersNames().indexOf(event.getName());
+                    long currentTime = getBaseManager().getUnbanTimes().get(indexOf);
+                    BanType banType = getBaseManager().getBanTypes().get(indexOf);
+                    if(banType != BanType.PERMANENT_IP){
                         if (System.currentTimeMillis() >= currentTime) {
-                            
+
                             this.unbanManager.preformUnban(player, "The Ban time has expired");
                             event.allow();
                             return;
                         }
-                        if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {
-                            String reason = getSQLiteManager().getBanReasons().get(indexOf);
-                            String id = getSQLiteManager().getBannedIds().get(indexOf);
-                            String timeAndDate = getSQLiteManager().getBansDates().get(indexOf) + ", " + getSQLiteManager().getBansTimes().get(indexOf);
-                            String initiatorName = getSQLiteManager().getBanInitiators().get(indexOf);
-                            if(banType == BanType.PERMANENT_NOT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                            if(banType == BanType.TIMED_NOT_IP) {
-                                event.disallow(
-                                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                                        setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
-                                );
-                                this.notifyAdmins(player, currentTime);
-                                return;
-                            }
-                        }
+                    }
+                    String reason = getBaseManager().getBanReasons().get(indexOf);
+                    String id = getBaseManager().getBannedIds().get(indexOf);
+                    String timeAndDate = getBaseManager().getBansDates().get(indexOf) + ", " + getBaseManager().getBansTimes().get(indexOf);
+                    String initiatorName = getBaseManager().getBanInitiators().get(indexOf);
+                    String realDate = getBaseManager().getBansDates().get(indexOf);
+                    String realTime = getBaseManager().getBansTimes().get(indexOf);
+                    getBaseManager().deleteFromBannedPlayers("-id", id);
+                    getBaseManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
+                    if(banType == BanType.PERMANENT_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
+                    }
+                    if(banType == BanType.TIMED_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
                     }
                 }
-                case H2: {
-                    break;
+            }
+
+            if(getBaseManager().getBannedIps().contains(event.getAddress().getHostAddress())) {
+
+                if((getBaseManager().getBanTypes().get(getBaseManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.PERMANENT_IP
+                        || getBaseManager().getBanTypes().get(getBaseManager().getBannedIps().indexOf(event.getAddress().getHostAddress())) == BanType.TIMED_IP)
+                        && !getBaseManager().getBannedPlayersNames().get(getBaseManager().getBannedIps().indexOf(event.getAddress().getHostAddress())).equalsIgnoreCase(event.getName())) {
+                    int indexOf = getBaseManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
+                    long currentTime = getBaseManager().getUnbanTimes().get(indexOf);
+                    BanType banType = getBaseManager().getBanTypes().get(indexOf);
+                    if(banType != BanType.PERMANENT_IP){
+                        if (System.currentTimeMillis() >= currentTime) {
+
+                            this.unbanManager.preformUnban(player, "The Ban time has expired");
+                            event.allow();
+                            return;
+                        }
+                    }
+                    String reason = getBaseManager().getBanReasons().get(indexOf);
+                    String id = getBaseManager().getBannedIds().get(indexOf);
+                    String timeAndDate = getBaseManager().getBansDates().get(indexOf) + ", " + getBaseManager().getBansTimes().get(indexOf);
+                    String initiatorName = getBaseManager().getBanInitiators().get(indexOf);
+                    String realDate = getBaseManager().getBansDates().get(indexOf);
+                    String realTime = getBaseManager().getBansTimes().get(indexOf);
+                    getBaseManager().deleteFromBannedPlayers("-id", id);
+                    getBaseManager().insertIntoBannedPlayers(id, event.getAddress().getHostAddress(), event.getName(), initiatorName, reason, banType, realDate, realTime, event.getUniqueId(), currentTime);
+                    if(banType == BanType.PERMANENT_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
+                    }
+                    if(banType == BanType.TIMED_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
+                    }
+                }
+                int indexOf = getBaseManager().getBannedIps().indexOf(event.getAddress().getHostAddress());
+                long currentTime = getBaseManager().getUnbanTimes().get(indexOf);
+                BanType banType = getBaseManager().getBanTypes().get(indexOf);
+                if(banType != BanType.PERMANENT_NOT_IP && banType != BanType.PERMANENT_IP){
+                    if (System.currentTimeMillis() >= currentTime) {
+
+                        this.unbanManager.preformUnban(player, "The Ban time has expired");
+                        event.allow();
+                        return;
+                    }
+                }
+                String reason = getBaseManager().getBanReasons().get(indexOf);
+                String id = getBaseManager().getBannedIds().get(indexOf);
+                String timeAndDate = getBaseManager().getBansDates().get(indexOf) + ", " + getBaseManager().getBansTimes().get(indexOf);
+                String initiatorName = getBaseManager().getBanInitiators().get(indexOf);
+                if(banType == BanType.PERMANENT_NOT_IP) {
+                    if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                        );
+                    }
+                    this.notifyAdmins(player, currentTime);
+                    return;
+                }
+                if(banType == BanType.PERMANENT_IP) {
+                    event.disallow(
+                            AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                            setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                    );
+                    this.notifyAdmins(player, currentTime);
+                    return;
+                }
+                if(banType == BanType.TIMED_NOT_IP) {
+                    if (getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(event.getUniqueId()))) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
+                        );
+                    }
+                    this.notifyAdmins(player, currentTime);
+                    return;
+                }
+                if(banType == BanType.TIMED_IP) {
+                    event.disallow(
+                            AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                            setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime)))
+                            ));
+                    this.notifyAdmins(player, currentTime);
+                    return;
+                }
+                return;
+            }
+
+
+            if(getBaseManager().getBannedUUIDs().contains(String.valueOf(event.getUniqueId()))) {
+                int indexOf = getBaseManager().getBannedUUIDs().indexOf(String.valueOf(event.getUniqueId()));
+                BanType banType = getBaseManager().getBanTypes().get(indexOf);
+                long currentTime = getBaseManager().getUnbanTimes().get(indexOf);
+                if (System.currentTimeMillis() >= currentTime) {
+
+                    this.unbanManager.preformUnban(player, "The Ban time has expired");
+                    event.allow();
+                    return;
+                }
+                if(banType == BanType.PERMANENT_NOT_IP || banType == BanType.TIMED_NOT_IP) {
+                    String reason = getBaseManager().getBanReasons().get(indexOf);
+                    String id = getBaseManager().getBannedIds().get(indexOf);
+                    String timeAndDate = getBaseManager().getBansDates().get(indexOf) + ", " + getBaseManager().getBansTimes().get(indexOf);
+                    String initiatorName = getBaseManager().getBanInitiators().get(indexOf);
+                    if(banType == BanType.PERMANENT_NOT_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", getGlobalVariables().getVariableNever()))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
+                    }
+                    if(banType == BanType.TIMED_NOT_IP) {
+                        event.disallow(
+                                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", timeAndDate).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(currentTime))))
+                        );
+                        this.notifyAdmins(player, currentTime);
+                        return;
+                    }
                 }
             }
         }

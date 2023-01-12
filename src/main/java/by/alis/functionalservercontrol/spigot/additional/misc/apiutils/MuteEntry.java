@@ -1,17 +1,18 @@
 package by.alis.functionalservercontrol.spigot.additional.misc.apiutils;
 
 import by.alis.functionalservercontrol.api.enums.MuteType;
+import by.alis.functionalservercontrol.api.interfaces.FunctionalMuteEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.mute.MuteManager.getMuteContainerManager;
 
-public class MuteEntry implements FunctionalMuteEntry{
+public class MuteEntry implements FunctionalMuteEntry {
 
     private final @Nullable String name;
     private final @NotNull String id;
@@ -89,14 +90,8 @@ public class MuteEntry implements FunctionalMuteEntry{
 
     @Override
     public void unmute() {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                getSQLiteManager().deleteFromMutedPlayers("-id", getId());
-                getSQLiteManager().deleteFromNullMutedPlayers("-id", getId());
-                break;
-            }
-            case H2: {}
-        }
+        getBaseManager().deleteFromMutedPlayers("-id", getId());
+        getBaseManager().deleteFromNullMutedPlayers("-id", getId());
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             getMuteContainerManager().removeFromMuteContainer("-id", getId());
             getMutedPlayersContainer().getMuteEntries().remove(this);

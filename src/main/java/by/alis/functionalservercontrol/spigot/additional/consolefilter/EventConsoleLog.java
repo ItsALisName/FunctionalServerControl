@@ -13,7 +13,7 @@ import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 
 @Deprecated
 public class EventConsoleLog implements Filter {
@@ -30,19 +30,15 @@ public class EventConsoleLog implements Filter {
     }
 
     private Result runCheck(String consoleMessage) {
-        if(consoleMessage == null) return Result.NEUTRAL;
+        if(!isTextNotNull(consoleMessage)) return Result.NEUTRAL;
         String[] message = {consoleMessage};
 
             if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
                 (new BukkitRunnable() {
                     @Override
                     public void run() {
-                        ConsoleLogOutEvent consoleLogEvent = new ConsoleLogOutEvent(consoleMessage, getConfigSettings().isApiEnabled());
-                        if(consoleLogEvent.isApiEnabled()) {
-                            Bukkit.getPluginManager().callEvent(consoleLogEvent);
-                        } else {
-                            cancel();
-                        }
+                        ConsoleLogOutEvent consoleLogEvent = new ConsoleLogOutEvent(consoleMessage);
+                        Bukkit.getPluginManager().callEvent(consoleLogEvent);
                     }
                 }).runTask(FunctionalServerControl.getPlugin(FunctionalServerControl.class));
             }

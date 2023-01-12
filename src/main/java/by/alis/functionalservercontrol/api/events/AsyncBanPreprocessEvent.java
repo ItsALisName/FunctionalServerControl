@@ -25,7 +25,6 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
 
 
     public AsyncBanPreprocessEvent(String banId, OfflinePlayer player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, String translatedTime) {
-
         super(true);
         this.banId = banId;
         this.banType = banType;
@@ -36,11 +35,9 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
         this.realTime = realTime;
         this.realDate = realDate;
         this.translatedTime = translatedTime;
-
     }
 
     public AsyncBanPreprocessEvent(String banId, String player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, String translatedTime) {
-
         super(true);
         this.banId = banId;
         this.banType = banType;
@@ -51,7 +48,6 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
         this.realTime = realTime;
         this.realDate = realDate;
         this.translatedTime = translatedTime;
-
     }
 
     /**

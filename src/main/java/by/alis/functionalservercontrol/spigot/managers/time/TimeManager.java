@@ -5,7 +5,7 @@ import by.alis.functionalservercontrol.api.enums.TimeUnit;
 import by.alis.functionalservercontrol.spigot.expansions.Expansions;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 

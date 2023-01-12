@@ -10,7 +10,6 @@ public class AsyncConsoleLogOutEvent extends Event implements Cancellable {
     private boolean cancelled;
     private static final HandlerList handlerList = new HandlerList();
     private String message;
-    private String apiPassword;
 
     public AsyncConsoleLogOutEvent(String message) {
         super(true);
@@ -33,23 +32,6 @@ public class AsyncConsoleLogOutEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
-    }
-
-    /**
-     * Used by the plugin to verify the entered password
-     * @return entered password
-     */
-    public String getApiPassword() {
-        return apiPassword;
-    }
-
-    /**
-     * Used if API password protection is enabled in general.yml
-     * Used to enter a password
-     * @param apiPassword password to use event
-     */
-    public void inputApiPassword(String apiPassword) {
-        this.apiPassword = apiPassword;
     }
 
     /**

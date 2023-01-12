@@ -1,5 +1,7 @@
 package by.alis.functionalservercontrol.spigot.commands;
 
+import by.alis.functionalservercontrol.api.FunctionalApi;
+import by.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
 import by.alis.functionalservercontrol.spigot.commands.completers.CheatCheckCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
@@ -10,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.getReason;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.managers.CheatCheckerManager.getCheatCheckerManager;
@@ -29,6 +31,7 @@ public class CheatCheckCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(sender.hasPermission("functionalservercontrol.cheatcheck")) {
 
@@ -222,6 +225,9 @@ public class CheatCheckCommand implements CommandExecutor {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.cheatcheck.unknown-subcommand").replace("%1$f", args[1])));
                 return true;
 
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+                return true;
             }
         }
         return true;

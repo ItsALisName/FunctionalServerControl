@@ -16,10 +16,10 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getChatSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getChatSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
@@ -41,13 +41,7 @@ public class PlayerDropItemListener implements Listener {
                         for(String blockedWord : getChatSettings().getBlockedWords()) {
                             if(droppedItemMeta.getDisplayName().contains(blockedWord)) {
                                 event.setCancelled(true);
-                                switch (getConfigSettings().getStorageType()) {
-                                    case SQLITE:
-                                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                                        break;
-                                    case H2: {
-                                    }
-                                }
+                                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
                                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-on-item").replace("%1$f", blockedWord)));
                                 notifyAdmins(player, droppedItemMeta.getDisplayName(), blockedWord, false);
                                 if(getChatSettings().isPunishEnabledForBlockedWords()) {
@@ -62,13 +56,7 @@ public class PlayerDropItemListener implements Listener {
                                     for(String loreArg : lore.split(" ")) {
                                         if(loreArg.equalsIgnoreCase(blockedWord)) {
                                             event.setCancelled(true);
-                                            switch (getConfigSettings().getStorageType()) {
-                                                case SQLITE:
-                                                    getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                                                    break;
-                                                case H2: {
-                                                }
-                                            }
+                                            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
                                             player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-on-item").replace("%1$f", blockedWord)));
                                             notifyAdmins(player, lore, blockedWord, false);
                                             if(getChatSettings().isPunishEnabledForBlockedWords()) {
@@ -85,10 +73,7 @@ public class PlayerDropItemListener implements Listener {
                     }
                     if(getChatSettings().isItemsIpProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.items.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                         if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(droppedItemMeta.getDisplayName()))) {
-                            switch (getConfigSettings().getStorageType()) {
-                                case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                                case H2: {}
-                            }
+                            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                             player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-item")));
                             notifyAdmins(player, droppedItemMeta.getDisplayName(), null, true);
                             for(String action : getChatSettings().getItemsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", droppedItemMeta.getDisplayName()));
@@ -100,10 +85,7 @@ public class PlayerDropItemListener implements Listener {
                         if(droppedItemMeta.hasLore()) {
                             for(String lore : droppedItemMeta.getLore()) {
                                 if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(lore))) {
-                                    switch (getConfigSettings().getStorageType()) {
-                                        case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                                        case H2: {}
-                                    }
+                                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                                     player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-item")));
                                     notifyAdmins(player, lore, null, true);
                                     for(String action : getChatSettings().getItemsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", lore));
@@ -117,10 +99,7 @@ public class PlayerDropItemListener implements Listener {
                     }
                     if(getChatSettings().isItemsDomainsProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.items.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                         if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(droppedItemMeta.getDisplayName()))) {
-                            switch (getConfigSettings().getStorageType()) {
-                                case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                                case H2: {}
-                            }
+                            getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                             player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-item")));
                             notifyAdmins(player, droppedItemMeta.getDisplayName(), null, true);
                             for(String action : getChatSettings().getItemsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", droppedItemMeta.getDisplayName()));
@@ -132,10 +111,7 @@ public class PlayerDropItemListener implements Listener {
                         if(droppedItemMeta.hasLore()) {
                             for(String lore : droppedItemMeta.getLore()) {
                                 if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(lore))) {
-                                    switch (getConfigSettings().getStorageType()) {
-                                        case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                                        case H2: {}
-                                    }
+                                    getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                                     player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-item")));
                                     notifyAdmins(player, lore, null, true);
                                     for(String action : getChatSettings().getItemsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", lore));

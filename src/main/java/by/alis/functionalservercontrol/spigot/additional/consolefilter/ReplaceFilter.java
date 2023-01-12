@@ -10,13 +10,14 @@ import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.consolefilter.ConsoleFilterHelper.getConsoleFilterHelper;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 
 public class ReplaceFilter implements Filter {
 
     public Filter.Result checkMessage(String message) {
-        if (StaticConsoleFilterHelper.getConsoleFilterHelper().isFunctionalServerControlCommand(message)) {
+        if (getConsoleFilterHelper().isFunctionalServerControlCommand(message)) {
             String playerName = message.split(" ")[0];
             Player player = Bukkit.getPlayer(playerName);
             if(player == null) {
@@ -24,10 +25,10 @@ public class ReplaceFilter implements Filter {
             } else {
                 playerName = player.getName();
             }
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", StaticConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
             return Filter.Result.DENY;
-        } else if(StaticConsoleFilterHelper.getConsoleFilterHelper().isMessageToReplace(message)) {
-            Bukkit.getConsoleSender().sendMessage(StaticConsoleFilterHelper.getConsoleFilterHelper().replaceConsoleMessage(message));
+        } else if(getConsoleFilterHelper().isMessageToReplace(message)) {
+            Bukkit.getConsoleSender().sendMessage(getConsoleFilterHelper().replaceConsoleMessage(message));
             return Filter.Result.DENY;
         }
         return Filter.Result.NEUTRAL;

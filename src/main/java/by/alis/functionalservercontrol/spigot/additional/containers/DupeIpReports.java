@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
@@ -20,8 +20,8 @@ public class DupeIpReports {
     private boolean reportExists;
     private String reportInitiator;
     private String time;
-    private List<String> dupeIps = new ArrayList<>();
-    private Map<Player, String> dupePlayers = new HashMap<>();
+    private final List<String> dupeIps = new ArrayList<>();
+    private final Map<Player, String> dupePlayers = new HashMap<>();
 
     public boolean isReportExists() {
         return reportExists;

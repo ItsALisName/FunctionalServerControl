@@ -12,7 +12,7 @@ import org.bukkit.event.EventPriority;
 import java.util.*;
 
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBanContainerManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getChatSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getChatSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 import static by.alis.functionalservercontrol.spigot.managers.mute.MuteManager.getMuteContainerManager;
@@ -744,28 +744,35 @@ public class GeneralConfigSettings {
             setServerSupportsHoverEvents(true);
             setSupportedHoverEvents("ADVENTURE");
         }
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-            switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
-                case "sqlite": {
-                    setStorageType(StorageType.SQLITE);
-                    if(!isLessInformation()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                    }
-                    break;
+        switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method")) {
+            case "sqlite": {
+                setStorageType(StorageType.SQLITE);
+                if(!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                 }
-                case "h2": {
-                    setStorageType(StorageType.H2);
-                    if(!isLessInformation()) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin Loading] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
-                    }
-                    break;
-                }
-                default: {
-                    setStorageType(StorageType.SQLITE);
-                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Plugin Loading] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
-                    break;
-                }
+                break;
             }
+            case "mysql": {
+                setStorageType(StorageType.MYSQL);
+                if(!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                }
+                break;
+            }
+            case "h2": {
+                setStorageType(StorageType.H2);
+                if(!isLessInformation()) {
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                }
+                break;
+            }
+            default: {
+                setStorageType(StorageType.SQLITE);
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Storage] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
+                break;
+            }
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
             setPermissionsProtectionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.permissions-protection.enabled"));
             if(isPermissionsProtectionEnabled()) {
                 if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {

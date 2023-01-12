@@ -13,13 +13,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class InformationManager {
@@ -107,83 +107,77 @@ public class InformationManager {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            if(getSQLiteManager().getBannedIds().contains(param)) {
-                                int indexOf = getSQLiteManager().getBannedIds().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getBannedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnbanTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getBanInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getBanReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if(sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unban")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(getSQLiteManager().getMutedIds().contains(param)) {
-                                int indexOf = getSQLiteManager().getMutedIds().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getMutedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if (getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if (sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unmute")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
-                            return;
+                    if(getBaseManager().getBannedIds().contains(param)) {
+                        int indexOf = getBaseManager().getBannedIds().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
+                        String name = getBaseManager().getBannedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnbanTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
                         }
-                        case H2: {}
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getBanInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getBanReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                            if(sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
                     }
+                    if(getBaseManager().getMutedIds().contains(param)) {
+                        int indexOf = getBaseManager().getMutedIds().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
+                        String name = getBaseManager().getMutedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnmuteTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
+                        }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if (getConfigSettings().isServerSupportsHoverEvents()) {
+                            if (sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableId()).replace("%2$f", param)));
                 }
                 return;
             }
@@ -264,85 +258,79 @@ public class InformationManager {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            if(getSQLiteManager().getBannedIps().contains(param)) {
-                                int indexOf = getSQLiteManager().getBannedIps().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getBannedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnbanTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getBanInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getBanReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if(sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unban")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(getSQLiteManager().getMutedIps().contains(param)) {
-                                int indexOf = getSQLiteManager().getMutedIps().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getMutedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if (getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if (sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unmute")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
-                            return;
+                    if(getBaseManager().getBannedIps().contains(param)) {
+                        int indexOf = getBaseManager().getBannedIps().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
+                        String name = getBaseManager().getBannedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnbanTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
                         }
-                        case H2: {}
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getBanInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getBanReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                            if(sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
                     }
+                    if(getBaseManager().getMutedIps().contains(param)) {
+                        int indexOf = getBaseManager().getMutedIps().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
+                        String name = getBaseManager().getMutedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnmuteTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
+                        }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if (getConfigSettings().isServerSupportsHoverEvents()) {
+                            if (sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableIp()).replace("%2$f", param)));
+                    return;
                 }
-                return;
             }
 
             if(flag.equalsIgnoreCase("-name")) {
@@ -421,85 +409,79 @@ public class InformationManager {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            if(getSQLiteManager().getBannedPlayersNames().contains(param)) {
-                                int indexOf = getSQLiteManager().getBannedPlayersNames().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getBannedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnbanTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getBanInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getBanReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if(sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unban")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(getSQLiteManager().getMutedPlayersNames().contains(param)) {
-                                int indexOf = getSQLiteManager().getMutedPlayersNames().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getMutedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if (getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if (sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unmute")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
-                            return;
+                    if(getBaseManager().getBannedPlayersNames().contains(param)) {
+                        int indexOf = getBaseManager().getBannedPlayersNames().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
+                        String name = getBaseManager().getBannedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnbanTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
                         }
-                        case H2: {}
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getBanInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getBanReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                            if(sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
                     }
+                    if(getBaseManager().getMutedPlayersNames().contains(param)) {
+                        int indexOf = getBaseManager().getMutedPlayersNames().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
+                        String name = getBaseManager().getMutedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnmuteTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
+                        }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if (getConfigSettings().isServerSupportsHoverEvents()) {
+                            if (sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableName()).replace("%2$f", param)));
+                    return;
                 }
-                return;
             }
 
             if(flag.equalsIgnoreCase("-uuid")) {
@@ -578,85 +560,79 @@ public class InformationManager {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
                     return;
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            if(getSQLiteManager().getBannedUUIDs().contains(param)) {
-                                int indexOf = getSQLiteManager().getBannedUUIDs().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getBannedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnbanTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getBanInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getBanReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if(getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if(sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unban")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            if(getSQLiteManager().getMutedUUIDs().contains(param)) {
-                                int indexOf = getSQLiteManager().getMutedUUIDs().indexOf(param);
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
-                                String name = getSQLiteManager().getMutedPlayersNames().get(indexOf);
-                                long time = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                                String translatedTime;
-                                if(time > 0) {
-                                    translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
-                                } else {
-                                    translatedTime = getGlobalVariables().getVariableNever();
-                                }
-                                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
-                                        .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
-                                        .replace("%2$f", name)
-                                        .replace("%3$f", getSQLiteManager().getMuteInitiators().get(indexOf))
-                                        .replace("%4$f", getSQLiteManager().getMuteReasons().get(indexOf))
-                                        .replace("%5$f", translatedTime)
-                                ));
-                                if (getConfigSettings().isServerSupportsHoverEvents()) {
-                                    if (sender instanceof Player) {
-                                        Player player = ((Player) sender).getPlayer();
-                                        if (sender.hasPermission("functionalservercontrol.unmute")) {
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                                player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                            if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                                player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
-                            return;
+                    if(getBaseManager().getBannedUUIDs().contains(param)) {
+                        int indexOf = getBaseManager().getBannedUUIDs().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
+                        String name = getBaseManager().getBannedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnbanTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
                         }
-                        case H2: {}
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusBanned())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getBanInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getBanReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if(getConfigSettings().isServerSupportsHoverEvents()) {
+                            if(sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unban")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnban(), "/unban " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
                     }
+                    if(getBaseManager().getMutedUUIDs().contains(param)) {
+                        int indexOf = getBaseManager().getMutedUUIDs().indexOf(param);
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.success").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
+                        String name = getBaseManager().getMutedPlayersNames().get(indexOf);
+                        long time = getBaseManager().getUnmuteTimes().get(indexOf);
+                        String translatedTime;
+                        if(time > 0) {
+                            translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(time));
+                        } else {
+                            translatedTime = getGlobalVariables().getVariableNever();
+                        }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.format")
+                                .replace("%1$f", getGlobalVariables().getVariableStatusMuted())
+                                .replace("%2$f", name)
+                                .replace("%3$f", getBaseManager().getMuteInitiators().get(indexOf))
+                                .replace("%4$f", getBaseManager().getMuteReasons().get(indexOf))
+                                .replace("%5$f", translatedTime)
+                        ));
+                        if (getConfigSettings().isServerSupportsHoverEvents()) {
+                            if (sender instanceof Player) {
+                                Player player = ((Player) sender).getPlayer();
+                                if (sender.hasPermission("functionalservercontrol.unmute")) {
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                        player.spigot().sendMessage(MD5TextUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                    if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                        player.sendMessage(AdventureApiUtils.createClickableSuggestCommandText(getGlobalVariables().getButtonUnmute(), "/unmute " + name));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getinfo.not-found").replace("%1$f", getGlobalVariables().getVariableUUID()).replace("%2$f", param)));
+                    return;
                 }
-                return;
             }
         });
     }
@@ -669,22 +645,16 @@ public class InformationManager {
             }
 
             if(attribute == null) {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-num")
-                            .replace("%1$f", String.valueOf(lines))
-                            .replace("%2$f", String.join("\n", getSQLiteManager().getRecordsFromHistory(recipient, lines, null)))
-                    ));
-                    case H2: {}
-                }
+                recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-num")
+                        .replace("%1$f", String.valueOf(lines))
+                        .replace("%2$f", String.join("\n", getBaseManager().getRecordsFromHistory(recipient, lines, null)))
+                ));
             } else {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-attribute")
-                            .replace("%1$f", String.valueOf(lines))
-                            .replace("%2$f", attribute)
-                            .replace("%3$f", String.join("\n", getSQLiteManager().getRecordsFromHistory(recipient, lines, attribute)))
-                    ));
-                    case H2: {}
-                }
+                recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.message-attribute")
+                        .replace("%1$f", String.valueOf(lines))
+                        .replace("%2$f", attribute)
+                        .replace("%3$f", String.join("\n", getBaseManager().getRecordsFromHistory(recipient, lines, attribute)))
+                ));
             }
         });
     }
@@ -694,17 +664,11 @@ public class InformationManager {
             OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(playerName);
             if(player != null && OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                 if (like.equalsIgnoreCase("admin")) {
-                    String adminBans = null, adminMutes = null, adminKicks = null, adminUnbans = null, adminUnmutes = null;
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            adminBans = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_BANS);
-                            adminKicks = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_KICKS);
-                            adminMutes = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_MUTES);
-                            adminUnbans = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNBANS);
-                            adminUnmutes = getSQLiteManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNMUTES);
-                        }
-                        case H2: {}
-                    }
+                    String adminBans = getBaseManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_BANS);
+                    String adminKicks = getBaseManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_KICKS);
+                    String adminMutes = getBaseManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_MUTES);
+                    String adminUnbans = getBaseManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNBANS);
+                    String adminUnmutes = getBaseManager().getAdminStatsInfo(player, StatsType.Administrator.STATS_UNMUTES);
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.admin-info-format")
                             .replace("%1$f", playerName)
                             .replace("%2$f", isTextNotNull(adminBans) ? adminBans : "0")
@@ -716,18 +680,12 @@ public class InformationManager {
                     return;
                 }
                 if (like.equalsIgnoreCase("player")) {
-                    String playerBans = null, playerMutes = null, playerKicks = null, playerBlockedCommand = null, playerBlockedWords = null, playerAdvertiseAttempts = null;
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            playerBans = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                            playerKicks = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
-                            playerMutes = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
-                            playerBlockedCommand = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
-                            playerBlockedWords = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                            playerAdvertiseAttempts = getSQLiteManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
-                        }
-                        case H2: {}
-                    }
+                    String playerBans = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    String playerKicks = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+                    String playerMutes = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.STATS_MUTES);
+                    String playerBlockedCommand = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
+                    String playerBlockedWords = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+                    String playerAdvertiseAttempts = getBaseManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getstatistic.player-info-format")
                             .replace("%1$f", playerName)
                             .replace("%2$f", isTextNotNull(playerKicks) ? playerKicks : "0")

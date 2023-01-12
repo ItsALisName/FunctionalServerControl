@@ -56,4 +56,9 @@ public class ConsoleFilterHelper {
         return getReplacedMessagesContainer().getReplacedMessages().get(TextUtils.stringToMonolith(consoleMessage).replace(":", "").replace("=", "").replace("/", "").replace("{", "").replace("}", ""));
     }
 
+    private static final ConsoleFilterHelper consoleFilterHelper = new ConsoleFilterHelper();
+    public static ConsoleFilterHelper getConsoleFilterHelper() {
+        return consoleFilterHelper;
+    }
+
 }

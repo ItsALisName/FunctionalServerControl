@@ -95,19 +95,32 @@ other:
   zero-time: "&c[FunctionalServerControl] &7Time cannot be 0"
   kick-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot kick it."
   mute-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot mute it."
+  chat-settings-messages: #---> Version: v1.05
+    chat-delay: "&7Wait another &c%1$f seconds &7before writing to the chat again!" #---> Version: v1.05
+    repeating-message: "&7You can't send the same messages" #---> Version: v1.05
+    blocked-word-in-chat: "&7The word &c%1$f &7is blocked for use in chat" #---> Version: v1.05
+    blocked-word-on-sign: "&7The word &c%1$f &7is blocked for use on the signs" #---> Version: v1.05
+    blocked-word-in-command: "&7The word &c%1$f &7is blocked for use in commands" #---> Version: v1.05
+    blocked-word-in-book: "&7The word &c%1$f &7is blocked for use in books" #---> Version: v1.05
+    blocked-word-on-item: "&7The word &c%1$f&7 is blocked for use in the name/description of the item" #---> Version: v1.05
+    advertise-in-chat: "&7Advertising of third-party projects/sites in the chat is prohibited!" #---> Version: v1.05
+    advertise-on-sign: "&7Advertising of third-party projects/sites on the sign is prohibited!" #---> Version: v1.05
+    advertise-on-book: "&7Advertising of third-party projects/sites in books is prohibited!" #---> Version: v1.05
+    advertise-on-item: "&7Advertising of third-party projects/sites in the name/ description of the subject is prohibited!" #---> Version: v1.05
+    advertise-in-command: "&7Advertising of third-party projects/sites using commands is prohibited!" #---> Version: v1.05
   history-formats: #
-    ban: "Admin %1$f banned player %2$f for reason %3$f"#
-    banip: "Admin %1$f banned ip %2$f for reason %3$f"#
-    tempban: "Admin %1$f banned player %2$f for %3$f for reason %4$f"#
-    tempbanip: "Admin %1$f banned айпи %2$f for %3$f for reason %4$f"#
-    cheatcheck: "Admin %1$f called player %2$f to check for cheats"#
-    kick: "Admin %1$f kicked player %2$f for reason %3$f" #
-    mute: "Admin %1$f muted player %2$f for reason %3$f" #
-    muteip: "Admin %1$f muted ip %2$f for reason %3$f" #
-    tempmute: "Admin %1$f muted player %2$f for %3$f for reason %4$f" #
-    tempmuteip: "Admin %1$f muted ip %2$f for %3$f for reason %4$f" #
-    unban: "Admin %1$f unban account %2$f for reason %3$f" #
-    unmute: "Admin %1$f unmute player %2$f for reason %3$f" #
+    ban: "Admin %1$f banned player %2$f for reason %3$f (When: %4$f)"#
+    banip: "Admin %1$f banned ip %2$f for reason %3$f (When: %4$f)"#
+    tempban: "Admin %1$f banned player %2$f for %3$f for reason %4$f (When: %5$f)"#
+    tempbanip: "Admin %1$f banned айпи %2$f for %3$f for reason %4$f (When: %5$f)"#
+    cheatcheck: "Admin %1$f called player %2$f to check for cheats (When: %3$f)"#
+    kick: "Admin %1$f kicked player %2$f for reason %3$f (When: %4$f)" #
+    mute: "Admin %1$f muted player %2$f for reason %3$f (When: %4$f)" #
+    muteip: "Admin %1$f muted ip %2$f for reason %3$f (When: %4$f)" #
+    tempmute: "Admin %1$f muted player %2$f for %3$f for reason %4$f (When: %5$f)" #
+    tempmuteip: "Admin %1$f muted ip %2$f for %3$f for reason %4$f (When: %5$f)" #
+    unban: "Admin %1$f unban account %2$f for reason %3$f (When: %4$f)" #
+    unmute: "Admin %1$f unmute player %2$f for reason %3$f (When: %4$f)" #
   player-notifying:
     when-muted:
       expired: "&aNow you can write to the chat!"
@@ -129,9 +142,24 @@ other:
       text: "&c[FunctionalServerControl] &7You still can't write to the chat \n&7Time left: &c%1$f &9(Hover for information)"
       hover-text: "&c%1$f &7mute you. \n&7When: &c%2$f &7in &c%3$f &7\nReason: &c%4$f &7\nID: &c%5$f"
   notifications:
+    same-ip: "&c[FunctionalServerControl] &7Player &c%1$f &7joined the server, but there are bans on his IP address! \n&7IP: &c%2$f \n&7Banned accounts: &c%3$f"  #---> Version: v1.05
     ban: "&c[FunctionalServerControl] &7The banned player &c%1$f &7tried to log in (Unban via: &c%2$f&7)"
     ban-ip: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to log in but his IP address(&c%2$f&7) is banned (Unban via: &c%3$f&7)"
     mute: "&c[FunctionalServerControl] &7The muted player &c%1$f &7tried to write to the chat: &c%2$f &7(Unmute via: &c%3$f&7)"
+    blocked-command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use blocked command &c%2$f" #---> Version: v1.05
+    player-info-hover-text: "&7Information about player: &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &times \n&7Advertise attempts: &c%7$f &7times" #---> Version: v1.05
+    advertise: #---> Version: v1.05
+      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in message: &c%2$f" #---> Version: v1.05
+      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on signs: &c%2$f" #---> Version: v1.05
+      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in book: &c%2$f" #---> Version: v1.05
+      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on item name/description: &c%2$f" #---> Version: v1.05
+      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in command: &c%2$f" #---> Version: v1.05
+    blocked-word: #---> Version: v1.05
+      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in message: &c%3$f" #---> Version: v1.05
+      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7on the sign in the text: &c%3$f" #---> Version: v1.05
+      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in command: &c%3$f" #---> Version: v1.05
+      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the book in the text: &c%3$f" #---> Version: v1.05
+      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the item name/description: &c%3$f" #---> Version: v1.05
     client:
       player-brand-notify: "&c[FunctionalServerControl] &7Player &c%1$f &7logged into the server using the client: &c%2$f&7, Minecraft version: &c%3$f"
       world-downloader: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to log in using &cWorldDownloader"
@@ -214,6 +242,15 @@ commands:
       empty: "&c[FunctionalServerControl] &7Cache is already empty"
     history: #
       cleared: "&c[FunctionalServerControl] &7History successfully cleared!" #
+
+  getstatistic:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает статистику и игроке(нарушения, наказания и т.п.)" #---> Version: v1.05
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f player ALis" #---> Version: v1.05
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <player/admin> <цель>" #---> Version: v1.05
+    no-info: "&c[FunctionalServerControl] &7Информации об игроке &c%1$f &7не найдено!" #---> Version: v1.05
+    unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип &c%1$f&7!"
+    admin-info-format: "&7Information about &c%1$f \n&7Preform bans: &c%2$f &7times \n&7Preform mutes: &c%3$f &7times \n&7Preform kicks: &c%4$f &7times \n&7Preform unbans: &c%2$f &7times \n&7Preform unmutes: &c%2$f &7times" #---> Version: v1.05
+    player-info-format: "&7Information about &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &7times \n&7Advertise attempts: &c%7$f &7times" #---> Version: v1.05
 
   kick:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Kick the specified player from the server"

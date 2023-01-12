@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.listeners.pluginmessages;
 
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;;
+import by.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -11,7 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 

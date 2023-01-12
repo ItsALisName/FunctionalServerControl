@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.spigot.additional.containers;
 
 import by.alis.functionalservercontrol.api.enums.BanType;
 import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.BanEntry;
-import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.FunctionalBanEntry;
+import by.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
 
 import java.util.*;
 

@@ -12,11 +12,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.Cooldowns.getCooldowns;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.ChatManager.getChatManager;
 import static by.alis.functionalservercontrol.spigot.managers.CheatCheckerManager.getCheatCheckerManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
@@ -118,32 +118,26 @@ public class PlayerCommandsListener implements Listener {
                         }
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            MuteType muteType = getSQLiteManager().getMuteTypes().get(getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
-                            long unmuteTime = getSQLiteManager().getUnmuteTimes().get(getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
-                            event.setCancelled(true);
-                            muteManager.notifyAboutMuteOnCommand(player);
-                            String translatedTime = getGlobalVariables().getVariableNever();
-                            if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                                translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
-                            }
-                            if (getConfigSettings().isConsoleNotification()) {
-                                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
+                    MuteType muteType = getBaseManager().getMuteTypes().get(getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
+                    long unmuteTime = getBaseManager().getUnmuteTimes().get(getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId())));
+                    event.setCancelled(true);
+                    muteManager.notifyAboutMuteOnCommand(player);
+                    String translatedTime = getGlobalVariables().getVariableNever();
+                    if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                        translatedTime = timeSettingsAccessor.getTimeManager().convertFromMillis(timeSettingsAccessor.getTimeManager().getPunishTime(unmuteTime));
+                    }
+                    if (getConfigSettings().isConsoleNotification()) {
+                        Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
+                                .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
+                        );
+                    }
+                    if (getConfigSettings().isPlayersNotification()) {
+                        for (Player admin : Bukkit.getOnlinePlayers()) {
+                            if (player.hasPermission("functionalservercontrol.notification.mute")) {
+                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                         .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
                                 );
                             }
-                            if (getConfigSettings().isPlayersNotification()) {
-                                for (Player admin : Bukkit.getOnlinePlayers()) {
-                                    if (player.hasPermission("functionalservercontrol.notification.mute")) {
-                                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute")
-                                                .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                        case H2: {
                         }
                     }
                 }

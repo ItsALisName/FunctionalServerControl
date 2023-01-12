@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.spigot;
 
 import by.alis.functionalservercontrol.api.FunctionalApi;
 import by.alis.functionalservercontrol.api.enums.ProtocolVersions;
-import by.alis.functionalservercontrol.spigot.additional.consolefilter.ConsoleFilterCore;
+import by.alis.functionalservercontrol.spigot.additional.consolefilter.Filter;
 import by.alis.functionalservercontrol.spigot.additional.consolefilter.L4JFilter;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.logger.LogWriter;
@@ -20,16 +20,17 @@ import by.alis.functionalservercontrol.spigot.listeners.pluginmessages.ClientBra
 import by.alis.functionalservercontrol.spigot.listeners.pluginmessages.WorldDownloaderChannelListener;
 import by.alis.functionalservercontrol.spigot.listeners.packetlisteners.PacketCommandsListener;
 import by.alis.functionalservercontrol.spigot.managers.file.FileManager;
-import by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor;
+import by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
+import static by.alis.functionalservercontrol.databases.DataBases.getMySQLManager;
 import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.*;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.expansions.Expansions.getProtocolLibManager;
 
@@ -41,7 +42,7 @@ import static by.alis.functionalservercontrol.spigot.expansions.Expansions.getPr
 public final class FunctionalServerControl extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final LogWriter writer = new LogWriter();
-    ConsoleFilterCore consoleFilterCore;
+    Filter consoleFilterCore;
 
     @Override
     public void onEnable() {
@@ -78,15 +79,19 @@ public final class FunctionalServerControl extends JavaPlugin {
 
         //Settings initializer
         Cooldowns.getCooldowns().loadCooldowns();
-        StaticSettingsAccessor.getConfigSettings().loadConfigSettings();
-        StaticSettingsAccessor.getGlobalVariables().loadGlobalVariables();
-        StaticSettingsAccessor.getLanguage().loadLanguage();
-        StaticSettingsAccessor.getChatSettings().loadChatSettings();
-        StaticSettingsAccessor.getCommandLimiterSettings().loadCommandLimiterSettings();
+        SettingsAccessor.getConfigSettings().loadConfigSettings();
+        SettingsAccessor.getGlobalVariables().loadGlobalVariables();
+        SettingsAccessor.getLanguage().loadLanguage();
+        SettingsAccessor.getChatSettings().loadChatSettings();
+        SettingsAccessor.getCommandLimiterSettings().loadCommandLimiterSettings();
         //Settings initializer
 
         //Bases functions
-        getSQLiteManager().setupTables();
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: getSQLiteManager().setupTables(); break;
+            case MYSQL: getMySQLManager().setupTables(); break;
+            case H2: {}
+        }
         //Bases functions
 
         //Expansions
@@ -95,7 +100,6 @@ public final class FunctionalServerControl extends JavaPlugin {
         Expansions.getProtocolLibManager().setupProtocolLib();
         Expansions.getViaVersionManager().setupViaVersion();
         //Expansions
-
 
         //Commands registering
         //new Test(this);
@@ -190,7 +194,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         this.unregisterPluginChannels();
     }
 
-    private ConsoleFilterCore getConsoleFilterCore() {
+    private Filter getConsoleFilterCore() {
         return consoleFilterCore;
     }
 

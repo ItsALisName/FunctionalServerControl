@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class BanChecker {
@@ -28,16 +28,8 @@ public class BanChecker {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getBannedPlayersContainer().getNameContainer().contains(nullPlayerName);
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getBannedPlayersNames().contains(nullPlayerName);
-                }
-                case H2: {
-                    return false;
-                }
-            }
+            return getBaseManager().getBannedPlayersNames().contains(nullPlayerName);
         }
-        return false;
     }
 
     /**
@@ -49,16 +41,8 @@ public class BanChecker {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getBannedPlayersContainer().getNameContainer().contains(player.getName()) && getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(player.getUniqueId()));
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId())) && getSQLiteManager().getBannedPlayersNames().contains(player.getName());
-                }
-                case H2: {
-                    return false;
-                }
-            }
+            return getBaseManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
         }
-        return false;
     }
 
     /**
@@ -67,21 +51,11 @@ public class BanChecker {
      * @return true if IP banned
      */
     public static boolean isIpBanned(String ipAddress) {
-
-
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return getBannedPlayersContainer().getIpContainer().contains(ipAddress);
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    return getSQLiteManager().getBannedIps().contains(ipAddress);
-                }
-                case H2: {
-                    break;
-                }
-            }
+            return getBaseManager().getBannedIps().contains(ipAddress);
         }
-        return false;
     }
 
     /**
@@ -92,17 +66,10 @@ public class BanChecker {
     public static boolean isIpBanned(OfflinePlayer player) {
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: return getBannedPlayersContainer().getIpContainer().contains(getSQLiteManager().getIpByUUID(player.getUniqueId()));
-                case H2: return false;
-            }
+            return getBannedPlayersContainer().getIpContainer().contains(getBaseManager().getIpByUUID(player.getUniqueId()));
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: return getSQLiteManager().getBannedIps().contains(getSQLiteManager().getIpByUUID(player.getUniqueId())) && getSQLiteManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
-                case H2: return false;
-            }
+            return getBaseManager().getBannedIps().contains(getBaseManager().getIpByUUID(player.getUniqueId()));
         }
-        return false;
     }
 
     public static void bannedIpNotify(Player player) {
@@ -115,13 +82,8 @@ public class BanChecker {
                         if(ip.equalsIgnoreCase(playerIp)) bannedAccounts.add(getBannedPlayersContainer().getNameContainer().get(getBannedPlayersContainer().getIpContainer().indexOf(ip)));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            for(String ip : getSQLiteManager().getBannedIps()) {
-                                if(ip.equalsIgnoreCase(playerIp)) bannedAccounts.add(getSQLiteManager().getBannedPlayersNames().get(getSQLiteManager().getBannedIps().indexOf(ip)));
-                            }
-                        }
-                        case H2: {}
+                    for(String ip : getBaseManager().getBannedIps()) {
+                        if(ip.equalsIgnoreCase(playerIp)) bannedAccounts.add(getBaseManager().getBannedPlayersNames().get(getBaseManager().getBannedIps().indexOf(ip)));
                     }
                 }
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.same-ip")

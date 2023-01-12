@@ -15,10 +15,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.jetbrains.annotations.Nullable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class SignChangeListener implements Listener {
@@ -34,13 +34,7 @@ public class SignChangeListener implements Listener {
                         for (String line : lines) {
                             if (line.contains(blockedWord)) {
                                 event.setCancelled(true);
-                                switch (getConfigSettings().getStorageType()) {
-                                    case SQLITE:
-                                        getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-                                        break;
-                                    case H2: {
-                                    }
-                                }
+                                getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
                                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-on-sign").replace("%1$f", blockedWord)));
                                 notifyAdmins(player, "\n" + String.join("\n", lines), blockedWord, false);
                                 if(getChatSettings().isPunishEnabledForBlockedWords()) {
@@ -57,10 +51,7 @@ public class SignChangeListener implements Listener {
             if(getChatSettings().isSignsIpProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.signs.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                 for(String line : lines) {
                     if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(line))) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                            case H2: {}
-                        }
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-sign")));
                         notifyAdmins(player, "\n" + String.join("\n", lines), null, true);
                         for(String action : getChatSettings().getSignsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", line));
@@ -74,10 +65,7 @@ public class SignChangeListener implements Listener {
             if(getChatSettings().isSignsDomainsProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.signs.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                 for(String line : lines) {
                     if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(line))) {
-                        switch (getConfigSettings().getStorageType()) {
-                            case SQLITE: getSQLiteManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS); break;
-                            case H2: {}
-                        }
+                        getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-sign")));
                         notifyAdmins(player, "\n" + String.join("\n", lines), null, true);
                         for(String action : getChatSettings().getSignsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", line));

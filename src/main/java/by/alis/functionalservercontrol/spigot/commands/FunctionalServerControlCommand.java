@@ -18,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.*;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 import static org.bukkit.plugin.java.JavaPlugin.getPlugin;
 
@@ -219,10 +219,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
                     }
                 }
                 if(args[1].equalsIgnoreCase("history")) {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: getSQLiteManager().clearHistory();
-                        case H2: {}
-                    }
+                    getBaseManager().clearHistory();
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.purge.history.cleared")));
                     return true;
                 }

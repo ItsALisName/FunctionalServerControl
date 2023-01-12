@@ -8,28 +8,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class BanContainerManager {
 
     public void loadBansIntoRAM() {
         getBannedPlayersContainer().addToBansContainer(
-                getSQLiteManager().getBannedIds(),
-                getSQLiteManager().getBannedIps(),
-                getSQLiteManager().getBannedPlayersNames(),
-                getSQLiteManager().getBanInitiators(),
-                getSQLiteManager().getBanReasons(),
-                getSQLiteManager().getBanTypes(),
-                getSQLiteManager().getBansDates(),
-                getSQLiteManager().getBansTimes(),
-                getSQLiteManager().getBannedUUIDs(),
-                getSQLiteManager().getUnbanTimes()
+                getBaseManager().getBannedIds(),
+                getBaseManager().getBannedIps(),
+                getBaseManager().getBannedPlayersNames(),
+                getBaseManager().getBanInitiators(),
+                getBaseManager().getBanReasons(),
+                getBaseManager().getBanTypes(),
+                getBaseManager().getBansDates(),
+                getBaseManager().getBansTimes(),
+                getBaseManager().getBannedUUIDs(),
+                getBaseManager().getUnbanTimes()
         );
-        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Bans loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getSQLiteManager().getBannedIds().size()))));
+        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Bans loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getBaseManager().getBannedIds().size()))));
     }
 
     public void addToBanContainer(String id, String ip, String playerName, String initiatorName, String reason, BanType banType, String realBanDate, String realBanTime, String uuid, Long time) {
@@ -159,7 +159,7 @@ public class BanContainerManager {
                                                             .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
                                                             .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
                                             ),
-                                            MD5TextUtils.addPardonButtons((Player)sender, getSQLiteManager().getBannedPlayersNames().get(start))
+                                            MD5TextUtils.addPardonButtons((Player)sender, getBaseManager().getBannedPlayersNames().get(start))
                                     )
                             );
                             start = start + 1;
@@ -178,7 +178,7 @@ public class BanContainerManager {
                                                     .replace("%4$f", getBannedPlayersContainer().getRealBanTimeContainer().get(start))
                                                     .replace("%5$f", getBannedPlayersContainer().getReasonContainer().get(start))
                                                     .replace("%6$f", getBannedPlayersContainer().getIdsContainer().get(start))
-                                    ).append(AdventureApiUtils.addPardonButtons((Player) sender,getSQLiteManager().getBannedPlayersNames().get(start)))
+                                    ).append(AdventureApiUtils.addPardonButtons((Player) sender,getBaseManager().getBannedPlayersNames().get(start)))
                             );
                             start = start + 1;
                         } while (start < stop);
@@ -192,78 +192,71 @@ public class BanContainerManager {
                     return;
                 }
             } else {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: {
-                        if(getSQLiteManager().getBannedIds().size() == 0) {
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.no-banned-players")));
-                            return;
-                        }
-                        if(page < 0) {
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-zero")));
-                            return;
-                        }
-                        int maxPages = getSQLiteManager().getBannedIds().size() / 10;
-                        if(maxPages == 0) maxPages = 1;
-                        if(page > maxPages) {
-                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
-                            return;
-                        }
-                        int start = page * 10; if(page == 1) start = 0;
-                        int stop = start + 10; if(stop > getSQLiteManager().getBannedIds().size()) stop = getSQLiteManager().getBannedIds().size();
-                        String format = getFileAccessor().getLang().getString("commands.banlist.format");
-                        String hoverText = getFileAccessor().getLang().getString("commands.banlist.hover-text");
-                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.success").replace("%1$f", String.valueOf(page))));
-                        if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                do {
-                                    sender.spigot().sendMessage(
-                                            MD5TextUtils.appendTwo(
-                                                    MD5TextUtils.createHoverText(setColors(
-                                                                    "&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
-                                                            setColors(hoverText
-                                                                    .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
-                                                                    .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
-                                                                    .replace("%3$f", getSQLiteManager().getBansDates().get(start))
-                                                                    .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
-                                                                    .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
-                                                                    .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
-                                                    ),
-                                                    MD5TextUtils.addPardonButtons((Player)sender,getSQLiteManager().getBannedPlayersNames().get(start))
-                                            )
-                                    );
-                                    start = start + 1;
-                                } while (start < stop);
-                                return;
-                            }
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                do {
-                                    sender.sendMessage(
-                                            AdventureApiUtils.createHoverText(
-                                                    setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))),
+                if(getBaseManager().getBannedIds().size() == 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.no-banned-players")));
+                    return;
+                }
+                if(page < 0) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-zero")));
+                    return;
+                }
+                int maxPages = getBaseManager().getBannedIds().size() / 10;
+                if(maxPages == 0) maxPages = 1;
+                if(page > maxPages) {
+                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.page-not-found").replace("%1$f", String.valueOf(page)).replace("%2$f", String.valueOf(maxPages))));
+                    return;
+                }
+                int start = page * 10; if(page == 1) start = 0;
+                int stop = start + 10; if(stop > getBaseManager().getBannedIds().size()) stop = getBaseManager().getBannedIds().size();
+                String format = getFileAccessor().getLang().getString("commands.banlist.format");
+                String hoverText = getFileAccessor().getLang().getString("commands.banlist.hover-text");
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.success").replace("%1$f", String.valueOf(page))));
+                if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                        do {
+                            sender.spigot().sendMessage(
+                                    MD5TextUtils.appendTwo(
+                                            MD5TextUtils.createHoverText(setColors(
+                                                            "&e" + (start + 1) + ". " + format.replace("%1$f", getBaseManager().getBannedPlayersNames().get(start)).replace("%2$f", getBaseManager().getBannedIds().get(start))),
                                                     setColors(hoverText
-                                                            .replace("%1$f", getSQLiteManager().getBanInitiators().get(start))
-                                                            .replace("%2$f", getSQLiteManager().getBannedPlayersNames().get(start)))
-                                                            .replace("%3$f", getSQLiteManager().getBansDates().get(start))
-                                                            .replace("%4$f", getSQLiteManager().getBansTimes().get(start))
-                                                            .replace("%5$f", getSQLiteManager().getBanReasons().get(start))
-                                                            .replace("%6$f", getSQLiteManager().getBannedIds().get(start))
-                                            ).append(AdventureApiUtils.addPardonButtons((Player) sender, getSQLiteManager().getBannedPlayersNames().get(start)))
-                                    );
-                                    start = start + 1;
-                                } while (start < stop);
-                                return;
-                            }
-                        } else {
-                            do {
-                                sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getSQLiteManager().getBannedPlayersNames().get(start)).replace("%2$f", getSQLiteManager().getBannedIds().get(start))));
-                                start = start + 1;
-                            } while (start < stop);
-                            return;
-                        }
+                                                            .replace("%1$f", getBaseManager().getBanInitiators().get(start))
+                                                            .replace("%2$f", getBaseManager().getBannedPlayersNames().get(start)))
+                                                            .replace("%3$f", getBaseManager().getBansDates().get(start))
+                                                            .replace("%4$f", getBaseManager().getBansTimes().get(start))
+                                                            .replace("%5$f", getBaseManager().getBanReasons().get(start))
+                                                            .replace("%6$f", getBaseManager().getBannedIds().get(start))
+                                            ),
+                                            MD5TextUtils.addPardonButtons((Player)sender,getBaseManager().getBannedPlayersNames().get(start))
+                                    )
+                            );
+                            start = start + 1;
+                        } while (start < stop);
+                        return;
                     }
-                    case H2: {
-
+                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                        do {
+                            sender.sendMessage(
+                                    AdventureApiUtils.createHoverText(
+                                            setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getBaseManager().getBannedPlayersNames().get(start)).replace("%2$f", getBaseManager().getBannedIds().get(start))),
+                                            setColors(hoverText
+                                                    .replace("%1$f", getBaseManager().getBanInitiators().get(start))
+                                                    .replace("%2$f", getBaseManager().getBannedPlayersNames().get(start)))
+                                                    .replace("%3$f", getBaseManager().getBansDates().get(start))
+                                                    .replace("%4$f", getBaseManager().getBansTimes().get(start))
+                                                    .replace("%5$f", getBaseManager().getBanReasons().get(start))
+                                                    .replace("%6$f", getBaseManager().getBannedIds().get(start))
+                                    ).append(AdventureApiUtils.addPardonButtons((Player) sender, getBaseManager().getBannedPlayersNames().get(start)))
+                            );
+                            start = start + 1;
+                        } while (start < stop);
+                        return;
                     }
+                } else {
+                    do {
+                        sender.sendMessage(setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getBaseManager().getBannedPlayersNames().get(start)).replace("%2$f", getBaseManager().getBannedIds().get(start))));
+                        start = start + 1;
+                    } while (start < stop);
+                    return;
                 }
             }
 

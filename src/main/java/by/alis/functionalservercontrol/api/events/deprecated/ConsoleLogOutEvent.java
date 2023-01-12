@@ -15,32 +15,12 @@ public class ConsoleLogOutEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     private final String consoleMessage;
 
-    private final boolean isApiEnabled;
-
-    private String apiPassword;
-
-    public ConsoleLogOutEvent(String consoleMessage, boolean isApiEnabled) {
+    public ConsoleLogOutEvent(String consoleMessage) {
         this.consoleMessage = consoleMessage;
-        this.isApiEnabled = isApiEnabled;
-    }
-
-    public void inputApiPassword(String apiPassword) {
-        this.apiPassword = apiPassword;
-    }
-
-    public String getApiPassword() {
-        if(this.apiPassword == null || this.apiPassword.equalsIgnoreCase("")) {
-            return null;
-        }
-        return apiPassword;
     }
 
     public String getConsoleMessage() {
         return this.consoleMessage;
-    }
-
-    public boolean isApiEnabled() {
-        return this.isApiEnabled;
     }
 
     @Override

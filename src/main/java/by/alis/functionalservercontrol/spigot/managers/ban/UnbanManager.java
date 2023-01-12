@@ -10,15 +10,15 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBanContainerManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.ban.BanChecker.isPlayerBanned;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
@@ -66,17 +66,9 @@ public class UnbanManager {
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             try {
-                switch (getConfigSettings().getStorageType()) {
-                    case SQLITE: {
-                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
-                        break;
-                    }
-                    case H2: {
-                        break;
-                    }
-                }
+                getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                if(unbanInitiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                 getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
                 if(!isTextNotNull(unbanReason)) {
                     if(announceUnban) {
@@ -93,28 +85,20 @@ public class UnbanManager {
             }
 
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: {
-                    try {
-                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
-                    } catch (NullPointerException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
-                    }
-                    if(!isTextNotNull(unbanReason)) {
-                        if(announceUnban) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
-                        }
-                    } else {
-                        if(announceUnban) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unbanReason)));
-                        }
-                    }
-                    break;
+            try {
+                getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                if(unbanInitiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
+            } catch (NullPointerException ignored) {
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
+            }
+            if(!isTextNotNull(unbanReason)) {
+                if(announceUnban) {
+                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unban.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
                 }
-                case H2: {
-                    break;
+            } else {
+                if(announceUnban) {
+                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unban.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unbanReason)));
                 }
             }
         }
@@ -169,9 +153,9 @@ public class UnbanManager {
             try {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
-                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                         break;
                     }
                     
@@ -198,9 +182,9 @@ public class UnbanManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     try {
-                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
-                        getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-                        if(unbanInitiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+                        if(unbanInitiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player)));
                     }
@@ -235,7 +219,7 @@ public class UnbanManager {
             try {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
-                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
                         break;
                     }
                     
@@ -253,7 +237,7 @@ public class UnbanManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     try {
-                        getSQLiteManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
+                        getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
                     }
@@ -282,7 +266,7 @@ public class UnbanManager {
             try {
                 switch (getConfigSettings().getStorageType()) {
                     case SQLITE: {
-                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
                         break;
                     }
                     
@@ -300,7 +284,7 @@ public class UnbanManager {
             switch (getConfigSettings().getStorageType()) {
                 case SQLITE: {
                     try {
-                        getSQLiteManager().deleteFromNullBannedPlayers("-n", player);
+                        getBaseManager().deleteFromNullBannedPlayers("-n", player);
                     } catch (NullPointerException ignored) {
                         Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player)));
                     }
@@ -346,10 +330,10 @@ public class UnbanManager {
 
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().clearBans();
-                getSQLiteManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unbanall").replace("%1$f", initiatorName).replace("%2$f", getDate() + ", " + getTime()));
+                getBaseManager().clearBans();
+                getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unbanall").replace("%1$f", initiatorName).replace("%2$f", getDate() + ", " + getTime()));
                 for(int i = 0; i < count; i++) {
-                    if(initiator instanceof Player) getSQLiteManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_UNBANS);
+                    if(initiator instanceof Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_UNBANS);
                 }
                 break;
             }

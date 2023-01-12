@@ -8,11 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class MuteGlobalTask extends BukkitRunnable {
@@ -39,25 +39,20 @@ public class MuteGlobalTask extends BukkitRunnable {
                         CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
                     }
                 } else {
-                    switch (getConfigSettings().getStorageType()) {
-                        case SQLITE: {
-                            if (getSQLiteManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()))) {
-                                int indexOf = getSQLiteManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
-                                MuteType muteType = getSQLiteManager().getMuteTypes().get(indexOf);
-                                String translatedUnmuteTime = getGlobalVariables().getVariableNever();
-                                long muteTime = getSQLiteManager().getUnmuteTimes().get(indexOf);
-                                if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
-                                    translatedUnmuteTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(muteTime));
-                                    if(System.currentTimeMillis() >= muteTime) {
-                                        UnmuteManager unmuteManager = new UnmuteManager();
-                                        unmuteManager.preformUnmute(player, getConfigSettings().getMuteTimeExpired());
-                                        break;
-                                    }
-                                }
-                                CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
+                    if (getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()))) {
+                        int indexOf = getBaseManager().getMutedUUIDs().indexOf(String.valueOf(player.getUniqueId()));
+                        MuteType muteType = getBaseManager().getMuteTypes().get(indexOf);
+                        String translatedUnmuteTime = getGlobalVariables().getVariableNever();
+                        long muteTime = getBaseManager().getUnmuteTimes().get(indexOf);
+                        if (muteType != MuteType.PERMANENT_IP && muteType != MuteType.PERMANENT_NOT_IP) {
+                            translatedUnmuteTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(muteTime));
+                            if(System.currentTimeMillis() >= muteTime) {
+                                UnmuteManager unmuteManager = new UnmuteManager();
+                                unmuteManager.preformUnmute(player, getConfigSettings().getMuteTimeExpired());
+                                break;
                             }
                         }
-                        case H2: {}
+                        CoreAdapter.getAdapter().sendActionBar(player, setColors(getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", setColors(translatedUnmuteTime))));
                     }
                 }
             }

@@ -1,9 +1,9 @@
 package by.alis.functionalservercontrol.spigot.managers;
 
-import static by.alis.functionalservercontrol.databases.DataBases.getSQLiteManager;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
-import static by.alis.functionalservercontrol.spigot.additional.globalsettings.StaticSettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 
 public class IdsManager {
 
@@ -15,12 +15,8 @@ public class IdsManager {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             return !getBannedPlayersContainer().getIdsContainer().contains(String.valueOf((int)Math.round(id))) && !getMutedPlayersContainer().getIdsContainer().contains(String.valueOf((int)Math.round(id)));
         } else {
-            switch (getConfigSettings().getStorageType()) {
-                case SQLITE: return !getSQLiteManager().getBannedIds().contains(String.valueOf((int)Math.round(id))) && !getSQLiteManager().getMutedIds().contains(String.valueOf((int)Math.round(id)));
-                case H2: return true;
-            }
+            return !getBaseManager().getBannedIds().contains(String.valueOf((int)Math.round(id))) && !getBaseManager().getMutedIds().contains(String.valueOf((int)Math.round(id)));
         }
-        return true;
     }
 
     public String getId() {
