@@ -83,6 +83,30 @@ public class YourSomeClass {
 }
 ```
 
-There is also a FunctionalApi#getCoreAdapter() method in the interface;
-But, I think there is not much sense from it, it just does not add anything new, it is rather needed by the plugin itself, 
-it allows you to use some functions that are not present in the Spigot / Paper API on very low server versions
+Working with the FunctionalApi#getCoreAdapter method:
+```
+package your.custom.pack;
+
+public class YourCustomClass {
+   
+    import by.alis.functionalservercontrol.api.FunctionalApi;
+   
+    public String getPlayerVersionAndBrand(Player player) {
+        FunctionalApi api = FunctionalApi.get();
+        if(api != null) {
+            Adapter coreAdapter = api.getCoreAdapter();
+            String adaptName = coreAdapter.getAdapterName(); //Get the name of the adapter(Spigot or Paper)
+            int playerProtocolVersion = coreAdapter.getPlayerProtocolVersion(player); //Get the player's protocol version
+            String playerVersion = coreAdapter.getPlayerVersion(player).toString(); //Get the player's minecraft version
+            String playerBrand = coreAdapter.getPlayerMinecraftBrand(player); //Get the name of the player's client
+            return "Player protocol version: " + playerProtocolVersion
+                + "; Player version: " + playerVersion
+                + "; Player client name: " + playerBrand;
+        } else {
+            Bukkit.getConsoleSender().sendMessage("Failed to get FunctionalApi!");
+            return null;
+        }
+    }
+   
+}
+```
