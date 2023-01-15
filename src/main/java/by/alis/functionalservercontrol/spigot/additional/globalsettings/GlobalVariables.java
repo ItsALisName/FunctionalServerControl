@@ -1,6 +1,6 @@
 package by.alis.functionalservercontrol.spigot.additional.globalsettings;
 
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
@@ -160,7 +160,7 @@ public class GlobalVariables {
     }
 
     public void loadGlobalVariables() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             try {
                 BUTTON_BAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.ban");
                 BUTTON_UNBAN = getFileAccessor().getGeneralConfig().getString("global-variables.buttons.unban");

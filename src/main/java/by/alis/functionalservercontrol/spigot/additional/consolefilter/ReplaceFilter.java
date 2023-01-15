@@ -17,6 +17,10 @@ import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.s
 public class ReplaceFilter implements Filter {
 
     public Filter.Result checkMessage(String message) {
+        if(getConsoleFilterHelper().isMessageToReplace(message)) {
+            Bukkit.getConsoleSender().sendMessage(getConsoleFilterHelper().replaceConsoleMessage(message));
+            return Filter.Result.DENY;
+        }
         if (getConsoleFilterHelper().isFunctionalServerControlCommand(message)) {
             String playerName = message.split(" ")[0];
             Player player = Bukkit.getPlayer(playerName);
@@ -26,9 +30,6 @@ public class ReplaceFilter implements Filter {
                 playerName = player.getName();
             }
             Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
-            return Filter.Result.DENY;
-        } else if(getConsoleFilterHelper().isMessageToReplace(message)) {
-            Bukkit.getConsoleSender().sendMessage(getConsoleFilterHelper().replaceConsoleMessage(message));
             return Filter.Result.DENY;
         }
         return Filter.Result.NEUTRAL;

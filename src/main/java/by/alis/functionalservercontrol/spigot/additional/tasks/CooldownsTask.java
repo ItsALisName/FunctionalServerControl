@@ -1,8 +1,8 @@
 package by.alis.functionalservercontrol.spigot.additional.tasks;
 
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.Cooldowns;
-import by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.TrackedCommand;
+import by.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns;
+import by.alis.functionalservercontrol.spigot.managers.cooldowns.TrackedCommand;
 import by.alis.functionalservercontrol.spigot.expansions.Expansions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-# All translated with YandexTranslate
+file-version: 1.07-build1
 ban-message-format:
   - "&6Your account has been blocked!"
   - ""
@@ -68,59 +68,83 @@ blocked-ip-kick-format:
 
 other:
   unknown-flag: "&c[FunctionalServerControl] &7Defunct flag &c%1$f"
-  unknown-player: "&c[FunctionalServerControl] &7&oPlayer &c&o%1$f&7&o never logged into the server!"
-  unknown-ip: "&c[FunctionalServerControl] &7&oThere has never been a player on the server with the IP address &c&o%1$f"
+  unknown-player: "&c[FunctionalServerControl] &7&oPlayer &c&o%1$f&7&o never logged
+    into the server!"
+  not-num: "&c[FunctionalServerControl] &7Seems like, &c%1$f &7not a number!"
+  unknown-ip: "&c[FunctionalServerControl] &7&oThere has never been a player on the
+    server with the IP address &c&o%1$f"
   missing-argument: "&c[FunctionalServerControl] &7Not enough arguments &c%1$f"
   too-many-arguments: "&c[FunctionalServerControl] &7Too many arguments, &c%1$f &7superfluous"
   target-offline: "&c[FunctionalServerControl] &7Player &c%1$f &7not found."
   last-ban-removed: "&c[FunctionalServerControl] &7Previous player ban &c%1$f &7removed."
-  last-ip-ban-removed: "&c[FunctionalServerControl] &7Previous IP address ban &c%1$f &7removed."
-  last-ip-mute-removed: "&c[Functional Server Control] &7 Previous IP address ban &c%1$f &7removed"
-  last-mute-removed: "&c[Functional Server Control] &7 Player's previous mute &c%1$f &7removed"
-  no-permissions: "&c[FunctionalServerControl] &7You don't have enough permissions to execute this command."
-  already-banned: "&c[FunctionalServerControl] &7The player already banned, you don't have enough rights to overwrite the ban"
-  already-muted: "&c[FunctionalServerControl] &7The player is already muted, you don't have enough rights to overwrite the mute"
-  unknown-subcommand: "&c[FunctionalServerControl] &7The well-known argument &c%1$f&7, use &c/fb help &7for help"
-  no-reason: "&c[FunctionalServerControl] &7You didn't specify the reason, it's mandatory."
-  flag-no-perms: "&c[FunctionalServerControl] &7You don't have enough rights to use the flag &c&o%1$f"
-  offline-no-perms: "&c[FunctionalServerControl] &7You can't interact with offline players"
+  last-ip-ban-removed: "&c[FunctionalServerControl] &7Previous IP address ban &c%1$f
+    &7removed."
+  last-ip-mute-removed: "&c[Functional ServerInfo Control] &7 Previous IP address ban
+    &c%1$f &7removed"
+  last-mute-removed: "&c[Functional ServerInfo Control] &7 Player""s previous mute &c%1$f
+    &7removed"
+  no-permissions: "&c[FunctionalServerControl] &7You don""t have enough permissions
+    to execute this command."
+  already-banned: "&c[FunctionalServerControl] &7The player already banned, you don""t
+    have enough rights to overwrite the ban"
+  already-muted: "&c[FunctionalServerControl] &7The player is already muted, you don""t
+    have enough rights to overwrite the mute"
+  unknown-subcommand: "&c[FunctionalServerControl] &7The well-known argument &c%1$f&7,
+    use &c/fb help &7for help"
+  no-reason: "&c[FunctionalServerControl] &7You didn""t specify the reason, it""s mandatory."
+  flag-no-perms: "&c[FunctionalServerControl] &7You don""t have enough rights to use
+    the flag &c&o%1$f"
+  offline-no-perms: "&c[FunctionalServerControl] &7You can""t interact with offline
+    players"
   ban-over-time: "&c[FunctionalServerControl] &7You cannot ban for more than &c%1$f"
   mute-over-time: "&c[FunctionalServerControl] &7You cannot mute for more than &c%1$f"
   no-yourself-actions: "&c[FunctionalServerControl] &7You cannot interact with yourself"
-  cooldown: "&c[FunctionalServerControl] &7You can use the command &c/%1$f &7 only through &c%2$f"
-  flag-not-support: " &c[FunctionalServerControl] &7Flag &c%1$f &7 is not available for this command"
-  blocked-nickname-notify: "&c[FunctionalServerControl] &7Player with a banned nickname &c%1$f &7tried join to the server"
-  blocked-ip-notify: "&c[FunctionalServerControl] &7Player with a banned IP address &c%1$f &7 tried join to the server"
-  unknown-time: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a valid time format, try for example &c1d, 1h, 1mon"
+  cooldown: "&c[FunctionalServerControl] &7You can use the command &c/%1$f &7 only through
+    &c%2$f"
+  flag-not-support: " &c[FunctionalServerControl] &7Flag &c%1$f &7 is not available
+    for this command"
+  blocked-nickname-notify: "&c[FunctionalServerControl] &7Player with a banned nickname
+    &c%1$f &7tried join to the server"
+  blocked-ip-notify: "&c[FunctionalServerControl] &7Player with a banned IP address
+    &c%1$f &7 tried join to the server"
+  unknown-time: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a valid time
+    format, try for example &c1d, 1h, 1mon"
   zero-time: "&c[FunctionalServerControl] &7Time cannot be 0"
-  kick-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot kick it."
-  mute-player-on-check: "&c[FunctionalServerControl] &7The player is currently being checked, you cannot mute it."
-  chat-settings-messages: #---> Version: v1.05
-    chat-delay: "&7Wait another &c%1$f seconds &7before writing to the chat again!" #---> Version: v1.05
-    repeating-message: "&7You can't send the same messages" #---> Version: v1.05
-    blocked-word-in-chat: "&7The word &c%1$f &7is blocked for use in chat" #---> Version: v1.05
-    blocked-word-on-sign: "&7The word &c%1$f &7is blocked for use on the signs" #---> Version: v1.05
-    blocked-word-in-command: "&7The word &c%1$f &7is blocked for use in commands" #---> Version: v1.05
-    blocked-word-in-book: "&7The word &c%1$f &7is blocked for use in books" #---> Version: v1.05
-    blocked-word-on-item: "&7The word &c%1$f&7 is blocked for use in the name/description of the item" #---> Version: v1.05
-    advertise-in-chat: "&7Advertising of third-party projects/sites in the chat is prohibited!" #---> Version: v1.05
-    advertise-on-sign: "&7Advertising of third-party projects/sites on the sign is prohibited!" #---> Version: v1.05
-    advertise-on-book: "&7Advertising of third-party projects/sites in books is prohibited!" #---> Version: v1.05
-    advertise-on-item: "&7Advertising of third-party projects/sites in the name/ description of the subject is prohibited!" #---> Version: v1.05
-    advertise-in-command: "&7Advertising of third-party projects/sites using commands is prohibited!" #---> Version: v1.05
-  history-formats: #
-    ban: "Admin %1$f banned player %2$f for reason %3$f (When: %4$f)"#
-    banip: "Admin %1$f banned ip %2$f for reason %3$f (When: %4$f)"#
-    tempban: "Admin %1$f banned player %2$f for %3$f for reason %4$f (When: %5$f)"#
-    tempbanip: "Admin %1$f banned айпи %2$f for %3$f for reason %4$f (When: %5$f)"#
-    cheatcheck: "Admin %1$f called player %2$f to check for cheats (When: %3$f)"#
-    kick: "Admin %1$f kicked player %2$f for reason %3$f (When: %4$f)" #
-    mute: "Admin %1$f muted player %2$f for reason %3$f (When: %4$f)" #
-    muteip: "Admin %1$f muted ip %2$f for reason %3$f (When: %4$f)" #
-    tempmute: "Admin %1$f muted player %2$f for %3$f for reason %4$f (When: %5$f)" #
-    tempmuteip: "Admin %1$f muted ip %2$f for %3$f for reason %4$f (When: %5$f)" #
-    unban: "Admin %1$f unban account %2$f for reason %3$f (When: %4$f)" #
-    unmute: "Admin %1$f unmute player %2$f for reason %3$f (When: %4$f)" #
+  kick-player-on-check: "&c[FunctionalServerControl] &7The player is currently being
+    checked, you cannot kick it."
+  mute-player-on-check: "&c[FunctionalServerControl] &7The player is currently being
+    checked, you cannot mute it."
+  chat-settings-messages:
+    chat-delay: "&7Wait another &c%1$f seconds &7before writing to the chat again!"
+    repeating-message: "&7You can""t send the same messages"
+    blocked-word-in-chat: "&7The word &c%1$f &7is blocked for use in chat"
+    blocked-word-on-sign: "&7The word &c%1$f &7is blocked for use on the signs"
+    blocked-word-in-command: "&7The word &c%1$f &7is blocked for use in commands"
+    blocked-word-in-book: "&7The word &c%1$f &7is blocked for use in books"
+    blocked-word-on-item: "&7The word &c%1$f&7 is blocked for use in the name/description
+      of the item"
+    advertise-in-chat: "&7Advertising of third-party projects/sites in the chat is prohibited!"
+    advertise-on-sign: "&7Advertising of third-party projects/sites on the sign is prohibited!"
+    advertise-on-book: "&7Advertising of third-party projects/sites in books is prohibited!"
+    advertise-on-item: "&7Advertising of third-party projects/sites in the name/ description
+      of the subject is prohibited!"
+    advertise-in-command: "&7Advertising of third-party projects/sites using commands
+      is prohibited!"
+  history-formats:
+    ban: "Admin %1$f banned player %2$f for reason %3$f (When: %4$f)"
+    banip: "Admin %1$f banned ip %2$f for reason %3$f (When: %4$f)"
+    tempban: "Admin %1$f banned player %2$f for %3$f for reason %4$f (When: %5$f)"
+    tempbanip: "Admin %1$f banned айпи %2$f for %3$f for reason %4$f (When: %5$f)"
+    cheatcheck: "Admin %1$f called player %2$f to check for cheats (When: %3$f)"
+    kick: "Admin %1$f kicked player %2$f for reason %3$f (When: %4$f)"
+    mute: "Admin %1$f muted player %2$f for reason %3$f (When: %4$f)"
+    muteip: "Admin %1$f muted ip %2$f for reason %3$f (When: %4$f)"
+    tempmute: "Admin %1$f muted player %2$f for %3$f for reason %4$f (When: %5$f)"
+    tempmuteip: "Admin %1$f muted ip %2$f for %3$f for reason %4$f (When: %5$f)"
+    unban: "Admin %1$f unban account %2$f for reason %3$f (When: %4$f)"
+    unmute: "Admin %1$f unmute player %2$f for reason %3$f (When: %4$f)"
+    unbanall: "Admin %1$f unbanned all! (When: %2$f)"
+    unmuteall: "Admin %1$f unmuted all! (When: %2$f)"
   player-notifying:
     when-muted:
       expired: "&aNow you can write to the chat!"
@@ -128,7 +152,7 @@ other:
         text: "&c[FunctionalServerControl] &7You cannot send messages! \n&7 Still: &c%1$f&9(Hover for information)"
         hover-text: "&c%1$f&7 mute you \n&7When: &c%2$f&7 in &c%3$f \n&7Reason: &c%4$f \n&7ID: &c%5$f"
       command:
-        text: "&c[Functional Server Control] &7 You cannot use this command while you are plugged in! \n&7 More: &c%1$f&9(Hover for information)"
+        text: "&c[FunctionalServerControl] &7You cannot use this command while you muted! \n&7 More: &c%1$f&9(Hover for information)"
         hover-text: "&c%1$f&7 mute you \n&7When: &c%2$f&7 in &c%3$f\n&7Reason: &c%4$f \n&7ID: &c%5$f"
   title:
     when-muted:
@@ -136,101 +160,97 @@ other:
     when-unmuted:
       text: "&aYou have been unblocked access to the chat!|&7Reason: &a%1$f"
   actionbar:
-    mute-format: "&7You can't write to the chat! Time left: &c%1$f"
+    mute-format: "&7You can""t write to the chat! Time left: &c%1$f"
   join:
     muted:
       text: "&c[FunctionalServerControl] &7You still can't write to the chat \n&7Time left: &c%1$f &9(Hover for information)"
       hover-text: "&c%1$f &7mute you. \n&7When: &c%2$f &7in &c%3$f &7\nReason: &c%4$f &7\nID: &c%5$f"
   notifications:
-    same-ip: "&c[FunctionalServerControl] &7Player &c%1$f &7joined the server, but there are bans on his IP address! \n&7IP: &c%2$f \n&7Banned accounts: &c%3$f"  #---> Version: v1.05
+    same-ip: "&c[FunctionalServerControl] &7Player &c%1$f &7joined the server, but there are bans on his IP address! \n&7IP: &c%2$f \n&7Banned accounts: &c%3$f"
     ban: "&c[FunctionalServerControl] &7The banned player &c%1$f &7tried to log in (Unban via: &c%2$f&7)"
     ban-ip: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to log in but his IP address(&c%2$f&7) is banned (Unban via: &c%3$f&7)"
     mute: "&c[FunctionalServerControl] &7The muted player &c%1$f &7tried to write to the chat: &c%2$f &7(Unmute via: &c%3$f&7)"
-    blocked-command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use blocked command &c%2$f" #---> Version: v1.05
-    player-info-hover-text: "&7Information about player: &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &times \n&7Advertise attempts: &c%7$f &7times" #---> Version: v1.05
-    advertise: #---> Version: v1.05
-      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in message: &c%2$f" #---> Version: v1.05
-      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on signs: &c%2$f" #---> Version: v1.05
-      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in book: &c%2$f" #---> Version: v1.05
-      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on item name/description: &c%2$f" #---> Version: v1.05
-      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in command: &c%2$f" #---> Version: v1.05
-    blocked-word: #---> Version: v1.05
-      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in message: &c%3$f" #---> Version: v1.05
-      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7on the sign in the text: &c%3$f" #---> Version: v1.05
-      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in command: &c%3$f" #---> Version: v1.05
-      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the book in the text: &c%3$f" #---> Version: v1.05
-      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the item name/description: &c%3$f" #---> Version: v1.05
+    blocked-command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use blocked command &c%2$f"
+    player-info-hover-text: "&7Information about player: &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &times \n&7Advertise attempts: &c%7$f &7times"
+    advertise:
+      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in message: &c%2$f"
+      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on signs: &c%2$f"
+      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in book: &c%2$f"
+      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise on item name/description: &c%2$f"
+      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried advertise in command: &c%2$f"
+    blocked-word:
+      chat: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in message: &c%3$f"
+      sign: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7on the sign in the text: &c%3$f"
+      command: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in command: &c%3$f"
+      book: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the book in the text: &c%3$f"
+      item: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to use a forbidden word &c%2$f &7in the item name/description: &c%3$f"
     client:
       player-brand-notify: "&c[FunctionalServerControl] &7Player &c%1$f &7logged into the server using the client: &c%2$f&7, Minecraft version: &c%3$f"
       world-downloader: "&c[FunctionalServerControl] &7Player &c%1$f &7tried to log in using &cWorldDownloader"
   permissions-protection:
-    player-cannot-be-operator: "&c[FunctionalServerControl] &7Player &c%1$f &7cannot be an operator" #---> Version: v1.04
-
-unsafe-actions:
-  unsafe-flag-no-perms: "&c[FunctionalServerControl] &7You don't have permissions to use the flag &4%1$f"
-  unsafe-ban-success: "&c[FunctionalServerControl] &7You ban &6%1$f &faccounts!"
-  unsafe-action-confirm: "&c[FunctionalServerControl] &7Confirm your action by entering the command &c/%1$f"
-  unsafe-action-confirm-1: "&c[FunctionalServerControl] &7Confirm your action by entering the command more once"
-  unsafe-ban-cached-notify: "&c[FunctionalServerControl] &7The players blocked in this way have been cached, you have the option to cancel this action - &c/fsc undo"
+    player-cannot-be-operator: "&c[FunctionalServerControl] &7Player &c%1$f &7cannot be an operator"
 
 commands:
-
   help:
     - "&cFunctionalServerControl &7by &cALis &7version &c%1$f"
     - "&4-> &c/fsc reload &7- reloads plugin configuration"
     - "&4-> &c/fsc purge <тип> &7- clears some optional data from memory"
     - "&4-> &c/fsc import <источник> &7- imports the appropriate data from the specified source"
-    - "&4-> &f/fsc history <кол-во записей> [attribute] {attribute}"
-
+    - "&4-> &c/fsc inetspeed &7- check the server internet speed"
+    - "&4-> &f/fsc history <page> [attribute] {attribute}"
   reload:
-    description: "&c[Functional Server Control] &7Description of the command &c/%1$f&7: Reloads certain plugin files"
+    description: "&c[Functional ServerInfo Control] &7Description of the command &c/%1$f&7: Reloads certain plugin files"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <type>"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f settings"
     done: "&c[FunctionalServerControl] &c%1$f &7successfully reloaded (In &c%2$f&7)"
     unknown-type: "&c[FunctionalServerControl] &fUnknown type &c%1$f"
     failed: "&c[FunctionalServerControl] &7Failed to reload &c%1$f"
-
+  clearchat:
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Clear chat for player/all"
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player/all>"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis"
+    success: "&7You successfully clear chat for &c%1$f"
+    all-success: "&7You successfully clear chat for all"
+    target-bypass: "&c[FunctionalServerControl] &7You cannot clear chat for &c%1$f!"
+    target-notify: "&7Admin &c%1$f &7clear chat for you!"
+    all-no-perms: "&c[FunctionalServerControl] &7You dont have permissions to clear chat for all"
   unban:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Removes the ban from the specified account"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {reason}"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Erroneous blocking"
-    player-not-banned: "&c[Functional Server Control] &7Player &c%1$f &7 and so not blocked"
+    player-not-banned: "&c[Functional ServerInfo Control] &7Player &c%1$f &7 and so not blocked"
+    id-not-banned: "&c[FunctionalServerControl] &7Specified ID &c%1$f &7not found among banned"
+    id-not-banned-but-muted: "&c[FunctionalServerControl] &7Specified ID &c%1$f &7not found among banned &7&o(But found among muted)"
     broadcast-message:
       with-reason: "Administrator &c%1$f&7 unban player &c%2$f&7 for the reason: &c%3$f"
       without-reason: "Administrator &c%1$f&7 unban player &c%2$f"
-
-  fb-undo:
-    success: "&c[FunctionalServerControl] &7Action canceled, &c%1$f &7accounts %2$f"
-    nothing-to-undo: "&c[FunctionalServerControl] &7You have nothing to cancel."
-
   ban:
-    description: "&c[Functional Server Control] &7Description of the command &c/%1$f&7: Ban the specified player for the specified reason"
+    description: "&c[Functional ServerInfo Control] &7Description of the command &c/%1$f&7: Ban the specified player for the specified reason"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {time} {reason}"
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Server rules violation"
-    broadcast-message: "&7Administrator &c%1$f &7ban the player &c%2$f &7for the reason: &c%3$f"
-    ip-broadcast-message: "&7 Administrator &c%1$f &7ban the IP address &c%2$f &7for the reason: &c%3$f"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis ServerInfo rules violation"
+    broadcast-message: "&7Administrator &c%1$f &7ban the player &c%2$f &7for the reason:
+      &c%3$f"
+    ip-broadcast-message: "&7 Administrator &c%1$f &7ban the IP address &c%2$f &7for the
+      reason: &c%3$f"
     target-bypass: "&c[FunctionalServerControl] &7You cannot ban this player"
-
   ban-ip:
-    description: "&c[FunctionalServerControl] &7Description of the command &c%1$f&7: Ban the specified IP address for the specified reason"
+    description: "&c[FunctionalServerControl] &7Description of the command &c%1$f&7: Ban
+      the specified IP address for the specified reason"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {reason}"
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Server rules violation"
-    broadcast-message: "&7Administrator &c%1$f&7 ban the IP address &c%2$f &7for the reason: &c%3$f"
-
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis ServerInfo rules violation"
+    broadcast-message: "&7Administrator &c%1$f&7 ban the IP address &c%2$f &7for the reason:
+      &c%3$f"
   tempban:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Ban the account of the specified player for the specified time for the specified reason"
-    example: "&c[Functional Server Control] &7 Example: &c/%1$f ALis 1day Violation of server rules"
+    example: "&c[Functional ServerInfo Control] &7 Example: &c/%1$f ALis 1day Violation of server rules"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> <time> {reason}"
-    broadcast-message: "&7Administrator &c%1$f &7 ban the player's account &c%2$f &7on &c%3$f &7for the reason: &c%4$f"
+    broadcast-message: "&7Administrator &c%1$f &7 ban the player""s account &c%2$f &7on &c%3$f &7for the reason: &c%4$f"
     ip-broadcast-message: "&7Administrator &c%1$f&7 ban the IP address of &c%2$f &7on &c%3$f &7for the reason: &c%4$f"
-
   tempban-ip:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Ban the account specified IP address for the specified time for the specified reason"
-    example: "&c[Functional Server Control] &7Example: &c/%1$f ALis 1day Violation of server rules"
+    example: "&c[Functional ServerInfo Control] &7Example: &c/%1$f ALis 1day Violation of server rules"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> <time> {reason}"
     broadcast-message: "&7Administrator &c%1$f&7 ban the IP address &c%2$f&7 on &c%3$f &7for the reason: &c%4$f"
-
-
   purge:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Clears some data types in the plugin"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f cache"
@@ -240,69 +260,60 @@ commands:
     cache:
       cleared: "&c[FunctionalServerControl] &7Cache cleared successfully."
       empty: "&c[FunctionalServerControl] &7Cache is already empty"
-    history: #
-      cleared: "&c[FunctionalServerControl] &7History successfully cleared!" #
-
+    history:
+      cleared: "&c[FunctionalServerControl] &7History successfully cleared!"
   getstatistic:
-    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает статистику и игроке(нарушения, наказания и т.п.)" #---> Version: v1.05
-    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f player ALis" #---> Version: v1.05
-    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <player/admin> <цель>" #---> Version: v1.05
-    no-info: "&c[FunctionalServerControl] &7Информации об игроке &c%1$f &7не найдено!" #---> Version: v1.05
+    description: "&c[FunctionalServerControl] &7Описание команды &c/%1$f&7: Получает статистику и игроке(нарушения, наказания и т.п.)"
+    example: "&c[FunctionalServerControl] &7Пример: &c/%1$f player ALis"
+    usage: "&c[FunctionalServerControl] &7Использование: &c/%1$f <player/admin> <цель>"
+    no-info: "&c[FunctionalServerControl] &7Информации об игроке &c%1$f &7не найдено!"
     unknown-type: "&c[FunctionalServerControl] &7Неизвестный тип &c%1$f&7!"
-    admin-info-format: "&7Information about &c%1$f \n&7Preform bans: &c%2$f &7times \n&7Preform mutes: &c%3$f &7times \n&7Preform kicks: &c%4$f &7times \n&7Preform unbans: &c%2$f &7times \n&7Preform unmutes: &c%2$f &7times" #---> Version: v1.05
-    player-info-format: "&7Information about &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &7times \n&7Advertise attempts: &c%7$f &7times" #---> Version: v1.05
-
+    admin-info-format: "&7Information about &c%1$f \n&7Preform bans: &c%2$f &7times \n&7Preform mutes: &c%3$f &7times \n&7Preform kicks: &c%4$f &7times \n&7Preform unbans: &c%2$f &7times \n&7Preform unmutes: &c%2$f &7times"
+    player-info-format: "&7Information about &c%1$f \n&7Was kicked: &c%2$f &7times \n&7Was banned: &c%3$f &7times \n&7Was muted: &c%4$f &7times \n&7Used blocked commands: &c%5$f &7times \n&7Used blocked words: &c%6$f &7times \n&7Advertise attempts: &c%7$f &7times"
   kick:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Kick the specified player from the server"
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Server Rules violation"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis ServerInfo Rules violation"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {reason}"
     broadcast-message: "&7Administrator &c%1$f &7kick the player &c%2$f &7for the reason: &c%3$f"
-    target-bypass: "&c[FunctionalServerControl] &7You can't kick this player"
-
+    target-bypass: "&c[FunctionalServerControl] &7You can""t kick this player"
   unbanall:
     success: "&c[FunctionalServerControl] &7You have unban &c%1$f &7accounts"
     broadcast-message: "&7Administrator &c%1$f &7unban all accounts"
-
-  banlist: # ---> Version v1.04
-    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of banned players"# ---> Version v1.04
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"# ---> Version v1.04
-    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"# ---> Version v1.04
-    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"# ---> Version v1.04
-    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"# ---> Version v1.04
-    success: "&7List of banned players, page: &c%1$f &9(Hover over nickname for info)"# ---> Version v1.04
-    format: "&7Nickname: &c%1$f &7(ID: &9%2$f&7)"# ---> Version v1.04
-    hover-text: "&c%1$f &7banned &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f &7\nID: &c%6$f"# ---> Version v1.04
-    not-num: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a number!" # ---> Version v1.04
-    no-banned-players: "&c[FunctionalServerControl] &7No banned players found!"# ---> Version v1.04
-
-  mutelist: # ---> Version v1.04
-    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of muted players"# ---> Version v1.04
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"# ---> Version v1.04
-    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"# ---> Version v1.04
-    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"# ---> Version v1.04
-    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"# ---> Version v1.04
-    success: "&7List of muted players, page: &c%1$f &9(Hover over nickname for info)"# ---> Version v1.04
-    format: "&7Nickname: &c%1$f &7(ID: &9%2$f&7)"# ---> Version v1.04
-    hover-text: "&c%1$f &7muted &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f &7\nID: &c%6$f"# ---> Version v1.04
-    not-num: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a number!" # ---> Version v1.04
-    no-muted-players: "&c[FunctionalServerControl] &7No muted players found!"# ---> Version v1.04
-
   kick-all:
     success: "&c[FunctionalServerControl] &7You kick &c%1$f &7players from the server"
-
+  banlist:
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of banned players"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"
+    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"
+    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"
+    success: "&7List of banned players, page: &c%1$f &9(Hover over nickname for info)"
+    format: "&7Nickname: &c%1$f &7(ID: &9%2$f&7)"
+    hover-text: "&c%1$f &7banned &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f \n&7ID: &c%6$f"
+    no-banned-players: "&c[FunctionalServerControl] &7No banned players found!"
+  mutelist:
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Shows a list of muted players"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 1"
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <page>"
+    page-not-found: "&c[FunctionalServerControl] &7Page &c%1$f &7not found, total pages &c%2$f"
+    page-not-zero: "&c[FunctionalServerControl] &7Page cannot be less than 1"
+    success: "&7List of muted players, page: &c%1$f &9(Hover over nickname for info)"
+    format: "&7Nickname: &c%1$f &7(ID: &9%2$f&7)"
+    hover-text: "&c%1$f &7muted &c%2$f. \n&7When: &c%3$f &7in &c%4$f &7\nReason: &c%5$f \n&7ID: &c%6$f"
+    not-num: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a number!"
+    no-muted-players: "&c[FunctionalServerControl] &7No muted players found!"
   crazykick:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Kick the specified player from the server with an inadequate reason"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> <color>"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis dark_red"
     unknown-color: "&c[FunctionalServerControl] &7Unknown color &c%1$f"
-
   dupeip:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Control of identical IP addresses on the server"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <action>"
-    example: "&c[Functional Server Control] &7Example: &c/%1$f report"
+    example: "&c[Functional ServerInfo Control] &7Example: &c/%1$f report"
     reports:
-      create-no-perms: "&c[FunctionalServerControl] &7You don't have permissions to create reports"
-      delete-no-perms: "&c[FunctionalServerControl] &7You don't have permissions to delete reports"
+      create-no-perms: "&c[FunctionalServerControl] &7You don""t have permissions to create reports"
+      delete-no-perms: "&c[FunctionalServerControl] &7You don""t have permissions to delete reports"
       report-preparing: "&c[FunctionalServerControl] &7Report is being prepared, it may take time depending on the number of online players"
       report-created: "&c[FunctionalServerControl] &7Report is ready, you can view it &c/dupeip info &7(After &c%1$f &7seconds it will be automatically deleted)"
       report-not-found: "&c[FunctionalServerControl] &7Firstly, create a report using the command: &c/dupeip createreport"
@@ -315,7 +326,6 @@ commands:
         - "&eReport created in &c%1$f &eby administrator &c%2$f"
         - "&eInformation:"
         - "%3$f"
-
   mute:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Blocks access to the chat to the specified player"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {time} {reason}"
@@ -323,14 +333,12 @@ commands:
     broadcast-message: "&7The administrator &c%1$f&7 mute the player &c%2$f &7for the reason: &c%3$f"
     ip-broadcast-message: "&7The administrator &c%1$f &7mute the IP address &c%2$f &7for the reason: &c%3$f"
     target-bypass: "&c[FunctionalServerControl] &7You cannot mute this player"
-
   muteip:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Blocks access to the chat to players with the specified IP address"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {time} {reason}"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Obscene language"
     broadcast-message: "&7Administrator &c%1$f&7 mute IP &c%2$f &7for the reason: &c%3$f"
     target-bypass: "&c[FunctionalServerControl] &7 You cannot mute this player"
-
   tempmute:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Temporarily blocks access to the chat to the specified player"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> <time> {reason}"
@@ -338,47 +346,66 @@ commands:
     broadcast-message: "&7The administrator &c%1$f&7 temporarily mute the player &c%2$f &7on &c%3$f &7for a reason: &c%4$f"
     ip-broadcast-message: "&7 The administrator &c%1$f &7temporarily mute the IP address &c%2$f &7on &c%3$f &7for the reason: &c%4$f"
     target-bypass: "&c[FunctionalServerControl] &7You cannot mute this player"
-
   tempmuteip:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Temporarily blocks access to the chat for players with the specified IP address"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> <time> {reason}"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$felis Obscene language"
     broadcast-message: "&7The administrator &c%1$f&7 temporarily mute the player &c%2$f&7 on &c%3$f&7 for a reason: &c%4$f"
     target-bypass: "&c[FunctionalServerControl] &7 You cannot mute this player"
-
+  deviceinfo:
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Show information about server/machine"
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <serverpart/machinepart>"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f serverpart"
+    serverpart-format:
+      - "&7TPS: \nLast second: &c%1$f \n&7Last 5 seconds: &c%2$f \nLast 30 seconds: &c%3$f \n&7Last minute: &c%4$f \n &7Last 5 minutes: &c%5$f \n&7Last 10 minutes: &c%6$f \n&7Average TPS: &c%7$f"
+      - "&7Max memory: &c%8$f"
+      - "&7Memory allocated: &c%9$f"
+      - "&7Memory occupied: &c%10$f"
+      - "&7Free memory: &c%11$f"
+      - "&7CPU usage by the system: &c%12$f"
+      - "&7CPU usage by Java: &c%13$f"
+      - "&7Average CPU usage: &c%14$f"
+      - "&7Server uptime: &c%15$f"
+    machinepart-format:
+      - "&7Java version: &c%1$f"
+      - "&7JDK version: &c%2$f"
+      - "&7Java Runtime version: &c%3$f"
+      - "&7OS Name: &c%4$f"
+      - "&7OS Version: &c%5$f"
+      - "&7Processor architecture: &c%6$f"
+  inetspeed:
+    started: "&7The test has started! You can continue your work, you will be notified of the results!"
+    success: "&7Internet Speed test results: \n&7Размер файла для теста: &c%1$f \n&7Downloading time: &c%2$f seconds \n&7Download speed: &c%3$f mbps \n&7Estimated maximum server throughput: &c%4$f mbps"
   unmute:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Removes mute from the specified account"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player> {reason}"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis Erroneous mutation"
     player-not-muted: "&c[FunctionalServerControl] &7Player &c%1$f &7 not muted"
+    id-not-muted: "&c[FunctionalServerControl] &7Specified ID &c%1$f &7not found among muted"
+    id-not-muted-but-banned: "&c[FunctionalServerControl] &7Specified ID &c%1$f &7not found among muted &7&o(But found among banned)"
     broadcast-message:
       with-reason: "The administrator &c%1$f &7unmute player &c%2$f &7for the reason: &c%3$f"
       without-reason: "The administrator &c%1$f&7 unmute player &c%2$f"
-
   unmuteall:
     success: "&c[FunctionalServerControl] &7You unmute &c%1$f &7accounts"
     broadcast-message: "&7Administrator &c%1$f&7 unmute all accounts"
-
   getinfo:
-    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gives information about the ID/nickname/uuid/IP if available in the database" #Not work now
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gives information about the ID/nickname/uuid/IP if available in the database"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <flag> <value>"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f -ip 127.0.0.1"
     not-found: "&c[FunctionalServerControl] &7Information about &c%1$f&7: &c%2$f &7not found!"
     success: "&c[FunctionalServerControl] &7Information about &c%1$f %2$f&7:"
     format: "&7Status: &c%1$f \n&7Player: &c%2$f \n&7Initiator: &c%3$f \n&7Reason: &c%4$f \n&7Time left: &c%5$f"
-
   getversion:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gets the version that the specified player is playing with"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player>"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis"
     success: "&c[FunctionalServerControl] &7Player &c%1$f &7uses the Minecraft version &c%2$f"
-
   getclient:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gets the name of the client from which the specified player is playing"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <player>"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f ALis"
     success: "&c[FunctionalServerControl] &7Player &c%1$f &7uses the Minecraft client &c%2$f"
-
   import:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Imports data from the specified source"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <source>"
@@ -387,30 +414,28 @@ commands:
     importing-ended: "&c[FunctionalServerControl] &7Import data from &c%1$f &7ended"
     empty: "&c[FunctionalServerControl] &7Data from &c%1$f &7empty."
     unknown-type: "&c[FunctionalServerControl] &7Unknown source type &c%1$f"
-
   history:
-    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gets records saved in history"#
-    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <number of records> [attribute] {attribute}"#
-    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 10"#
+    description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Gets records saved in history"
+    usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <number of records> [attribute] {attribute}"
+    example: "&c[FunctionalServerControl] &7Example: &c/%1$f 10"
     message-num: "&7Last &c%1$f &7records: \n%2$f"
     message-attribute: "&7Last &c%1$f &7records by attribute &c%2$f: \n%3$f"
     fewer-records: "&c[FunctionalServerControl] &7Records turned out to be less than you indicated, only found &c%1$f"
     not-zero: "&c[FunctionalServerControl] &7Number of records retrieved cannot be 0"
     not-num: "&c[FunctionalServerControl] &7Looks like argument &c%1$f &7is not numeric"
-
   cheatcheck:
     description: "&c[FunctionalServerControl] &7Description of the command &c/%1$f&7: Control of calls checks the players on the use of third-party software"
     usage: "&c[FunctionalServerControl] &7Usage: &c/%1$f <start/stop/confirm/refute> <player> {time} {reason}"
     example: "&c[FunctionalServerControl] &7Example: &c/%1$f start ALis 5min Suspicion of using the KillAura cheat"
     unknown-time: "&c[FunctionalServerControl] &7Looks like &c%1$f &7is not a valid time value, try for example &c10s &7or just &c10"
-    unknown-subcommand: "&c[Functional Server Control] &7Unknown argument &c%1$f&7, use &c/cheat check &7 to get help."
+    unknown-subcommand: "&c[Functional ServerInfo Control] &7Unknown argument &c%1$f&7, use &c/cheat check &7 to get help."
     player-already-checking: "&c[FunctionalServerControl] &7This player is already being checked."
     player-not-checking-now: "&c[FunctionalServerControl] &7This player is not being checked."
     check-stopped: "&c[FunctionalServerControl] &7Player check &c%1$f &7completed!"
     not-your-player: "&c[FunctionalServerControl] &7You are not checking this player!"
     target-bypass: "&c[FunctionalServerControl] &7You cannot call this player to check!"
     success: "&c[FunctionalServerControl] &7You called the player &c%1$f &7to check."
-    target-quit: "&c[Functional Server Control] &7The player you checked has left the game!"
+    target-quit: "&c[Functional ServerInfo Control] &7The player you checked has left the game!"
     chat-message-on-start: "&eAdministrator &c%1$f &ecalled you to check for cheats \nCall reason: &c%2$f \nYou have &c%3$f seconds &eto justify yourself"
     chat-message-on-stop: "&eThe check is completed, you can continue your game!"
     actionbar-message: "&eTime left &c%1$f&e!"
@@ -420,3 +445,5 @@ commands:
     header-title-on-stop: "&cCheck completed!"
     footer-title-on-stop:
       - "&eYou can continue your game."
+
+

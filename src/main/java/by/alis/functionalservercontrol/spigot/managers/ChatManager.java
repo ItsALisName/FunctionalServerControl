@@ -5,7 +5,6 @@ import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import by.alis.functionalservercontrol.spigot.expansions.Expansions;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -36,7 +35,7 @@ public class ChatManager {
 
     public void setupChatDelay(Player player) {
         if(player.hasPermission("functionalservercontrol.chat.delay.bypass")) return;
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getChatSettings().isUseGroups()) {
                 if(Expansions.getVaultManager().isVaultSetuped()) {
                     String playerGroup = Expansions.getVaultManager().getPlayerGroup(player);
@@ -71,7 +70,7 @@ public class ChatManager {
 
     public void setRepeatingMessage(Player player, String message) {
         if(player.hasPermission("functionalservercontrol.chat.repeating-message.bypass")) return;
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getChatSettings().isBlockRepeatingMessages()) {
                 if (TemporaryCache.getRepeatingMessages().containsKey(player.getUniqueId())) {
                     TemporaryCache.getRepeatingMessages().replace(player.getUniqueId(), message);
@@ -92,7 +91,7 @@ public class ChatManager {
                     player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-chat").replace("%1$f", word)));
                     if (getChatSettings().isPunishEnabledForBlockedWords()) {
                         for (String punishCmd : getChatSettings().getPunishForBlockedWords()) {
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
+                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
                         }
                     }
                     this.notifyAdminsAboutBlockedWord(player, word, message);
@@ -113,7 +112,7 @@ public class ChatManager {
                     player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-command").replace("%1$f", word)));
                     if (getChatSettings().isPunishEnabledForBlockedWords()) {
                         for (String punishCmd : getChatSettings().getPunishForBlockedWords()) {
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
+                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
                         }
                     }
                     this.notifyAdminsAboutBlockedWordInCommand(player, word, command);
@@ -126,7 +125,7 @@ public class ChatManager {
 
     private void notifyAdminsAboutBlockedWord(Player player, String word, String message) {
         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)));
                 for(Player admin : Bukkit.getOnlinePlayers()) {
@@ -137,7 +136,7 @@ public class ChatManager {
                                     admin.spigot().sendMessage(
                                             MD5TextUtils.appendTwo(
                                                     MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player),
-                                                        MD5TextUtils.addPunishmentButtons(admin, player.getName())));
+                                                    MD5TextUtils.addPunishmentButtons(admin, player.getName())));
                                     continue;
                                 }
                                 if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
@@ -165,7 +164,7 @@ public class ChatManager {
     }
 
     public void notifyAdminsOnTryChat(Player player, String message, String timeLeft) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if (getConfigSettings().isConsoleNotification()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)));
             }
@@ -207,7 +206,7 @@ public class ChatManager {
 
     private void notifyAdminsAboutBlockedWordInCommand(Player player, String word, String command) {
         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)));
                 for(Player admin : Bukkit.getOnlinePlayers()) {

@@ -1,7 +1,8 @@
 package by.alis.functionalservercontrol.spigot.listeners;
 
 import by.alis.functionalservercontrol.api.enums.BanType;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import by.alis.functionalservercontrol.spigot.managers.ban.UnbanManager;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -33,9 +34,7 @@ public class NullPlayerJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 if(banType != BanType.PERMANENT_IP && banType != BanType.PERMANENT_NOT_IP) {
                     if (System.currentTimeMillis() >= time) {
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            this.unbanManager.preformUnban(player, "The Ban time has expired");
-                        });
+                        TaskManager.preformAsync(() -> this.unbanManager.preformUnban(player, "The Ban time has expired"));
                         return;
                     }
                 }
@@ -119,9 +118,7 @@ public class NullPlayerJoinListener implements Listener {
                 BanType banType = getBannedPlayersContainer().getBanTypesContainer().get(indexOf);
                 if(banType != BanType.PERMANENT_IP && banType != BanType.PERMANENT_NOT_IP) {
                     if (System.currentTimeMillis() >= time) {
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            this.unbanManager.preformUnban(player, "The Ban time has expired");
-                        });
+                        TaskManager.preformAsync(() -> this.unbanManager.preformUnban(player, "The Ban time has expired"));
                         return;
                     }
                 }
@@ -199,7 +196,7 @@ public class NullPlayerJoinListener implements Listener {
                 return;
             }
         } else {
-            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            TaskManager.preformAsync(() -> {
                 if(getBaseManager().getBannedPlayersNames().contains(player.getName())) {
                     int indexOf = getBaseManager().getBannedPlayersNames().indexOf(player.getName());
                     String initiatorName = getBaseManager().getBanInitiators().get(indexOf);
@@ -217,9 +214,7 @@ public class NullPlayerJoinListener implements Listener {
                     getBaseManager().deleteFromNullBannedPlayers("-n", player.getName());
                     getBaseManager().insertIntoBannedPlayers(id, player.getAddress().getAddress().getHostAddress(), player.getName(), initiatorName, reason, banType, realDate, realTime, player.getUniqueId(), time);
                     if(banType == BanType.PERMANENT_NOT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                         }
@@ -232,9 +227,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.PERMANENT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", player.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", player.getAddress().getAddress().getHostAddress())));
                         }
@@ -247,9 +240,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.TIMED_NOT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
                         }
@@ -262,9 +253,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.TIMED_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", player.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))).replace("%2$f", player.getAddress().getAddress().getHostAddress())));
                         }
@@ -295,9 +284,7 @@ public class NullPlayerJoinListener implements Listener {
                     getBaseManager().deleteFromNullBannedPlayers("-n", player.getName());
                     getBaseManager().insertIntoBannedPlayers(id, player.getAddress().getAddress().getHostAddress(), player.getName(), initiatorName, reason, banType, realDate, realTime, player.getUniqueId(), time);
                     if(banType == BanType.PERMANENT_NOT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", getGlobalVariables().getVariableNever())));
                         }
@@ -310,9 +297,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.PERMANENT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", player.getName()).replace("%3$f", getGlobalVariables().getVariableNever()).replace("%2$f", player.getAddress().getAddress().getHostAddress())));
                         }
@@ -325,9 +310,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.TIMED_NOT_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban").replace("%1$f", player.getName()).replace("%2$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
                         }
@@ -340,9 +323,7 @@ public class NullPlayerJoinListener implements Listener {
                         }
                     }
                     if(banType == BanType.TIMED_IP) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time)))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))))));
                         if (getConfigSettings().isConsoleNotification()) {
                             Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.ban-ip").replace("%1$f", player.getName()).replace("%3$f", this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(time))).replace("%2$f", player.getAddress().getAddress().getHostAddress())));
                         }

@@ -7,7 +7,6 @@ import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,7 +33,7 @@ public class AdvertiseManager {
             if(getConfigSettings().isApiEnabled()) {
                 Bukkit.getPluginManager().callEvent(asyncPlayerAdvertiseEvent);
             }
-            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            TaskManager.preformSync(() -> {
                 for(String action : getChatSettings().getChatIpProtectionActions()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
                 }
@@ -55,8 +54,8 @@ public class AdvertiseManager {
             if(getConfigSettings().isApiEnabled()) {
                 Bukkit.getPluginManager().callEvent(asyncPlayerAdvertiseEvent);
             }
-            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                for(String action : getChatSettings().getChatDomainsProtectionActions()) {
+            TaskManager.preformSync(() -> {
+                for(String action : getChatSettings().getCommandsIpProtectionActions()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
                 }
             });
@@ -74,7 +73,7 @@ public class AdvertiseManager {
                 getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-command")));
                 notifyAdminsAboutAdvertiseInCommand(player, command);
-                for(String action : getChatSettings().getSignsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));
+                for(String action : getChatSettings().getCommandsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));
                 PlayerAdvertiseEvent asyncPlayerAdvertiseEvent = new PlayerAdvertiseEvent(player, Chat.AdvertiseMethod.COMMAND, String.join(", ", command));
                 if(getConfigSettings().isApiEnabled()) Bukkit.getPluginManager().callEvent(asyncPlayerAdvertiseEvent);
                 return true;
@@ -85,7 +84,7 @@ public class AdvertiseManager {
                 getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-in-command")));
                 notifyAdminsAboutAdvertiseInCommand(player, command);
-                for(String action : getChatSettings().getSignsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));
+                for(String action : getChatSettings().getCommandsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", command));
                 PlayerAdvertiseEvent asyncPlayerAdvertiseEvent = new PlayerAdvertiseEvent(player, Chat.AdvertiseMethod.COMMAND, command);
                 if(getConfigSettings().isApiEnabled()) Bukkit.getPluginManager().callEvent(asyncPlayerAdvertiseEvent);
                 return true;
@@ -95,42 +94,42 @@ public class AdvertiseManager {
     }
 
     private static void notifyAdminAboutAdvertiseInChat(Player player, String message) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getChatSettings().isNotifyAdminAboutAdvertise()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat")
-                            .replace("%1$f", player.getName())
-                            .replace("%2$f", message)));
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat")
+                        .replace("%1$f", player.getName())
+                        .replace("%2$f", message)));
             }
             for(Player admin : Bukkit.getOnlinePlayers()) {
                 if(!admin.hasPermission("functionalservercontrol.notification.advertise")) return;
                 if(getConfigSettings().isServerSupportsHoverEvents()) {
-                        if(getConfigSettings().isButtonsOnNotifications()) {
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                admin.spigot().sendMessage(MD5TextUtils.appendTwo(
-                                        MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player),
-                                        MD5TextUtils.appendTwo(
-                                                MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonBan() + " "), "/ban " + player.getName()),
-                                                MD5TextUtils.createClickableSuggestCommandText(setColors(getGlobalVariables().getButtonMute()), "/mute " + player.getName())
-                                        )
-                                ));
-                                continue;
-                            }
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player)
-                                        .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonBan() + " "), "/ban " + player.getName()))
-                                            .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(getGlobalVariables().getButtonMute()), "/mute " + player.getName())));
-                                continue;
-                            }
-                        } else {
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player));
-                                continue;
-                            }
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player));
-                                continue;
-                            }
+                    if(getConfigSettings().isButtonsOnNotifications()) {
+                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                            admin.spigot().sendMessage(MD5TextUtils.appendTwo(
+                                    MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player),
+                                    MD5TextUtils.appendTwo(
+                                            MD5TextUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonBan() + " "), "/ban " + player.getName()),
+                                            MD5TextUtils.createClickableSuggestCommandText(setColors(getGlobalVariables().getButtonMute()), "/mute " + player.getName())
+                                    )
+                            ));
+                            continue;
                         }
+                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                            admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player)
+                                    .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(" " + getGlobalVariables().getButtonBan() + " "), "/ban " + player.getName()))
+                                    .append(AdventureApiUtils.createClickableSuggestCommandText(setColors(getGlobalVariables().getButtonMute()), "/mute " + player.getName())));
+                            continue;
+                        }
+                    } else {
+                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                            admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player));
+                            continue;
+                        }
+                        if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                            admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat").replace("%1$f", player.getName()).replace("%2$f", message)), player));
+                            continue;
+                        }
+                    }
                 } else {
                     admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.chat")
                             .replace("%1$f", player.getName())
@@ -141,7 +140,7 @@ public class AdvertiseManager {
     }
 
     private static void notifyAdminsAboutAdvertiseInCommand(Player player, String command) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if (getChatSettings().isNotifyAdminAboutAdvertise()) {
                 Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.command").replace("%1$f", player.getName()).replace("%2$f", command)));
                 for (Player admin : Bukkit.getOnlinePlayers()) {
@@ -175,7 +174,6 @@ public class AdvertiseManager {
                     }
                 }
             }
-
         });
     }
 

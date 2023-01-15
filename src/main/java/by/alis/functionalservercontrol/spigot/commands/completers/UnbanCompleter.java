@@ -19,8 +19,21 @@ public class UnbanCompleter implements TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (sender.hasPermission("functionalservercontrol.unban")) {
             if (args.length == 1) {
-                if (sender.hasPermission("functionalservercontrol.unban")) {
+                List<String> a;
+                if (getConfigSettings().isAllowedUseRamAsContainer()) {
+                    a = getBannedPlayersContainer().getNameContainer();
+                    a.removeIf((cmd) -> cmd.equalsIgnoreCase("NULL_PLAYER"));
+                    return TextUtils.sortList(a, args);
+                } else {
+                    a = getBaseManager().getBannedPlayersNames();
+                    a.removeIf((cmd) -> cmd.equalsIgnoreCase("NULL_PLAYER"));
+                    return TextUtils.sortList(a, args);
+                }
+            }
+            if(args[0].equalsIgnoreCase("-s") && args.length == 2) {
+                if(sender.hasPermission("functionalservercontrol.use.silently")) {
                     List<String> a;
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
                         a = getBannedPlayersContainer().getNameContainer();
@@ -32,8 +45,25 @@ public class UnbanCompleter implements TabCompleter {
                         return TextUtils.sortList(a, args);
                     }
                 }
-                return Collections.singletonList("");
             }
+            if(args[0].equalsIgnoreCase("-id") && args.length == 2) {
+                if(getConfigSettings().isAllowedUseRamAsContainer()){
+                    return TextUtils.sortList(getBannedPlayersContainer().getIdsContainer(), args);
+                } else {
+                    return TextUtils.sortList(getBaseManager().getBannedIds(), args);
+                }
+            }
+            if((args[0].equalsIgnoreCase("-id") && args[1].equalsIgnoreCase("-s") || args[0].equalsIgnoreCase("-s") && args[1].equalsIgnoreCase("-id")) && args.length == 3) {
+                if(sender.hasPermission("functionalservercontrol.use.silently")){
+                    if (getConfigSettings().isAllowedUseRamAsContainer()) {
+                        return TextUtils.sortList(getBannedPlayersContainer().getIdsContainer(), args);
+                    } else {
+                        return TextUtils.sortList(getBaseManager().getBannedIds(), args);
+                    }
+                }
+            }
+            return Collections.singletonList("");
+        }
         return Collections.singletonList("");
     }
 }

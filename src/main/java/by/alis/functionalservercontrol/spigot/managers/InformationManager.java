@@ -5,9 +5,7 @@ import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapte
 import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,7 +28,7 @@ public class InformationManager {
     public InformationManager() {}
 
     public static void getCachedInformation(CommandSender sender, String flag, String param) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(flag.equalsIgnoreCase("-id")) {
                 TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
                 if (getConfigSettings().isAllowedUseRamAsContainer()) {
@@ -638,7 +636,7 @@ public class InformationManager {
     }
 
     public static void sendHistory(CommandSender recipient, int lines, @Nullable String attribute) { //Добавить команду /fsc history
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(lines <= 0){
                 recipient.sendMessage(setColors(getFileAccessor().getLang().getString("commands.history.not-zero")));
                 return;
@@ -660,7 +658,7 @@ public class InformationManager {
     }
 
     public static void sendStatistic(CommandSender sender, String like, String playerName) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(playerName);
             if(player != null && OtherUtils.isNotNullPlayer(player.getUniqueId())) {
                 if (like.equalsIgnoreCase("admin")) {

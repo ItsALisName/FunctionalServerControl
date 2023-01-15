@@ -4,7 +4,6 @@ import by.alis.functionalservercontrol.api.enums.KickType;
 import by.alis.functionalservercontrol.api.enums.StatsType;
 import by.alis.functionalservercontrol.api.events.KickPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
+import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getDate;
 import static by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass.getTime;
@@ -35,27 +35,23 @@ public class KickManager {
      * @param announceKick Will it be reported in the global chat?
      */
     public void preformKick(@NotNull Player player, CommandSender initiator, @Nullable String reason, boolean announceKick) {
-        String finalReason = null;
-        String initiatorName = null;
+        String finalReason;
+        String initiatorName;
         if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getName();
+            initiatorName = initiator.getName();
         } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
-
         if(reason == null || reason.equalsIgnoreCase("")) {
             finalReason = getGlobalVariables().getDefaultReason();
         } else {
             finalReason = reason;
         }
-
         KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(false, player, initiator, finalReason, KickType.SINGLE);
         if(getConfigSettings().isApiEnabled()) {
             Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
         }
-
         if(kickPreprocessEvent.isCancelled()) return;
-
         if(finalReason.equalsIgnoreCase(getGlobalVariables().getDefaultReason())) {
             if(!getConfigSettings().isKickAllowedWithoutReason() && !initiator.hasPermission("functionalservercontrol.use.no-reason")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
@@ -63,7 +59,6 @@ public class KickManager {
                 return;
             }
         }
-
         if(!announceKick && initiator instanceof Player) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
@@ -71,7 +66,6 @@ public class KickManager {
                 return;
             }
         }
-
         if(getConfigSettings().isProhibitYourselfInteraction()) {
             if(initiator.getName().equalsIgnoreCase(player.getName())) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
@@ -79,9 +73,7 @@ public class KickManager {
                 return;
             }
         }
-
-        finalReason = kickPreprocessEvent.getReason();
-
+        finalReason = isTextNotNull(kickPreprocessEvent.getReason()) ? kickPreprocessEvent.getReason() : getGlobalVariables().getDefaultReason();
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(getCheatCheckerManager().isPlayerChecking(player) && getConfigSettings().isPreventKickDuringCheatCheck()) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.kick-player-on-check")));
@@ -167,9 +159,7 @@ public class KickManager {
 
             String anotherFinalReason = finalReason;
             String finalInitiatorName = initiatorName;
-            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName)));
-            });
+            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName))));
 
             if(announceKick) {
                 CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));

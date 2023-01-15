@@ -1,3 +1,4 @@
+file-version: "1.07-build1"
 settings:
   ##############################################################################
   #        This parameter is not changed by the '/fsc reload' command.         #

@@ -3,7 +3,7 @@ package by.alis.functionalservercontrol.spigot.managers.ban;
 import by.alis.functionalservercontrol.api.enums.BanType;
 import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -123,7 +123,7 @@ public class BanContainerManager {
     }
 
     public void sendBanList(CommandSender sender, int page) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(getConfigSettings().isAllowedUseRamAsContainer()) {
                 if(getBannedPlayersContainer().getIdsContainer().size() == 0) {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.banlist.no-banned-players")));
@@ -259,7 +259,6 @@ public class BanContainerManager {
                     return;
                 }
             }
-
         });
     }
 

@@ -2,6 +2,7 @@ package by.alis.functionalservercontrol.spigot.additional.consolefilter;
 
 import by.alis.functionalservercontrol.api.events.AsyncConsoleLogOutEvent;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -17,9 +18,10 @@ public class EventAsyncConsoleLog implements Filter {
 
 
     public Filter.Result checkMessage(String message) {
+
         AsyncConsoleLogOutEvent asyncConsoleLogOutEvent = new AsyncConsoleLogOutEvent(message);
         if(getConfigSettings().isApiEnabled() && FunctionalServerControl.getPlugin(FunctionalServerControl.class).isEnabled()) {
-            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent));
+            TaskManager.preformAsync(() -> Bukkit.getPluginManager().callEvent(asyncConsoleLogOutEvent));
         }
         if(asyncConsoleLogOutEvent.isCancelled()) return Result.DENY;
         if(!asyncConsoleLogOutEvent.getMessage().equalsIgnoreCase(message)) {

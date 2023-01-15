@@ -28,13 +28,6 @@ public class BanCompleter implements TabCompleter {
                 return Collections.singletonList("");
             }
 
-            if (args[0].equalsIgnoreCase("-a") && args.length == 2) {
-                if (sender.hasPermission("functionalservercontrol.ban") && sender.hasPermission("functionalservercontrol.use.unsafe-flags")) {
-                    return Collections.singletonList("-s");
-                }
-                return Collections.singletonList("");
-            }
-
             if (args[0].equalsIgnoreCase("-s") && args.length == 2) {
                 List<String> a = new ArrayList<>();
                 if (sender.hasPermission("functionalservercontrol.ban") && sender.hasPermission("functionalservercontrol.use.silently")) {

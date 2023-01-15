@@ -5,7 +5,7 @@ import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapte
 import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import by.alis.functionalservercontrol.spigot.managers.ban.UnbanManager;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
@@ -465,7 +465,7 @@ public class AsyncJoinListener implements Listener {
     }
 
     private void notifyAdmins(OfflinePlayer player, long timeLeft) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             String convertedTime = getGlobalVariables().getVariableNever();
             if(timeLeft > 0) {
                 convertedTime = this.timeSettingsAccessor.getTimeManager().convertFromMillis(this.timeSettingsAccessor.getTimeManager().getPunishTime(timeLeft));

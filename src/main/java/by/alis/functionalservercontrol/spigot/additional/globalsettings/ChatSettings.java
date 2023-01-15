@@ -1,6 +1,5 @@
 package by.alis.functionalservercontrol.spigot.additional.globalsettings;
-
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -307,7 +306,7 @@ public class ChatSettings {
     }
 
     public void loadChatSettings() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             setFunctionEnabled(getFileAccessor().getChatConfig().getBoolean("settings.enabled"));
             if(isFunctionEnabled()) {
                 //Advertise protection settings
@@ -384,7 +383,6 @@ public class ChatSettings {
                     }
                 }
             }
-
         });
     }
 

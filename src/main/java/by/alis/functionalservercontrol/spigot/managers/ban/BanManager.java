@@ -6,8 +6,8 @@ import by.alis.functionalservercontrol.api.enums.BanType;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.WorldTimeAndDateClass;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.managers.IdsManager;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -119,11 +119,11 @@ public class BanManager {
                         getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.ban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason).replace("%4$f", getDate() + ", " + getTime()));
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                        try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                        getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
                         getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         if(player.isOnline()) {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));                            }
+                            CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));                            }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
@@ -137,7 +137,7 @@ public class BanManager {
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(player.isOnline()) {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
+                            CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", reason).replace("%3$f", initiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
                         }
                         if(announceBan) {
                             CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.ban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", reason).replace("%1$f", initiatorName)));
@@ -161,9 +161,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                     }
                 } else {
                     getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
@@ -177,9 +175,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                     }
                 }
             }
@@ -195,8 +191,8 @@ public class BanManager {
                         getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.banip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason));
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                        try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ingored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                        getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
                         getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), -1L);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
@@ -205,9 +201,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         }
                     } else {
                         getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
@@ -223,9 +217,7 @@ public class BanManager {
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                         }
                         return;
                     }
@@ -246,9 +238,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                     }
                 } else {
                     getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), -1);
@@ -261,9 +251,7 @@ public class BanManager {
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever())));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", getGlobalVariables().getVariableNever()))));
                     }
                     return;
                 }
@@ -280,19 +268,18 @@ public class BanManager {
                         getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                        try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                        getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
                         getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                        String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                         if(player.isOnline()) {
                             String finalInitiatorName = initiatorName;
                             String finalReason = reason;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime))));
                         }
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
                         if(announceBan) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%1$f", initiatorName).replace("%4$f", reason)));
                         }
                         return;
                     } else {
@@ -303,15 +290,14 @@ public class BanManager {
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
+                        String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime))));
                         }
                         if(announceBan) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%1$f", initiatorName).replace("%4$f", reason)));
                         }
                     }
                     return;
@@ -327,30 +313,28 @@ public class BanManager {
                     if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                     getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                     getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
+                    String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                     if(announceBan) {
-                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime))));
                     }
                 } else {
                     getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
                     getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
                     if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                     getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
+                    String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                     if(player.isOnline()) {
                         String finalReason = reason;
                         String finalInitiatorName = initiatorName;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime())))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-message-format")).replace("%1$f", String.valueOf(id)).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime))));
                     }
                     if(announceBan) {
-                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%1$f", initiatorName).replace("%4$f", reason)));
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban.broadcast-message").replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%1$f", initiatorName).replace("%4$f", reason)));
                     }
                     return;
                 }
@@ -367,19 +351,18 @@ public class BanManager {
                         getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                        try { getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId())); } catch (NullPointerException ignored) {}
-                        try { getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId())); } catch (NullPointerException ignored) {}
+                        getBanContainerManager().removeFromBanContainer("-u", String.valueOf(player.getUniqueId()));
+                        getBanContainerManager().removeFromBanContainer("-ip", getBaseManager().getIpByUUID(player.getUniqueId()));
                         getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
-                        if(announceBan) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
-                        }
+                        String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime)));
+                        }
+                        if(announceBan) {
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%4$f", reason)));
                         }
                     } else {
                         getBaseManager().deleteFromBannedPlayers("-u", String.valueOf(player.getUniqueId()));
@@ -389,15 +372,14 @@ public class BanManager {
                         if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                         getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.last-ban-removed").replace("%1$f", player.getName())));
-                        if(announceBan) {
-                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
-                        }
+                        String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                         if(player.isOnline()) {
                             String finalReason = reason;
                             String finalInitiatorName = initiatorName;
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
-                            });
+                            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime)));
+                        }
+                        if(announceBan) {
+                            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%4$f", reason)));
                         }
                         return;
                     }
@@ -412,30 +394,28 @@ public class BanManager {
                     if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                     getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
                     getBanContainerManager().addToBanContainer(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, String.valueOf(player.getUniqueId()), banPlayerEvent.getBanTime());
-                    if(announceBan) {
-                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
-                    }
+                    String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                     if(player.isOnline()) {
                         String finalInitiatorName = initiatorName;
                         String finalReason = reason;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime)));
+                    }
+                    if(announceBan) {
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%4$f", reason)));
                     }
                 } else {
                     getBaseManager().insertIntoBannedPlayers(id, getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realDate, realTime, player.getUniqueId(), banPlayerEvent.getBanTime());
                     getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.tempbanip").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", convertedTime).replace("%4$f", reason).replace("%5$f", getDate() + ", " + getTime()));
                     if(initiator instanceof  Player) getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_BANS);
                     getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_BANS);
-                    if(announceBan) {
-                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))).replace("%4$f", reason)));
-                    }
+                    String fcTime = timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()));
                     if(player.isOnline()) {
                         String finalInitiatorName = initiatorName;
                         String finalReason = reason;
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                            player.getPlayer().kickPlayer(setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", timeManager.convertFromMillis(timeManager.getPunishTime(banPlayerEvent.getBanTime()))));
-                        });
+                        TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player.getPlayer(), setColors(String.join("\n", getFileAccessor().getLang().getStringList("temporary-ban-ip-message-format")).replace("%1$f", id).replace("%2$f", finalReason).replace("%3$f", finalInitiatorName)).replace("%4$f", realDate + ", " + realTime).replace("%5$f", fcTime)));
+                    }
+                    if(announceBan) {
+                        CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.tempban-ip.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", fcTime).replace("%4$f", reason)));
                     }
                 }
             }

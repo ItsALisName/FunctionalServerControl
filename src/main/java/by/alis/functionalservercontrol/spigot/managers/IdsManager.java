@@ -7,24 +7,40 @@ import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBas
 
 public class IdsManager {
 
-    private double generateId() {
-        return Math.random() * (100000 - 500) + 500;
+    private int generateId() {
+        return (int) (Math.random() * (100000 - 500) + 500);
     }
 
-    private boolean isIdFree(double id) {
+    private boolean isIdFree(int id) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return !getBannedPlayersContainer().getIdsContainer().contains(String.valueOf((int)Math.round(id))) && !getMutedPlayersContainer().getIdsContainer().contains(String.valueOf((int)Math.round(id)));
+            return !getBannedPlayersContainer().getIdsContainer().contains(String.valueOf(Math.round(id))) && !getMutedPlayersContainer().getIdsContainer().contains(String.valueOf(Math.round(id)));
         } else {
-            return !getBaseManager().getBannedIds().contains(String.valueOf((int)Math.round(id))) && !getBaseManager().getMutedIds().contains(String.valueOf((int)Math.round(id)));
+            return !getBaseManager().getBannedIds().contains(String.valueOf(Math.round(id))) && !getBaseManager().getMutedIds().contains(String.valueOf(Math.round(id)));
+        }
+    }
+
+    public boolean isBannedId(String id) {
+        if (getConfigSettings().isAllowedUseRamAsContainer()) {
+            return getBannedPlayersContainer().getIdsContainer().contains(id);
+        } else {
+            return getBaseManager().getBannedIds().contains(id);
+        }
+    }
+
+    public boolean isMutedId(String id) {
+        if(getConfigSettings().isAllowedUseRamAsContainer()) {
+            return getMutedPlayersContainer().getIdsContainer().contains(id);
+        } else {
+            return getBaseManager().getMutedIds().contains(id);
         }
     }
 
     public String getId() {
         String b = "ID_ERROR";
         for(int a = 0; a < 50; a++) {
-            double id = generateId();
+            int id = generateId();
             if(isIdFree(id)) {
-                b = String.valueOf((int)Math.round(id));
+                b = String.valueOf(Math.round(id));
                 return b;
             }
         }

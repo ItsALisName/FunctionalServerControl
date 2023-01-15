@@ -4,7 +4,6 @@ import by.alis.functionalservercontrol.api.enums.StatsType;
 import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.expansions.Expansions;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -29,10 +28,7 @@ public class GlobalCommandManager {
                         return true;
                     } else {
                         player.sendMessage(setColors(getCommandLimiterSettings().getSyntaxDenyMessage()));
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                            notifyAdminsAboutBlockedCommand(player, finalCommand);
-                        });
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                         return false;
                     }
                 }
@@ -51,10 +47,7 @@ public class GlobalCommandManager {
                                     return true;
                                 } else {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                        notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                    });
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                     return false;
                                 }
                             }
@@ -64,10 +57,7 @@ public class GlobalCommandManager {
                                 return true;
                             } else {
                                 player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                    notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                });
+                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                 return false;
                             }
                         }
@@ -83,10 +73,7 @@ public class GlobalCommandManager {
                                     return true;
                                 } else {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                        notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                    });
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                     return false;
                                 }
                             }
@@ -96,10 +83,7 @@ public class GlobalCommandManager {
                                 return true;
                             } else {
                                 player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                    notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                });
+                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                 return false;
                             }
                         }
@@ -120,10 +104,7 @@ public class GlobalCommandManager {
                                     return true;
                                 } else {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                        notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                    });
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                     return false;
                                 }
                             }
@@ -133,10 +114,7 @@ public class GlobalCommandManager {
                                 return true;
                             } else {
                                 player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                    notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                });
+                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                 return false;
                             }
                         }
@@ -147,10 +125,7 @@ public class GlobalCommandManager {
                                 return true;
                             } else {
                                 player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                    notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                });
+                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                 return false;
                             }
                         }
@@ -162,9 +137,7 @@ public class GlobalCommandManager {
                                     return true;
                                 } else {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                                    Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                        notifyAdminsAboutBlockedCommand(player, finalCommand);
-                                    });
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                     return false;
                                 }
                             }
@@ -185,10 +158,7 @@ public class GlobalCommandManager {
                             return true;
                         } else {
                             player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                notifyAdminsAboutBlockedCommand(player, finalCommand);
-                            });
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                             return false;
                         }
                     }
@@ -198,10 +168,7 @@ public class GlobalCommandManager {
                             return true;
                         } else {
                             player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                notifyAdminsAboutBlockedCommand(player, finalCommand);
-                            });
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                             return false;
                         }
                     }
@@ -213,10 +180,7 @@ public class GlobalCommandManager {
                         return true;
                     } else {
                         player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                            notifyAdminsAboutBlockedCommand(player, finalCommand);
-                        });
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                         return false;
                     }
                 }
@@ -226,10 +190,7 @@ public class GlobalCommandManager {
                         return true;
                     } else {
                         player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                            notifyAdminsAboutBlockedCommand(player, finalCommand);
-                        });
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                         return false;
                     }
                 }
@@ -247,10 +208,7 @@ public class GlobalCommandManager {
                             return true;
                         } else {
                             player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                notifyAdminsAboutBlockedCommand(player, finalCommand);
-                            });
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                             return false;
                         }
                     }
@@ -260,10 +218,7 @@ public class GlobalCommandManager {
                             return true;
                         } else {
                             player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                                notifyAdminsAboutBlockedCommand(player, finalCommand);
-                            });
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                             return false;
                         }
                     }
@@ -275,10 +230,7 @@ public class GlobalCommandManager {
                         return true;
                     } else {
                         player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                            notifyAdminsAboutBlockedCommand(player, finalCommand);
-                        });
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                         return false;
                     }
                 }
@@ -288,10 +240,7 @@ public class GlobalCommandManager {
                         return true;
                     } else {
                         player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-
-                            notifyAdminsAboutBlockedCommand(player, finalCommand);
-                        });
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                         return false;
                     }
                 }

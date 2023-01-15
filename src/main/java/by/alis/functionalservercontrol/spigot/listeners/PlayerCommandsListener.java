@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import static by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
 import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
-import static by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.Cooldowns.getCooldowns;
+import static by.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns.getCooldowns;
 import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static by.alis.functionalservercontrol.spigot.managers.BaseManager.getBaseManager;
 import static by.alis.functionalservercontrol.spigot.managers.ChatManager.getChatManager;

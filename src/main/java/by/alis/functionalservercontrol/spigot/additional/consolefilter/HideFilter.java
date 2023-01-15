@@ -1,6 +1,5 @@
 package by.alis.functionalservercontrol.spigot.additional.consolefilter;
 
-import by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -12,20 +11,21 @@ import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
 
 import static by.alis.functionalservercontrol.spigot.additional.consolefilter.ConsoleFilterHelper.getConsoleFilterHelper;
+import static by.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 
 public class HideFilter implements Filter {
 
     public Filter.Result checkMessage(String message) {
+        if(getConsoleFilterHelper().isHidedMessage(message) == Result.DENY) {
+            if(getConfigSettings().isAnnounceWhenLogHided()) {
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl | Log] The incoming message to the console is safely hidden"));
+            }
+            return Filter.Result.DENY;
+        }
         if(message.contains("com.mojang.authlib.GameProfile")) {
             return Filter.Result.DENY;
         }
         if(message.contains("鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵")) {
-            return Filter.Result.DENY;
-        }
-        if(getConsoleFilterHelper().isHidedMessage(message)) {
-            if(SettingsAccessor.getConfigSettings().isAnnounceWhenLogHided()) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl | Log] The incoming message to the console is safely hidden"));
-            }
             return Filter.Result.DENY;
         }
         return Filter.Result.NEUTRAL;

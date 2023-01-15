@@ -15,66 +15,13 @@ import static by.alis.functionalservercontrol.spigot.additional.misc.TextUtils.s
 import static by.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class TemporaryCache {
-
-    private static final HashMap<OfflinePlayer, CommandSender> unsafeBannedPlayers = new HashMap<>();
-    private static final HashMap<OfflinePlayer, CommandSender> unsafeMutedPlayers = new HashMap<>();
     private static final List<String> onlinePlayerNames = new ArrayList<>();
     private static final Map<Player, String> onlineIps = new HashMap<>();
-    private static int bansDeletedCount, muteDeletedCount;
-    private static final UnbanManager unbanManager = new UnbanManager();
     private static final List<String> checkingPlayersNames = new ArrayList<>();
     private static final HashMap<Player, String> clientBrands = new HashMap<>();
     private static final HashMap<UUID, Integer> chatDelays = new HashMap<>();
     private static final HashMap<UUID, String> repeatingMessages = new HashMap<>();
 
-
-    public static HashMap<OfflinePlayer, CommandSender> getUnsafeMutedPlayers() {
-        return unsafeMutedPlayers;
-    }
-    public static void setUnsafeMutedPlayers(OfflinePlayer whoBanned, CommandSender initiator) {
-        unsafeMutedPlayers.put(whoBanned, initiator);
-    }
-    public static HashMap<OfflinePlayer, CommandSender> getUnsafeBannedPlayers() {
-        return unsafeBannedPlayers;
-    }
-    public static void setUnsafeBannedPlayers(OfflinePlayer whoMuted, CommandSender initiator) {
-        unsafeBannedPlayers.put(whoMuted, initiator);
-    }
-
-    public static void preformCommandUndo(CommandSender initiator) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-            for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeBannedPlayers.entrySet()) {
-                if(e.getValue().equals(initiator)) {
-                    bansDeletedCount = bansDeletedCount + 1;
-                    unsafeBannedPlayers.remove(e.getKey());
-                    unbanManager.preformUnban(e.getKey(), getGlobalVariables().getDefaultReason());
-                }
-            }
-            if(bansDeletedCount != 0) {
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
-            }
-
-            for(Map.Entry<OfflinePlayer, CommandSender> e : unsafeMutedPlayers.entrySet()) {
-                if(e.getValue().equals(initiator)) {
-                    muteDeletedCount = muteDeletedCount + 1;
-                    unsafeMutedPlayers.remove(e.getKey());
-                    UnmuteManager unmuteManager = new UnmuteManager();
-                    unmuteManager.preformUnmute(e.getKey(), getGlobalVariables().getDefaultReason());
-                }
-            }
-            if(muteDeletedCount != 0) {
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.success").replace("%1$f", String.valueOf(bansDeletedCount)).replace("%2$f", getGlobalVariables().getVarUnbanned())));
-            }
-
-            if(bansDeletedCount == 0 && muteDeletedCount == 0) {
-                initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.fb-undo.nothing-to-undo")));
-                return;
-            }
-            bansDeletedCount = 0;
-            muteDeletedCount = 0;
-
-        });
-    }
 
     /**
      * Used to get a list of names of online players
@@ -97,9 +44,9 @@ public class TemporaryCache {
      * @param player Player whose name will be removed
      */
     public static void unsetOnlinePlayerName(Player player) {
-        if(onlinePlayerNames.contains(player.getName())) {
+        try {
             onlinePlayerNames.remove(player.getName());
-        }
+        } catch (NullPointerException ignored) {}
     }
 
     public static Map<Player, String> getOnlineIps() {

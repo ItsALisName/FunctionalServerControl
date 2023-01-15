@@ -2,10 +2,11 @@ package by.alis.functionalservercontrol.spigot.additional.globalsettings;
 
 import by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers;
 import by.alis.functionalservercontrol.api.enums.StorageType;
-import by.alis.functionalservercontrol.spigot.additional.libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.additional.tasks.*;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 
@@ -50,8 +51,6 @@ public class GeneralConfigSettings {
     private boolean isAllowedUnbanWithoutReason = true;
     private String banTimeExpired = "The Ban time has expired";
     private String muteTimeExpired = "The Mute time has expired";
-    private boolean isAutoPurgerEnabled = false;
-    private int autoPurgerDelay = 600;
     private boolean sendTitleWhenMuted = true;
     private boolean sendTitleWhenUnmuted = true;
     private boolean serverSupportsHoverEvents;
@@ -97,10 +96,15 @@ public class GeneralConfigSettings {
     private String dupeIpAction = null;
     private int dupeIpTimerDelay = 30;
     private boolean nickFormatControlEnabled = false;
-    private boolean blockVanilla = false;
-    private final List<String> vanillaActions = new ArrayList<>();
-    private boolean blockForge = false;
-    private final List<String> forgeActions = new ArrayList<>();
+    private boolean asyncClientsChecking;
+    private boolean blockVanillaClient;
+    private final List<String> vanillaClientActions = new ArrayList<>();
+    private boolean blockForgeClient;
+    private final List<String> forgeClientActions = new ArrayList<>();
+    private boolean blockLunarClient;
+    private final List<String> lunarClientActions = new ArrayList<>();
+    private boolean blockBadlionClient;
+    private List<String> badlionClientActions = new ArrayList<>();
     private final List<String> blockedNickFormats = new ArrayList<>();
     private boolean buttonsOnNotifications;
     private boolean hideIpsFromCompletions;
@@ -223,31 +227,37 @@ public class GeneralConfigSettings {
     private void setAnnounceConsoleAboutBrand(boolean announceConsoleAboutBrand) {
         this.announceConsoleAboutBrand = announceConsoleAboutBrand;
     }
-    public boolean isBlockVanilla() {
-        return blockVanilla;
+    public boolean isAsyncClientsChecking() {
+        return asyncClientsChecking;
     }
-    public List<String> getVanillaActions() {
-        return vanillaActions;
+    public void setAsyncClientsChecking(boolean asyncClientsChecking) {
+        this.asyncClientsChecking = asyncClientsChecking;
     }
-    private void setBlockVanilla(boolean blockVanilla) {
-        this.blockVanilla = blockVanilla;
+    public boolean isBlockVanillaClient() {
+        return blockVanillaClient;
     }
-    private void setVanillaActions(List<String> vanillaActions) {
-        this.vanillaActions.clear();
-        this.vanillaActions.addAll(vanillaActions);
+    public List<String> getVanillaClientActions() {
+        return vanillaClientActions;
     }
-    public boolean isBlockForge() {
-        return blockForge;
+    private void setBlockVanillaClient(boolean blockVanillaClient) {
+        this.blockVanillaClient = blockVanillaClient;
     }
-    private void setBlockForge(boolean blockForge) {
-        this.blockForge = blockForge;
+    private void setVanillaClientActions(List<String> vanillaClientActions) {
+        this.vanillaClientActions.clear();
+        this.vanillaClientActions.addAll(vanillaClientActions);
     }
-    public List<String> getForgeActions() {
-        return forgeActions;
+    public boolean isBlockForgeClient() {
+        return blockForgeClient;
     }
-    private void setForgeActions(List<String> forgeActions) {
-        this.forgeActions.clear();
-        this.forgeActions.addAll(forgeActions);
+    private void setBlockForgeClient(boolean blockForgeClient) {
+        this.blockForgeClient = blockForgeClient;
+    }
+    public List<String> getForgeClientActions() {
+        return forgeClientActions;
+    }
+    private void setForgeClientActions(List<String> forgeClientActions) {
+        this.forgeClientActions.clear();
+        this.forgeClientActions.addAll(forgeClientActions);
     }
 
     public boolean isBlockWorldDownloader() {
@@ -262,6 +272,32 @@ public class GeneralConfigSettings {
     private void setActionsOnWDL(List<String> actionsOnWDL) {
         this.actionsOnWDL.clear();
         this.actionsOnWDL.addAll(actionsOnWDL);
+    }
+    public boolean isBlockLunarClient() {
+        return blockLunarClient;
+    }
+    private void setBlockLunarClient(boolean blockLunarClient) {
+        this.blockLunarClient = blockLunarClient;
+    }
+    public List<String> getLunarClientActions() {
+        return lunarClientActions;
+    }
+    private void setLunarClientActions(List<String> lunarClientActions) {
+        this.lunarClientActions.clear();
+        this.lunarClientActions.addAll(lunarClientActions);
+    }
+    public boolean isBlockBadlionClient() {
+        return blockBadlionClient;
+    }
+    private void setBlockBadlionClient(boolean blockBadlionClient) {
+        this.blockBadlionClient = blockBadlionClient;
+    }
+    public List<String> getBadlionClientActions() {
+        return badlionClientActions;
+    }
+    private void setBadlionClientActions(List<String> badlionClientActions) {
+        this.badlionClientActions.clear();
+        this.badlionClientActions.addAll(badlionClientActions);
     }
     public boolean isServerSupportsHoverEvents() {
         return serverSupportsHoverEvents;
@@ -662,18 +698,6 @@ public class GeneralConfigSettings {
     private void setOldServerVersion(boolean oldServerVersion) {
         this.isOldServerVersion = oldServerVersion;
     }
-    public boolean isAutoPurgerEnabled() {
-        return this.isAutoPurgerEnabled;
-    }
-    private void setAutoPurgerEnabled(boolean autoPurgerEnabled) {
-        this.isAutoPurgerEnabled = autoPurgerEnabled;
-    }
-    public int getAutoPurgerDelay() {
-        return this.autoPurgerDelay;
-    }
-    private void setAutoPurgerDelay(int autoPurgerDelay) {
-        this.autoPurgerDelay = autoPurgerDelay;
-    }
     private void setNickFormatControlEnabled(boolean nickFormatControlEnabled) {
         this.nickFormatControlEnabled = nickFormatControlEnabled;
     }
@@ -772,7 +796,7 @@ public class GeneralConfigSettings {
                 break;
             }
         }
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             setPermissionsProtectionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.permissions-protection.enabled"));
             if(isPermissionsProtectionEnabled()) {
                 if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
@@ -816,13 +840,22 @@ public class GeneralConfigSettings {
                 setLogFormat(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.log-format"));
                 setMessagesToLog(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.logger.messages-to-log"), "[", "]").split(", ")));
             }
-            setBlockVanilla(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
-            if(isBlockVanilla()) {
-                setVanillaActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
+            setAsyncClientsChecking(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.async-checking"));
+            setBlockVanillaClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
+            if(isBlockVanillaClient()) {
+                setVanillaClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
             }
-            setBlockForge(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
-            if(isBlockForge()) {
-                setForgeActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+            setBlockForgeClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
+            if(isBlockForgeClient()) {
+                setForgeClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+            }
+            setBlockLunarClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.lunarclient.block"));
+            if(isBlockLunarClient()) {
+                setLunarClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.lunarclient.actions"));
+            }
+            setBlockBadlionClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.badlion.block"));
+            if(isBlockBadlionClient()) {
+                setBadlionClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.badlion.actions"));
             }
             if(isNicksControlEnabled()) {
                 switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.check-mode")) {
@@ -883,10 +916,6 @@ public class GeneralConfigSettings {
             if(isNickFormatControlEnabled()) {
                 setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
             }
-            setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
-            if(isAutoPurgerEnabled()) {
-                setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
-            }
             setCheatCheckFunctionEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.enabled"));
             if(isCheatCheckFunctionEnabled()) {
                 setPreventBlockPlaceDuringCheatCheck(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.cheat-checks-settings.prevents.block-place"));
@@ -928,13 +957,6 @@ public class GeneralConfigSettings {
                 Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalServerControl | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalServerControl | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
             }
             //Tasks
-            if (isAutoPurgerEnabled()) {
-                if (getAutoPurgerDelay() > 5) {
-                    Bukkit.getScheduler().runTaskLater(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                        new PurgerTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getAutoPurgerDelay() * 20L);
-                    }, 200L);
-                }
-            }
             if(isDupeIdModeEnabled()) {
                 new DupeIpTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, getDupeIpTimerDelay() * 20L);
             }
@@ -946,6 +968,7 @@ public class GeneralConfigSettings {
             if(getChatSettings().isFunctionEnabled()) {
                 new ChatTask().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 20L);
             }
+            Bukkit.getScheduler().runTaskTimerAsynchronously(FunctionalServerControl.getPlugin(FunctionalServerControl.class), new ServerInfoCollector(), 0, 20L);
             //Tasks
             OtherUtils.loadCachedPlayers();
         });
@@ -960,16 +983,25 @@ public class GeneralConfigSettings {
         setHideIpsFromCompletions(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.hide-ips-from-completions"));
         setReplaceMinecraftCommand(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.plugin-commands.replace-default-minecraft-commands"));
         setBlockWorldDownloader(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.world-downloader.block"));
+        setAsyncClientsChecking(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.async-checking"));
         if(isBlockWorldDownloader()) {
             setActionsOnWDL(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.world-downloader.actions"));
         }
-        setBlockVanilla(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
-        if(isBlockVanilla()) {
-            setVanillaActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
+        setBlockVanillaClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.vanilla.block"));
+        if(isBlockVanillaClient()) {
+            setVanillaClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.vanilla.actions"));
         }
-        setBlockForge(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
-        if(isBlockForge()) {
-            setForgeActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+        setBlockForgeClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.forge.block"));
+        if(isBlockForgeClient()) {
+            setForgeClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.forge.actions"));
+        }
+        setBlockLunarClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.lunarclient.block"));
+        if(isBlockLunarClient()) {
+            setLunarClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.lunarclient.actions"));
+        }
+        setBlockBadlionClient(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.clients-control.badlion.block"));
+        if(isBlockBadlionClient()) {
+            setBadlionClientActions(getFileAccessor().getGeneralConfig().getStringList("plugin-settings.join-settings.clients-control.badlion.actions"));
         }
         if(isPermissionsProtectionEnabled()) {
             if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
@@ -1022,10 +1054,6 @@ public class GeneralConfigSettings {
         setNickFormatControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.nicks-control.nick-format-control.enabled"));
         if(isNickFormatControlEnabled()) {
             setBlockedNickFormats(Arrays.asList(StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.nicks-control.nick-format-control.blocked-formats"), "[", "]").split(", ")));
-        }
-        setAutoPurgerEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.auto-purger.enabled"));
-        if(isAutoPurgerEnabled()) {
-            setAutoPurgerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.auto-purger.delay"));
         }
         setIpsControlEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.join-settings.ips-control.enabled"));
         if(isIpsControlEnabled()) {

@@ -3,7 +3,6 @@ package by.alis.functionalservercontrol.spigot.managers;
 import by.alis.functionalservercontrol.api.events.PlayerCheatCheckPreprocessEvent;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import by.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -156,9 +155,7 @@ public class CheatCheckerManager {
                 getCheckingCheatsPlayers().getCheckReason().remove(getCheckingCheatsPlayers().getCheckingPlayers().indexOf(player));
                 getCheckingCheatsPlayers().getCheckingPlayers().remove(player);
                 for (String action : getConfigSettings().getActionIfQuitDuringCheatCheck()) {
-                    Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
-                    });
+                    TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName())));
                 }
             }
         }
@@ -181,9 +178,7 @@ public class CheatCheckerManager {
             getCheckingCheatsPlayers().getCheckReason().remove(getCheckingCheatsPlayers().getCheckingPlayers().indexOf(player));
             getCheckingCheatsPlayers().getCheckingPlayers().remove(player);
             for (String action : getConfigSettings().getActionIfValidCheatCheck()) {
-                Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
-                });
+                TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName())));
             }
         }
     }
@@ -205,9 +200,7 @@ public class CheatCheckerManager {
             getCheckingCheatsPlayers().getCheckReason().remove(getCheckingCheatsPlayers().getCheckingPlayers().indexOf(player));
             getCheckingCheatsPlayers().getCheckingPlayers().remove(player);
             for (String action : getConfigSettings().getActionIfFailedCheatCheck()) {
-                Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
-                });
+                TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName())));
             }
         }
     }
@@ -225,9 +218,7 @@ public class CheatCheckerManager {
                         countdown.remove(player);
                         TemporaryCache.unsetCheckingPlayersNames(player.getName());
                         for(String action : getConfigSettings().getActionIfTimeLeftOnCheatCheck()) {
-                            Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()));
-                            });
+                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName())));
                         }
                         this.cancel();
                     }

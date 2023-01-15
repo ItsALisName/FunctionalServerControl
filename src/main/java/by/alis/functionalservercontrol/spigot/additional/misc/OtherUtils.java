@@ -3,8 +3,8 @@ package by.alis.functionalservercontrol.spigot.additional.misc;
 import by.alis.functionalservercontrol.api.enums.Chat;
 import by.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import by.alis.functionalservercontrol.spigot.additional.libraries.org.apache.commons.lang3.StringUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -240,7 +240,7 @@ public class OtherUtils {
     }
 
     public static void plugmanInjection() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(Bukkit.getPluginManager().getPlugin("PlugManX") != null) {
                 try {
                     File pManConfigFile = new File("plugins/PlugManX/", "config.yml");
@@ -257,22 +257,17 @@ public class OtherUtils {
         });
     }
 
-    public static Class<?> getNmsClass(String nmsClassName) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + "." + nmsClassName);
-    }
-
     public static void loadCachedPlayers() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                 String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
                 getBaseManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
             }
-
         });
     }
 
     public static void clearChat(CommandSender initiator, Chat.ClearType clearType, @Nullable Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(clearType == Chat.ClearType.PLAYER) {
                 if(player.hasPermission("functionalservercontrol.clearchat.bypass") && !initiator.hasPermission("functionalservercontrol.bypass-break")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.clearchat.target-bypass").replace("%1$f", player.getName())));

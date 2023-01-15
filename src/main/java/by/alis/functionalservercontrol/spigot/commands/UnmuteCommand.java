@@ -3,6 +3,7 @@ package by.alis.functionalservercontrol.spigot.commands;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.commands.completers.UnmuteCompleter;
 import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import by.alis.functionalservercontrol.spigot.managers.mute.UnmuteManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -26,94 +27,158 @@ public class UnmuteCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-
-
-        if(sender.hasPermission("functionalservercontrol.unmute")) {
-            UnmuteManager unmuteManager = new UnmuteManager();
-
-            if(args.length == 0) {
-                if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label))); }
-                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.usage").replace("%1$f", label)));
-                if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.example").replace("%1$f", label))); }
-                return true;
-            }
-
-            if(args.length == 1) {
-                if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
-                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                        unmuteManager.preformUnmute(args[0], sender, null, true);
-                    });
-                } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, null, true);
-                    });
-                }
-                return true;
-            }
-
-            if(args.length > 1) {
-                if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
-                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                        unmuteManager.preformUnmute(args[0], sender, getReason(args, 1), true);
-                    });
-                } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
-                    });
-                }
-                return true;
-            }
-
-            if(args[0].equalsIgnoreCase("-a")) {
-                if(sender.hasPermission("functionalservercontrol.use.unsafe-flags")) {
-                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.flag-not-support").replace("%1$f", "-a")));
-                } else {
-                    sender.sendMessage(setColors(getFileAccessor().getLang().getString("unsafe-actions.unsafe-flag-no-perms").replace("%1$f", "-a")));
-                }
-                return true;
-            }
-
-            if(args[0].equalsIgnoreCase("-s")) {
-                if(args.length == 1) {
+        TaskManager.preformAsync(() -> {
+            if(sender.hasPermission("functionalservercontrol.unmute")) {
+                UnmuteManager unmuteManager = new UnmuteManager();
+                if(args.length == 0) {
                     if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label))); }
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.usage").replace("%1$f", label)));
                     if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.example").replace("%1$f", label))); }
-                    return true;
+                    return;
                 }
-                if(args.length == 2) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+
+                if(((args[0].equalsIgnoreCase("-s") && args[1].equalsIgnoreCase("-id")) || (args[0].equalsIgnoreCase("-id") && args[1].equalsIgnoreCase("-s")))) {
+                    if(args.length == 2){
+                        if (getConfigSettings().showDescription()) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label)));
+                        }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.usage").replace("%1$f", label)));
+                        if (getConfigSettings().showExamples()) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.example").replace("%1$f", label)));
+                        }
+                        return;
+                    }
+                }
+
+                if(args[0].equalsIgnoreCase("-id") && args[1].equalsIgnoreCase("-s")) {
+                    int id = -1;
+                    if(args.length == 3) {
+                        try {
+                            id = Integer.parseInt(args[2]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[2])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), null, false);
+                        return;
+                    }
+                    if(args.length > 3) {
+                        try {
+                            id = Integer.parseInt(args[2]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[2])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), getReason(args, 3), false);
+                        return;
+                    }
+                    return;
+                }
+
+                if(args[0].equalsIgnoreCase("-id")) {
+                    if(args.length == 1) {
+                        if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label))); }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.usage").replace("%1$f", label)));
+                        if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.example").replace("%1$f", label))); }
+                        return;
+                    }
+                    int id = -1;
+                    if(args.length == 2) {
+                        try {
+                            id = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[1])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), null, true);
+                        return;
+                    }
+                    if(args.length > 2) {
+                        try {
+                            id = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[1])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), getReason(args, 2), true);
+                        return;
+                    }
+                }
+
+                if(args[0].equalsIgnoreCase("-s") && args[1].equalsIgnoreCase("-id")) {
+                    int id = -1;
+                    if(args.length == 3) {
+                        try {
+                            id = Integer.parseInt(args[2]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[2])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), null, false);
+                        return;
+                    }
+                    if(args.length > 3) {
+                        try {
+                            id = Integer.parseInt(args[2]);
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.not-num").replace("%1$f", args[2])));
+                            return;
+                        }
+                        unmuteManager.preformUnmuteById(sender, String.valueOf(id), getReason(args, 3), false);
+                        return;
+                    }
+                    return;
+                }
+
+                if(args[0].equalsIgnoreCase("-s")) {
+                    if(args.length == 1) {
+                        if(getConfigSettings().showDescription()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.description").replace("%1$f", label))); }
+                        sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.usage").replace("%1$f", label)));
+                        if(getConfigSettings().showExamples()) { sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.example").replace("%1$f", label))); }
+                        return;
+                    }
+                    if(args.length == 2) {
+                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
                             unmuteManager.preformUnmute(args[1], sender, null, false);
-                        });
-                    } else {
-                        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        } else {
                             unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[1]), sender, null, false);
-                        });
+                        }
+                        return;
                     }
-                    return true;
-                }
-                if(args.length > 2) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                    if(args.length > 2) {
+                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
                             unmuteManager.preformUnmute(args[1], sender, getReason(args, 2), false);
-                        });
-                    } else {
-                        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                        } else {
                             unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[1]), sender, getReason(args, 2), false);
-                        });
+                        }
+                        return;
                     }
-                    return true;
+                    return;
                 }
-                return true;
+
+                if(args.length == 1) {
+                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                        unmuteManager.preformUnmute(args[0], sender, null, true);
+                    } else {
+                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, null, true);
+                    }
+                    return;
+                }
+
+                if(args.length > 1) {
+                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                        unmuteManager.preformUnmute(args[0], sender, getReason(args, 1), true);
+                    } else {
+                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
+                    }
+                    return;
+                }
+
+            } else {
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
+                return;
             }
-
-
-
-        } else {
-            sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
-            return true;
-        }
-
+        });
         return true;
     }
 

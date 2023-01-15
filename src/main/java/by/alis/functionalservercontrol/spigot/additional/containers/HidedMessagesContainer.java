@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.additional.containers;
 
-import by.alis.functionalservercontrol.spigot.additional.libraries.org.apache.commons.lang3.StringUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class HidedMessagesContainer {
 
     private final String[] a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-filter"), "[", "]").split(", ");
     public void loadHidedMessages() {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             this.hidedMessages.clear();
             try {
                 Collections.addAll(this.hidedMessages, a);

@@ -3,7 +3,6 @@ package by.alis.functionalservercontrol.spigot.managers;
 import by.alis.functionalservercontrol.api.enums.BanType;
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -33,7 +32,7 @@ public class ImportManager {
     public ImportManager() {}
 
     public static void importDataFromVanilla(CommandSender sender) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             @NotNull Set<BanEntry> namesBans = Bukkit.getBanList(BanList.Type.NAME).getBanEntries();
             @NotNull Set<BanEntry> ipBans = Bukkit.getBanList(BanList.Type.IP).getBanEntries();
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.importing-started").replace("%1$f", "Vanilla Bans") + "&8(Async)"));
@@ -48,7 +47,7 @@ public class ImportManager {
                     OfflinePlayer target = CoreAdapter.getAdapter().getOfflinePlayer(aNem);
                     String reason = entry.getReason();
                     String initiatorName = entry.getSource();
-                    if (initiatorName.equalsIgnoreCase("Server")) {
+                    if (initiatorName.equalsIgnoreCase("ServerInfo")) {
                         initiatorName = getGlobalVariables().getConsoleVariableName();
                     }
                     String realBanDate = getDate(entry.getCreated());
@@ -87,7 +86,7 @@ public class ImportManager {
                     String nameOrIp = entry.getTarget();
                     String reason = entry.getReason();
                     String initiatorName = entry.getSource();
-                    if (initiatorName.equalsIgnoreCase("Server")) {
+                    if (initiatorName.equalsIgnoreCase("ServerInfo")) {
                         initiatorName = getGlobalVariables().getConsoleVariableName();
                     }
                     String realBanDate = getDate(entry.getCreated());

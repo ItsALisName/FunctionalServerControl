@@ -7,7 +7,7 @@ import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -80,7 +80,7 @@ public class SignChangeListener implements Listener {
     }
 
     private void notifyAdmins(Player player, String message, @Nullable String word, boolean isAdvertise) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(isAdvertise) {
                 if (getChatSettings().isNotifyAdminAboutAdvertise()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)));

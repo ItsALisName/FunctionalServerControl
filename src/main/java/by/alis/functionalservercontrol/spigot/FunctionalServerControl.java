@@ -7,7 +7,7 @@ import by.alis.functionalservercontrol.spigot.additional.consolefilter.L4JFilter
 import by.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import by.alis.functionalservercontrol.spigot.additional.logger.LogWriter;
 import by.alis.functionalservercontrol.spigot.additional.misc.apiutils.ApiCore;
-import by.alis.functionalservercontrol.spigot.additional.misc.cooldowns.Cooldowns;
+import by.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns;
 import by.alis.functionalservercontrol.spigot.additional.misc.Metrics;
 import by.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import by.alis.functionalservercontrol.spigot.commands.*;
@@ -42,7 +42,7 @@ import static by.alis.functionalservercontrol.spigot.expansions.Expansions.getPr
 public final class FunctionalServerControl extends JavaPlugin {
     private final FileManager fileManager = new FileManager();
     private final LogWriter writer = new LogWriter();
-    Filter consoleFilterCore;
+    private Filter consoleFilterCore;
 
     @Override
     public void onEnable() {
@@ -103,6 +103,7 @@ public final class FunctionalServerControl extends JavaPlugin {
 
         //Commands registering
         //new Test(this);
+        new DeviceInfoCommand(this);
         new KickCommand(this);
         new BanCommand(this);
         new FunctionalServerControlCommand(this);
@@ -136,8 +137,8 @@ public final class FunctionalServerControl extends JavaPlugin {
 
 
         //Listeners registering
-        Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
-        Bukkit.getPluginManager().registerEvents(new QuitListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(), this);
         if(OtherUtils.isClassExists("org.bukkit.event.player.PlayerCommandSendEvent")){
             Bukkit.getPluginManager().registerEvents(new ServerSendCommandsListener(), this);
         } else {

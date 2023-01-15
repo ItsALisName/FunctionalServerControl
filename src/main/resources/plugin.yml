@@ -7,6 +7,9 @@ description: Multifunctional control of the server and players
 website: https://vk.com/alphatwo
 softdepend: [Vault, LuckPerms, ProtocolLib, ViaVersion, ProtocolSupport]
 commands:
+  test:
+  deviceinfo:
+    aliases: [dinfo]
   kick:
   functionalservercontrol:
     aliases: [fsc, fscontrol]

@@ -1,7 +1,7 @@
 package by.alis.functionalservercontrol.spigot.additional.globalsettings;
 
-import by.alis.functionalservercontrol.spigot.additional.libraries.org.apache.commons.lang3.StringUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -172,7 +172,7 @@ public class CommandLimiterSettings {
     public void loadCommandLimiterSettings() {
         setFunctionEnabled(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.enabled"));
         if (isFunctionEnabled()) {
-            Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+            TaskManager.preformAsync(() -> {
                 setNotifyAdmins(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.notify-admins"));
                 setDisableSpigotReloadCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.disable-reload-command"));
                 setCheckMode(getFileAccessor().getCommandsLimiterConfig().getString("settings.commands-check-mode"));
@@ -199,9 +199,9 @@ public class CommandLimiterSettings {
                                 this.perWorldGroups.add(groupName);
                                 this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".group." + groupName));
                             }
-                                this.perWorldGroups.add("global");
-                                this.perGroupWorlds.add(world);
-                                this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
+                            this.perWorldGroups.add("global");
+                            this.perGroupWorlds.add(world);
+                            this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         } else {
                             Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                         }
@@ -218,7 +218,7 @@ public class CommandLimiterSettings {
                 setConsoleCommandsDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.console.deny-message"));
             });
         }
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             setModifyTabCompletions(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.modify-tab-completions"));
             if(isModifyTabCompletions()) {
                 for(String command : getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("tab-completions.per-command.global").getKeys(false)) {

@@ -1,3 +1,4 @@
+file-version: "1.07-build1"
 settings:
   disable-reload-command: true #---> Version: v1.05
   enabled: true

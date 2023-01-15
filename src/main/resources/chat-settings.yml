@@ -1,3 +1,4 @@
+file-version: "1.07-build1"
 settings:
   ##############################################################################
   #                 Are the functions of this config enabled?                  #
@@ -133,6 +134,7 @@ chat:
     punishments:
       enabled: true
       commands:
+      - some_command
       #- "mute %1$f 5m Вам не разрешено использовать слово %2$f!"
     #######################################################################
     #               Worlds where word restriction doesn't work            #

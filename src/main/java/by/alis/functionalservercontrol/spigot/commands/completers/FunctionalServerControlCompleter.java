@@ -24,11 +24,12 @@ public class FunctionalServerControlCompleter implements TabCompleter {
             if(sender.hasPermission("functionalservercontrol.import")) a.add("import");
             if(sender.hasPermission("functionalservercontrol.history")) a.add("history");
             if(sender.hasPermission("functionalservercontrol.getstatistic")) a.add("getstatistic");
+            if(sender.hasPermission("functionalservercontrol.inetspeed")) a.add("inetspeed");
             return TextUtils.sortList(a, args);
         }
 
         if (args[0].equalsIgnoreCase("purge") && args.length == 2) {
-            if (sender.hasPermission("functionalservercontrol.purge")) return TextUtils.sortList(Arrays.asList("cache", "history"), args);
+            if (sender.hasPermission("functionalservercontrol.purge")) return Collections.singletonList("history");
         }
 
         if (args[0].equalsIgnoreCase("reload") && args.length == 2) {

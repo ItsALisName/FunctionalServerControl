@@ -2,6 +2,7 @@ package by.alis.functionalservercontrol.spigot.additional.consolefilter;
 
 import by.alis.functionalservercontrol.spigot.additional.containers.StaticContainers;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
+import org.apache.logging.log4j.core.Filter;
 
 import java.util.*;
 
@@ -11,7 +12,7 @@ public class ConsoleFilterHelper {
 
     private final List<String> functionalServerControlCommands = new ArrayList<>(Arrays.asList("/banip", "/temporarybanip", "/tempbanip", "/ccheck", "/cheatcheck", "/dupeip", "/ckick", "/crazykick", "/unbanall", "/unban", "/kickall", "/temporaryban", "/tempban", "/ban",
             "/fsc", "/fscontrol", "/functionalservercontrol", "/kick", "/mute", "/tempmute", "/muteip", "/tempmuteip", "/unmute", "/temporarymute", "/temporarymuteip", "/unmuteall", "/getver", "/gv", "/getversion",
-            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation", "/banlist", "/banslist", "/mutelist", "/muteslist", "/cleanchat", "/clearchat"));
+            "/getclient", "/gc", "/getc", "/getinfo", "/gi", "/getinformation", "/banlist", "/banslist", "/mutelist", "/muteslist", "/cleanchat", "/clearchat", "/deviceinfo", "/dinfo"));
     private final String ISSUED_COMMAND_TEXT = "issued server command: ";
 
     public boolean isFunctionalServerControlCommand(String consoleMessage) {
@@ -29,12 +30,12 @@ public class ConsoleFilterHelper {
         return this.functionalServerControlCommands;
     }
 
-    protected boolean isHidedMessage(String consoleMessage) {
-        if(StaticContainers.getHidedMessagesContainer().getHidedConsoleMessages().isEmpty()) return false;
+    protected Filter.Result isHidedMessage(String consoleMessage) {
+        if(StaticContainers.getHidedMessagesContainer().getHidedConsoleMessages().isEmpty()) return Filter.Result.NEUTRAL;
         for(String hMsg : StaticContainers.getHidedMessagesContainer().getHidedConsoleMessages()) {
-            if(consoleMessage.contains(hMsg)) return true;
+            if(consoleMessage.contains(hMsg)) return Filter.Result.DENY;
         }
-        return false;
+        return Filter.Result.NEUTRAL;
     }
 
     public String getUsedFunctionalServerControlCommand(String consoleMessage) {

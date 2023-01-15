@@ -2,7 +2,7 @@ package by.alis.functionalservercontrol.spigot.managers.ban;
 
 import by.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -73,7 +73,7 @@ public class BanChecker {
     }
 
     public static void bannedIpNotify(Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             if(isIpBanned(player)) {
                 String playerIp = player.getAddress().getAddress().getHostAddress();
                 List<String> bannedAccounts = new ArrayList<>();
@@ -112,13 +112,13 @@ public class BanChecker {
                             if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
                                 admin.sendMessage(
                                         AdventureApiUtils.stringToComponent(setColors(getFileAccessor().getLang().getString("other.notifications.same-ip")
-                                                .replace("%1$f", player.getName())
-                                                .replace("%2$f", playerIp)
-                                                .replace("%3$f", String.join(", ", bannedAccounts))))
-                                                    .append(AdventureApiUtils.createClickableSuggestCommandText(
-                                                            setColors(" " + getGlobalVariables().getButtonBan()),
-                                                            "/ban " + player.getName()
-                                                    ))
+                                                        .replace("%1$f", player.getName())
+                                                        .replace("%2$f", playerIp)
+                                                        .replace("%3$f", String.join(", ", bannedAccounts))))
+                                                .append(AdventureApiUtils.createClickableSuggestCommandText(
+                                                        setColors(" " + getGlobalVariables().getButtonBan()),
+                                                        "/ban " + player.getName()
+                                                ))
                                 );
                                 continue;
                             }

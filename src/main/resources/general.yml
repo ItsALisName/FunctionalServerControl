@@ -1,27 +1,24 @@
+file-version: "1.07-build1"
 ##############################################################################
 #                 Basic settings of the plugin system                        #
 ##############################################################################
 plugin-settings:
-
   ##############################################################################
   #      The language in which the messages will be displayed in the game      #
   #                      "en_US" - English language                            #
   #                      "ru_RU" - Russian language                            #
   ##############################################################################
   global-language: "ru_RU"
-
   ##############################################################################
   #       Will the plugin require the player to re-enter the command if        #
   #                     it performs an unsafe action?                          #
   ##############################################################################
   unsafe-actions-confirmation: true
-
   ##############################################################################
   #       Should the plugin require repeated input for confirmation            #
   #    when trying to use the command "/functionalservercontrol purge"?        #
   ##############################################################################
   purge-confirmation: true
-
   ##############################################################################
   #                          Data storage methods                              #
   #  Available storage methods:                                                #
@@ -36,7 +33,6 @@ plugin-settings:
     username: "root"
     password: "password"
     database_name: "name"
-
   ##############################################################################
   #          Hide the command "/functionalservercontrol" from the              #
   #                 list when the player presses Tab?                          #
@@ -44,7 +40,6 @@ plugin-settings:
   #      (When using Minecraft version lower than 1.13 - need ProtocolLib)     #
   ##############################################################################
   hide-main-command: true
-
   ##############################################################################
   #                    Will some data be loaded into RAM?                      #
   #          "true" is recommended if the database is not very large           #
@@ -52,157 +47,122 @@ plugin-settings:
   #             not affect the stability of the server in any way!)            #
   ##############################################################################
   allow-use-ram: true
-
   ##############################################################################
   #     Hide some non-mandatory information in the console on startup?         #
   ##############################################################################
   less-information: false
-
-  plugin-commands: #---> Version: v1.04
-
+  plugin-commands: 
     ##############################################################################
     #          If enabled, online IPs will be removed from autofill              #
     ##############################################################################
-    hide-ips-from-completions: true #---> Version: v1.04
-
+    hide-ips-from-completions: true 
     ##################################################################################
     #          If enabled, standard minecraft commands will be replaced with         #
     #                                 plugin commands                                #
     # Example: '/minecraft:ban' will be replaced with '/functionalservercontrol:ban' #
     ##################################################################################
-    replace-default-minecraft-commands: true #---> Version: v1.04
-
+    replace-default-minecraft-commands: true 
   ##############################################################################
   #                           Notification Settings                            #
   ##############################################################################
   notifications:
-
     ##############################################################################
     #     Will the console be notified when a blocked player tries to log in     #
     #               or a muted player tries to write to the chat?                #
     ##############################################################################
     console: true
-
     ##############################################################################
     #  Will players with a certain permission be notified when a blocked player  #
     #       tries to log in or a muted player tries to write to the chat?        #
     ##############################################################################
     players: true
-
     ##############################################################################
     #  If enabled, a button will be added to players who receive a notification  #
     #   about the entry of a banned player or an attempt by a muted player to    #
     #       write to the chat with the ability to unmute/unban the player.      #
     ##############################################################################
     buttons-on-notifications: true #----> Version: v1.04
-
   ##############################################################################
   #     If enabled, players will not be able to interact with themselves       #
   #                    in any way within this plugin.                          #
   ##############################################################################
   prohibit-interaction-to-yourself: true
-
   ##############################################################################
   #    Show the description of the command when it is entered incorrectly?     #
   ##############################################################################
   show-description: true
-
   ##############################################################################
   #         Show examples when a player entered a command incorrectly?         #
   ##############################################################################
   show-examples: true
-
   ##############################################################################
   #                           Is the API enabled?                              #
   ##############################################################################
   api: true
-
   logger:
     enabled: true
     log-format: "[FunctionalServerControl <-> %1$f] %2$f"
     messages-to-log: [Your messages from console to log, FunctionalServerControl]
-
   ##############################################################################
   #                       Settings using reasons                               #
   ##############################################################################
   reason-settings:
-
     ##############################################################################
     #    The reason that will be used if the player did not specify a reason     #
     ##############################################################################
     default-reason: "&cThe reason is not specified, please contact the administrator"
-
     ##############################################################################
     #                       Reason when ban time is up                           #
     ##############################################################################
     ban-time-left: "The ban time has expired"
-
     ##############################################################################
     #                        Reason when mute time is up                         #
     ##############################################################################
     mute-time-left: "The mute time has expired"
-
     ##############################################################################
     #         Settings for using commands without specifying a reason            #
     ##############################################################################
     bans-without-reason:
-
       ##############################################################################
       #        Is it allowed to block a player without specifying a reason?        #
       ##############################################################################
       allowed: false
-
     kick-without-reason:
-
       ##############################################################################
       #        Is it allowed to kick a player without specifying a reason?        #
       ##############################################################################
       allowed: false
-
     mute-without-reason:
-
       ##############################################################################
       #        Is it allowed to mute a player without specifying a reason?        #
       ##############################################################################
       allowed: false
-
     cheatcheck-without-reason:
-
       ##############################################################################
       #     Is it allowed to call a player to check for cheats without reason?     #
       ##############################################################################
       allowed: false
-
     unban-without-reason:
-
       ##############################################################################
       #             Is it allowed to unban a player for no reason?                 #
       ##############################################################################
       allowed: false
-
     unmute-without-reason:
-
       ##############################################################################
       #                   Is unmute allowed without reason?                        #
       ##############################################################################
       allowed: false
-
   title-settings:
-
     send-when-muted: true
-
     send-when-unmuted: true
-
   ##############################################################################
   #                       Setting "Actionbar" messages                         #
   ##############################################################################
   action-bar-settings:
-
     ##############################################################################
     #     Send a message to the "Actionbar" to the player while he is muted?     #
     ##############################################################################
     send-while-muted: true
-
   ##############################################################################
   #         OP protection, groups and certain permissions protection           #
   ##############################################################################
@@ -226,7 +186,6 @@ plugin-settings:
       ##############################################################################
       actions: #---> Version v1.04
       - "kick %1$f Вы не можете быть оператором" #---> Version v1.04
-
     group-protection: #---> Version v1.04
       ##############################################################################
       #                         List of protected groups                           #
@@ -242,7 +201,6 @@ plugin-settings:
       actions: #---> Version v1.04
       - "lp user %1$f parent set default" #---> Version v1.04
       - "kick %1$f Вы не можете иметь группу %2$f" #---> Version v1.04
-
     perms-protection: #---> Version v1.04
       protected-permissions: #---> Version v1.04
       - "minecraft.command.op" #---> Version v1.04
@@ -254,14 +212,10 @@ plugin-settings:
       actions: #---> Version v1.04
       - "lp user %1$f permission set %2$f false" #---> Version v1.04
       - "kick %1$f Вы не можете иметь права '%2$f'" #---> Version v1.04
-
-
-
   ##############################################################################
   #                        Chat function configuration                         #
   ##############################################################################
   chat-settings:
-
     ##############################################################################
     #                Setting the priority of a chat listener                     #
     # "LOWEST" - Event call is of very low importance and should be ran first,   #
@@ -275,55 +229,45 @@ plugin-settings:
     #               Not changed by the "/fsc reload" command                     #
     ##############################################################################
     chat-listener-priority: "NORMAL"
-
     disabled-commands-when-muted: [/bc, /tell, /msg, /r, /reply, /m, /message]
-
-
   ##############################################################################
   #               Here you can set server login restrictions                   #
   ##############################################################################
   join-settings:
     announce-console-about-brand: true
-
     ##############################################################################
     #               Control of player clients entering the server                #
     ##############################################################################
     clients-control:
-
-      ##############################################################################
-      #                             Block "Vanilla"?                               #
-      ##############################################################################
+      async-checking: true #The check may be late by 0.5 - 1.5 seconds in asynchronous mode.
       vanilla:
         block: false
         actions:
         - "kick %1$f Vanilla отключена на этом сервере!"
-
-      ##############################################################################
-      #                              Block "Forge"?                                #
-      ##############################################################################
       forge:
         block: false
         actions:
         - "kick %1$f Forge отключен на этом сервере!"
-
-      ##############################################################################
-      #                         Block "WorldDownloader"?                           #
-      ##############################################################################
       world-downloader:
         block: true
         actions:
         - "kick %1$f Использование WorldDownloader'a запрещено"
-
+      lunarclient:
+        block: false
+        actions:
+        - "kick %1$f Использование Lunar запрещено"
+      badlion:
+        block: false
+        actions:
+        - "kick %1$f Использование BanLion запрещено"
     ##############################################################################
     #                         Setting banned nicknames                           #
     ##############################################################################
     nicks-control:
-
       ##############################################################################
       #           Is the mode for checking forbidden nicknames enabled?            #
       ##############################################################################
       enabled: true
-
       ##############################################################################
       #                       Nickname verification method                         #
       # "equals" - it is understood that the player must have a nickname that is   #
@@ -332,26 +276,21 @@ plugin-settings:
       # similar to one of the banned nicknames                                     #
       ##############################################################################
       check-mode: "contains"
-
       ##############################################################################
       #         Whether to notify the console if a player with a banned            #
       #                         nickname tried to log in?                          #
       ##############################################################################
       notify-console: true
-
       ##############################################################################
       #                           Blocked nicknames                                #
       #            Compliance with the format ", " is mandatory                    #
       ##############################################################################
       blocked-nicks: [MC_STORM, Extreme]
-
       ##############################################################################
       #                          Nickname format control                           #
       ##############################################################################
       nick-format-control:
-
         enabled: true
-
         ################################################################################
         #                               Blocked formats                                #
         #  <num> - it means that it can be any number;                                 #
@@ -364,68 +303,56 @@ plugin-settings:
         #                               he will be kicked.                             #
         ################################################################################
         blocked-formats: [<num><num><num><num><num><let>, <let>acker_<num>28, Exa<let>ple_12<num>]
-
     ##############################################################################
     #                      Setting up blocked IP addresses                       #
     ##############################################################################
     ips-control:
-
       ##############################################################################
       #                      Is IP-Address Control enabled?                        #
       ##############################################################################
       enabled: true
-
       ###############################################################################
       # Whether to notify the console if a player with a blocked IP tried to enter? #
       ###############################################################################
       notify-console: true
-
       ##############################################################################
       #                            Blocked ips                                     #
       #            Compliance with the format ", " is mandatory                    #
       ##############################################################################
       blocked-ips: [127.0.0.4, 132.0.0.3]
-
       ##############################################################################
       #          Checking the same IPs currently playing on the server             #
       ##############################################################################
       dupe-ip:
         enabled: true
-
         ##############################################################################
         #                   Maximum similar IP addresses per session                 #
         ##############################################################################
         max-similar-ips-per-session: 3
-
         ##############################################################################
         #                                Check method                                #
         # "join" - checked when the player enters the server                         #
         # "timer" - checks every N seconds for a similar IP                          #
         ##############################################################################
         check-mode: "timer"
-
         ##############################################################################
         #       Time between two checks for similar IP addresses (in seconds)        #
         #                   (Used if the check method is "timer")                    #
         ##############################################################################
         timer-delay: 30
-
         ##############################################################################
         #             Action to be applied (where %1$f is the player)                #
         ##############################################################################
         action: "banip %1$f 1hour На Вашем IP-адресе слишком много аккаунтов"
-
   ##############################################################################
   #             Settings for limiting the duration of punishments              #
   ##############################################################################
   time-settings:
-
     ##############################################################################
     #                       Maximum possible blocking time                       #
     ##############################################################################
     max-possible-ban-time: "3|months"
     max-possible-mute-time: "3|mon"
-
     ##############################################################################
     #  Intergroup setting the maximum punish time (If installed LuckPerms etc.)  #
     ##############################################################################
@@ -436,25 +363,10 @@ plugin-settings:
       admin:
         ban: "1|years"
         mute: "1|years"
-
-  ##############################################################################
-  #           Configuring automatic cleaning of some data from RAM             #
-  ##############################################################################
-  auto-purger:
-
-    enabled: true
-
-    ##############################################################################
-    #        Time in seconds after which the cleaning will be performed          #
-    ##############################################################################
-    delay: 600
-
-
   ##############################################################################
   #                Configuring messages displayed in the console               #
   ##############################################################################
   console-logger:
-
     ################################################################################
     #     Here you can write a message that will be deleted from the console       #
     #             (It is not necessary to specify the entire message)              #
@@ -462,12 +374,10 @@ plugin-settings:
     # Compliance with the ", " format between two different messages is mandatory! #
     ################################################################################
     messages-filter: [Your some messages, And another one message]
-
     ################################################################################
     #       Will the plugin notify the console about the intercepted message?      #
     ################################################################################
     announce-console-when-message-hidden: true
-
     ################################################################################
     #        Replacing incoming messages in the console with your messages         #
     #            (It is mandatory to specify the full message here)                #
@@ -476,18 +386,15 @@ plugin-settings:
     #        Compliance with the format for replacing " -> " is mandatory          #
     ################################################################################
     messages-replacer: [Some console message -> The replaced message, Another console message -> The replaced message No.2]
-
   ################################################################################
   #        Customizing the use and action of the "/cheatcheck" command           #
   ################################################################################
   cheat-checks-settings:
-
     ################################################################################
     #                           Is the feature enabled?                            #
     #   Disable if you are using another plugin that replaces this functionality   #
     ################################################################################
     enabled: true
-
     ################################################################################
     #               Setting restrictions for a player during checkout              #
     ################################################################################
@@ -501,36 +408,30 @@ plugin-settings:
       interact: true #Is it forbidden to interact?
       item-drop: true
       item-pickup: true
-      teleport: true # ---> Version: v1.05
-
+      teleport: true 
     ################################################################################
     #         The list of ignored commands during the check, if the value          #
     #                     of "use-commands" is set to true                         #
     ################################################################################
     whitelisted-commands: [/your, /custom, /commands]
-
     ################################################################################
     #             Prevents players from being kicked during a check                #
     #               Works only with kicks produced by this plugin                  #
     ################################################################################
     prevent-player-kick: true
-
     ################################################################################
     #             Prevents players from being mute during a check                  #
     #              Works only with mutes produced by this plugin                   #
     ################################################################################
     prevent-player-mute: true
-
     ################################################################################
     #                     Standard check time (in seconds)                         #
     ################################################################################
     default-check-time: 450
-
     ################################################################################
     # Will the title message be sent to the player at the beginning of the check?  #
     ################################################################################
     send-title: true
-
     ################################################################################
     #                 Setting up automatic actions during check                    #
     ################################################################################
@@ -542,9 +443,6 @@ plugin-settings:
       if-check-fails: [] #If the check failed (the player is not a cheater)
       if-time-left: #If the check time has expired
       - ban %1$f 1d Проверка не пройдена
-
-
-
 
 global-variables:
   seconds: "Секунду|Секунды|Секунд"

@@ -1,8 +1,8 @@
 package by.alis.functionalservercontrol.spigot.additional.containers;
 
-import by.alis.functionalservercontrol.spigot.additional.libraries.org.apache.commons.lang3.StringUtils;
+import by.alis.functionalservercontrol.spigot.libraries.org.apache.commons.lang3.StringUtils;
 import by.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
-import by.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import by.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -21,8 +21,7 @@ public class ReplacedMessagesContainer {
     }
 
     public void loadReplacedMessages() {
-
-        Bukkit.getScheduler().runTaskAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
+        TaskManager.preformAsync(() -> {
             this.replacedMessages.clear();
             try {
                 a = StringUtils.substringBetween(getFileAccessor().getGeneralConfig().getString("plugin-settings.console-logger.messages-replacer"), "[", "]").split(", ");
