@@ -19,7 +19,7 @@ package your.some.class;
 
 public class SomeYourClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
 
     private FunctionalApi api; //Creating a global API variable for further obtaining it
 
@@ -41,7 +41,7 @@ Example of working with bans(with mutes also, only FunctionalMuteEntry and api.g
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
     
     public void unbanPlayerIfHeALis() {
         FunctionalApi api = FunctionalApi.get(); //Getting FunctionalApi
@@ -65,7 +65,7 @@ Example of working with statistics:
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
 
     public String sendStatisctic(Player player) {
         FunctionalApi api = FunctionalApi.get();
@@ -89,7 +89,7 @@ package your.custom.pack;
 
 public class YourCustomClass {
    
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
    
     public String getPlayerVersionAndBrand(Player player) {
         FunctionalApi api = FunctionalApi.get();
