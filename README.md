@@ -41,7 +41,7 @@ Example of working with bans(with mutes also, only FunctionalMuteEntry and api.g
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
     
     public void unbanPlayerIfHeALis() {
         FunctionalApi api = FunctionalApi.get(); //Getting FunctionalApi
@@ -65,7 +65,7 @@ Example of working with statistics:
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import net.alis.functionalservercontrol.api.FunctionalApi;
 
     public String sendStatisctic(Player player) {
         FunctionalApi api = FunctionalApi.get();
@@ -83,6 +83,29 @@ public class YourSomeClass {
 }
 ```
 
-There is also a FunctionalApi#getCoreAdapter() method in the interface;
-But, I think there is not much sense from it, it just does not add anything new, it is rather needed by the plugin itself, 
-it allows you to use some functions that are not present in the Spigot / Paper API on very low server versions
+Example of working with the FunctionalApi#getCoreAdapter method:
+```
+package your.custom.pack;
+
+public class YourCustomClass {
+  
+    import net.alis.functionalservercontrol.api.FunctionalApi;
+  
+    public String getPlayerVersionAndBrand(Player player) {
+        FunctionalApi api = FunctionalApi.get();
+        if(api != null) {
+            Adapter coreAdapter = api.getCoreAdapter();
+            String adaptName = coreAdapter.getAdapterName(); //We get the name of the adapter(Spigot or Paper)
+            int playerProtocolVersion = coreAdapter.getPlayerProtocolVersion(player); //We get the version of the player's protocol
+            String playerVersion = coreAdapter.getPlayerVersion(player).toString(); //Get the minecraft version of the player
+            String playerBrand = coreAdapter.getPlayerMinecraftBrand(player); //We get the name of the player's client
+            return "Player Protocol Version: " + playerProtocolVersion
+                + "; Player version: " + playerVersion
+                + "; Player client name: " + playerBrand;
+        } else {
+            Bukkit.getConsoleSender().sendMessage("Failed to get FunctionalApi!");
+            return null;
+        }
+    }
+}
+```
