@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface FunctionalApi {
 
-    static FunctionalApi get() {
+    static FunctionalApi getFunctionalPlayer() {
         return ApiGetter.getApi();
     }
 
@@ -29,7 +29,7 @@ public interface FunctionalApi {
     /**
      * This API mechanics is taken from Chatty(Plugin by MrBrikster)
      */
-    class ApiGetter {
+    public static class ApiGetter {
         private static @Getter @Setter FunctionalApi api;
     }
 

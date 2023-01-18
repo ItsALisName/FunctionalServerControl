@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.misc.reflect;
+package net.alis.functionalservercontrol.spigot.additional.reflect;
 
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;

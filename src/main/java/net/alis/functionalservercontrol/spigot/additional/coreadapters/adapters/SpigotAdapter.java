@@ -2,11 +2,11 @@ package net.alis.functionalservercontrol.spigot.additional.coreadapters.adapters
 
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
-import net.alis.functionalservercontrol.spigot.additional.misc.reflect.PingReflect;
+import net.alis.functionalservercontrol.spigot.additional.reflect.PingReflect;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
-import net.alis.functionalservercontrol.spigot.additional.misc.reflect.ActionBarReflect;
-import net.alis.functionalservercontrol.spigot.additional.misc.reflect.TitleReflect;
+import net.alis.functionalservercontrol.spigot.additional.reflect.ActionBarReflect;
+import net.alis.functionalservercontrol.spigot.additional.reflect.TitleReflect;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

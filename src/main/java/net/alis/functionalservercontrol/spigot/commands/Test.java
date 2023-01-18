@@ -4,7 +4,7 @@ import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
-import net.alis.functionalservercontrol.spigot.additional.misc.reflect.PingReflect;
+import net.alis.functionalservercontrol.spigot.additional.reflect.PingReflect;
 import net.alis.functionalservercontrol.spigot.managers.ImportManager;
 import net.alis.functionalservercontrol.spigot.managers.InetManager;
 import org.bukkit.*;
@@ -83,7 +83,7 @@ public class Test implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("api")) {
-            FunctionalApi api = FunctionalApi.get();
+            FunctionalApi api = FunctionalApi.getFunctionalPlayer();
             if (api != null) {
                 for (FunctionalBanEntry banEntry : api.getBans()) {
                     sender.sendMessage("NAME: " + banEntry.getName());
@@ -100,7 +100,7 @@ public class Test implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("unban")) {
-            FunctionalApi api = FunctionalApi.get();
+            FunctionalApi api = FunctionalApi.getFunctionalPlayer();
             if (api != null) {
                 for (FunctionalBanEntry entry : api.getBans()) {
                     if (entry.getName().equalsIgnoreCase(args[1])) {
@@ -113,7 +113,7 @@ public class Test implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("api-stats")) {
-            FunctionalApi api = FunctionalApi.get();
+            FunctionalApi api = FunctionalApi.getFunctionalPlayer();
             if (api != null) {
                 String s = api.getPlayerStatistics().getAsPlayer((Player) sender).get(StatsType.Player.STATS_BANS);
                 sender.sendMessage(s);

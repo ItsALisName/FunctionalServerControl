@@ -27,8 +27,7 @@ public class MiniNBTFactory {
         StructureModifier<NbtBase<?>> modifier = null;
         try {
             modifier = (StructureModifier<NbtBase<?>>) stackModifier.invoke(null, stack);
-        } catch (IllegalAccessException | IllegalArgumentException
-                 | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
         NbtBase<?> result = modifier.read(0);

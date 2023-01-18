@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.misc.reflect;
+package net.alis.functionalservercontrol.spigot.additional.reflect;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;

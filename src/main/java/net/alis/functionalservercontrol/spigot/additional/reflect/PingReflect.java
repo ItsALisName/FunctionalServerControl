@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.misc.reflect;
+package net.alis.functionalservercontrol.spigot.additional.reflect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

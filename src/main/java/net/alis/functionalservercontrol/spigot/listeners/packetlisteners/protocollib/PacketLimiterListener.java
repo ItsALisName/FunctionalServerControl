@@ -24,7 +24,7 @@ public class PacketLimiterListener {
 
     public void listeningPackets() {
         if(Expansions.getProtocolLibManager().isProtocolLibSetuped()) {
-            Expansions.getProtocolLibManager().getProtocolManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.LOWEST, getPackets(), ListenerOptions.ASYNC, ListenerOptions.INTERCEPT_INPUT_BUFFER) {
+            Expansions.getProtocolLibManager().getProtocolManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.LOWEST, getPackets(), ListenerOptions.ASYNC) {
                 @Override
                 public void onPacketReceiving(PacketEvent packetEvent) {
                     if (!getProtectionSettings().isPacketLimiterEnabled()) return;

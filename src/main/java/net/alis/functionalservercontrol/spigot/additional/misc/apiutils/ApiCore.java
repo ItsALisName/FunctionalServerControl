@@ -15,6 +15,8 @@ import static net.alis.functionalservercontrol.spigot.additional.globalsettings.
 
 public class ApiCore implements FunctionalApi {
 
+    private HashSet<FunctionalPlayer> players = new HashSet<>();
+
     @Override
     public Set<FunctionalBanEntry> getBans() {
         Set<FunctionalBanEntry> entries = new HashSet<>();
@@ -54,4 +56,5 @@ public class ApiCore implements FunctionalApi {
     public FunctionalStatistics getPlayerStatistics() {
         return new FunctionalStatistics();
     }
+
 }

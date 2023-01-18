@@ -114,7 +114,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         //Expansions
 
         //Commands registering
-        new Test(this);
+        //new Test(this);
         new DeviceInfoCommand(this);
         new KickCommand(this);
         new BanCommand(this);
@@ -215,7 +215,7 @@ public final class FunctionalServerControl extends JavaPlugin {
         //Console filters
 
         //Packetevents initializing
-        if(Bukkit.getPluginManager().getPlugin("ProtocolLib") == null || Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+        if(!Expansions.getProtocolLibManager().isProtocolLibSetuped()) {
             PacketEvents.get().init();
         }
 
@@ -226,7 +226,9 @@ public final class FunctionalServerControl extends JavaPlugin {
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
         this.unregisterPluginChannels();
-        PacketEvents.get().terminate();
+        if(!Expansions.getProtocolLibManager().isProtocolLibSetuped()){
+            PacketEvents.get().terminate();
+        }
     }
 
     private Filter getConsoleFilterCore() {
