@@ -9,7 +9,7 @@ Supported kernels: Spigot and its forks
 
 # API
 
-The API is located in the package: by.alis.functionalservercontrol.api.FunctionalApi;
+The API is located in the package: api.io.alis.functionalservercontrol.FunctionalApi;
 The events are located in the package: by.alis.functionalservercontrol.api.events;
 
 Example of getting the API:
@@ -19,7 +19,7 @@ package your.some.class;
 
 public class SomeYourClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import api.io.alis.functionalservercontrol.FunctionalApi;
 
     private FunctionalApi api; //Creating a global API variable for further obtaining it
 
@@ -41,7 +41,7 @@ Example of working with bans(with mutes also, only FunctionalMuteEntry and api.g
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import api.io.alis.functionalservercontrol.FunctionalApi;
     
     public void unbanPlayerIfHeALis() {
         FunctionalApi api = FunctionalApi.get(); //Getting FunctionalApi
@@ -65,7 +65,7 @@ Example of working with statistics:
 ```
 public class YourSomeClass {
 
-    import by.alis.functionalservercontrol.api.FunctionalApi;
+    import api.io.alis.functionalservercontrol.FunctionalApi;
 
     public String sendStatisctic(Player player) {
         FunctionalApi api = FunctionalApi.get();

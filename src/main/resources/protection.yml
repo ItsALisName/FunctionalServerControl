@@ -1,0 +1,55 @@
+file-version: "1.08-build1"
+################################################################################
+#       Settings for limiting packets sent by the player to the server         #
+# ATTENTION! Specify the number of packets depending on the specified interval #
+#               (The smaller the interval, the fewer packets)                  #
+################################################################################
+packet-limiter:
+  enabled: true
+  max-player-packets: 250
+  check-interval: 5 # <-- Not changed by '/fsc reload'
+  notify-admins: true
+  punishments:
+  - "kick %1$f Вы отправляете слишком много пакетов"
+################################################################################
+#                           Lectern exploit fix                                #
+#                     Not needed on versions above 1.18                        #
+#             Original plugin LecternCrashFix on spigotmc.org                  #
+#       These functions work in asynchronous mode, failures are possible       #
+################################################################################
+lectern-crash-fixer:
+  enabled: true
+  notify-admins: true
+  kick-message: "kick %1$f Похоже, вы попытались сломать сервер"
+ping-limiter:
+  enabled: true
+  max-ping: 1500
+  punishments:
+  - "kick %1$f Похоже, у Вас проблемы с интернет-соединением, у Вас слишком большой пинг."
+accounts-protection:
+  enabled: true
+  notify-admins: true
+  kick-message: "&cВам не разрешено входить на данный аккаунт!"
+  accounts:
+    ALis: 127.0.0.1
+    YOUR_NAME: 1.1.1.1
+################################################################################
+#                         !!!Only with ProtocolLib!!!                          #
+#                        Control of items on the server                        #
+#                 Original plugin ItemFixer on spigotmc.org                    #
+# The original has increased functionality, but new versions are not supported #
+# These functions have been moved to asynchronous mode, failures are possible  #
+################################################################################
+item-fixer:
+  enabled: true
+  check-enchants: true
+  check-invalid-item-enchants: true
+  check-items-on-join: true
+  ignored-tags:
+  - tag1
+  - tag2
+  ignored-worlds:
+    - "your"
+    - "custom"
+    - "worlds"
+

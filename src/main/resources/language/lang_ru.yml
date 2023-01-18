@@ -1,4 +1,4 @@
-file-version: "1.07-build1"
+file-version: "1.08-build1"
 ban-message-format:
 - "&6Ваш аккаунт был заблокирован!"
 - ""
@@ -151,7 +151,10 @@ other:
     mute: "&c[FunctionalServerControl] &7Заткнутый игрок &c%1$f &7попытался написать в чат: &c%2$f &7(Размут через: &c%3$f&7)"
     blocked-command: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался использовать команду &c%2$f" 
     player-info-hover-text: "&7Информация о игроке: &c%1$f \n&7Был кикнут: &c%2$f &7раз \n&7Был забанен: &c%3$f &7раз \n&7Был заткнут: &c%4$f &7раз \n&7Использовал заблокированные команды: &c%5$f &7раз \n&7Использовал запрещенные слова: &c%6$f &7раз \n&7Попыток рекламирования: &c%7$f &7раз" 
-    advertise: 
+    player-send-over-packets: "&7Игрок &c%1$f &7отправил слишком много пакетов&7&o(%2$f/%3$f)"
+    protected-account-join: "&7На защищенный аккаунт &c%1$f &7(Защищен адресом: &c%2$f&7) попытался зайти игрок с адресом: &c%3$f"
+    lectern-crash-try: "&7Игрок &c%1$f &7попытался не верно кликнуть на слот в кафедре &9&o(LecternCrash?)"
+    advertise:
       chat: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался рекламировать в сообщении: &c%2$f" 
       sign: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался рекламировать на табличке: &c%2$f" 
       book: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался рекламировать в книжке: &c%2$f" 
@@ -168,6 +171,9 @@ other:
       world-downloader: "&c[FunctionalServerControl] &7Игрок &c%1$f &7попытался зайти используя &cWorldDownloader"
   permissions-protection:
     player-cannot-be-operator: "&c[FunctionalServerControl] &7Игрок &c%1$f &7не может быть оператором"
+
+unsafe-actions:
+  unsafe-action-confirm: "&7Пожалуйста подтвердите Ваше действия введя команду: &c/%1$f"
 
 commands:
   help:

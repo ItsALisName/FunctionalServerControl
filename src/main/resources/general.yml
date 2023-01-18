@@ -1,4 +1,4 @@
-file-version: "1.07-build1"
+file-version: "1.08-build1"
 ##############################################################################
 #                 Basic settings of the plugin system                        #
 ##############################################################################
@@ -36,8 +36,6 @@ plugin-settings:
   ##############################################################################
   #          Hide the command "/functionalservercontrol" from the              #
   #                 list when the player presses Tab?                          #
-  #       (Incorrect operation is possible when using ProtocolSupport)         #
-  #      (When using Minecraft version lower than 1.13 - need ProtocolLib)     #
   ##############################################################################
   hide-main-command: true
   ##############################################################################
