@@ -1,11 +1,11 @@
 package net.alis.functionalservercontrol.spigot.managers.mute;
 
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.MuteType;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class FileManager {
 
     private final FunctionalServerControl plugin;
-    private final String configsVersion = "1.08-build1";
+    private final String configsVersion = "1.09.1";
     public FileManager(FunctionalServerControl plugin) {
         this.plugin = plugin;
         this.initializeFiles();

@@ -3,7 +3,7 @@ package net.alis.functionalservercontrol.spigot.managers;
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
-import net.alis.functionalservercontrol.api.events.PlayerCheatCheckPreprocessEvent;
+import net.alis.functionalservercontrol.api.events.AsyncPlayerCheatCheckPreprocessEvent;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -56,7 +56,7 @@ public class CheatCheckerManager {
             reason = getGlobalVariables().getDefaultReason();
         }
 
-        PlayerCheatCheckPreprocessEvent cheatCheckPreprocessEvent = new PlayerCheatCheckPreprocessEvent(player, initiator, reason);
+        AsyncPlayerCheatCheckPreprocessEvent cheatCheckPreprocessEvent = new AsyncPlayerCheatCheckPreprocessEvent(player, initiator, reason);
         if(getConfigSettings().isApiEnabled()) {
             Bukkit.getPluginManager().callEvent(cheatCheckPreprocessEvent);
         }

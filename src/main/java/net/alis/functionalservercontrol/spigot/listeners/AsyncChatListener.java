@@ -4,7 +4,7 @@ import net.alis.functionalservercontrol.spigot.managers.AdvertiseManager;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.ChatManager;
 import net.alis.functionalservercontrol.api.enums.MuteType;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.managers.mute.MuteManager;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import io.papermc.paper.event.player.AsyncChatEvent;

@@ -1,12 +1,12 @@
 package net.alis.functionalservercontrol.spigot.listeners.packetlisteners.protocollib;
 
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.protocolutils.inwrappers.WrapperPlayClientWindowClick;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.InventoryClickType;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerOptions;

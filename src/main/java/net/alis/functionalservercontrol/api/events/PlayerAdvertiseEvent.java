@@ -1,12 +1,12 @@
 package net.alis.functionalservercontrol.api.events;
 
 import net.alis.functionalservercontrol.api.enums.Chat;
+import net.alis.functionalservercontrol.api.events.event.AbstractPlayerEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerAdvertiseEvent extends PlayerEvent {
+public class PlayerAdvertiseEvent extends AbstractPlayerEvent {
 
     private static final HandlerList handlerList = new HandlerList();
     private final Chat.AdvertiseMethod advertiseMethod;

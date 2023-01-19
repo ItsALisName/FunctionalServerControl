@@ -1,9 +1,9 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

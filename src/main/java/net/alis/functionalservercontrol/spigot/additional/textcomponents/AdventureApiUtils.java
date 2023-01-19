@@ -1,6 +1,7 @@
-package net.alis.functionalservercontrol.spigot.additional.misc;
+package net.alis.functionalservercontrol.spigot.additional.textcomponents;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
+import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.file.SFAccessor;
 
@@ -13,9 +14,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 
 public class AdventureApiUtils {
-
 
     public static Component createHoverText(String text, String hoverText) {
         Component hoverComponent = Component.text(TextUtils.setColors(hoverText));
@@ -53,6 +54,13 @@ public class AdventureApiUtils {
         String playerBlockedWords = BaseManager.getBaseManager().getPlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
         String playerAdvertiseAttempts = BaseManager.getBaseManager().getPlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
         return createHoverText(TextUtils.setColors(message), TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.player-info-hover-text").replace("%1$f", player.getName()).replace("%2$f", TextUtils.isTextNotNull(playerKicks) ? playerKicks : "0").replace("%3$f", TextUtils.isTextNotNull(playerBans) ? playerBans : "0").replace("%4$f", TextUtils.isTextNotNull(playerMutes) ? playerMutes : "0").replace("%5$f", TextUtils.isTextNotNull(playerBlockedCommand) ? playerBlockedCommand : "0").replace("%6$f", TextUtils.isTextNotNull(playerBlockedWords) ? playerBlockedWords : "0").replace("%7$f", TextUtils.isTextNotNull(playerAdvertiseAttempts) ? playerAdvertiseAttempts : "0")));
+    }
+
+    public static Component createHoverOpenURLText(String input, String hoverText, String link) {
+        Component component = Component.text(setColors(input));
+        component = component.hoverEvent(HoverEvent.showText(stringToComponent(setColors(hoverText))))
+                .clickEvent(ClickEvent.openUrl(link));
+        return component;
     }
 
     public static Component addPunishmentButtons(Player admin, String who) {
@@ -101,6 +109,51 @@ public class AdventureApiUtils {
             }
             return component;
         }
+    }
+
+    public static class NoClassComponent {
+        private Component component;
+
+        public NoClassComponent() {
+            this.component = Component.text("");
+        }
+
+        public NoClassComponent(String text) {
+            this.component = Component.text(setColors(text));
+        }
+
+        public NoClassComponent(Component text) {
+            this.component = text;
+        }
+
+        public NoClassComponent addExtra(AdventureApiUtils.NoClassComponent extra) {
+            component = component.append(extra.component);
+            return this;
+        }
+
+        public NoClassComponent addExtra(String extra) {
+            component = component.append(stringToComponent(extra));
+            return this;
+        }
+
+        public NoClassComponent addExtra(Component extra) {
+            component = component.append(extra);
+            return this;
+        }
+
+        public NoClassComponent addOnStart(String extra) {
+            this.component = Component.text(extra).append(component);
+            return this;
+        }
+
+        public Component get() {
+            return this.component;
+        }
+
+        public String getString() {
+            return componentToString(this.component);
+        }
+
     }
 
 }

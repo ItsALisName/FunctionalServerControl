@@ -73,9 +73,13 @@ public class ConfigUpdater {
                 continue;
             }
             if(trailingKey.contains("file-version")) {
-                parserConfig.set(trailingKey, "1.08-build1");
+                parserConfig.set(trailingKey, "1.09.1");
             } else {
-                parserConfig.set(trailingKey, currentValue);
+                if(currentValue instanceof List<?>) {
+                    parserConfig.set(trailingKey, new ArrayList<>(((List<?>) currentValue)));
+                } else {
+                    parserConfig.set(trailingKey, currentValue);
+                }
             }
             String yaml = parserConfig.saveToString();
             yaml = yaml.substring(0, yaml.length() - 1).replace("\n", "\n" + indents);

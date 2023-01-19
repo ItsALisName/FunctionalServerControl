@@ -1,8 +1,9 @@
-file-version: "1.08-build1"
+file-version: "1.09.1"
 ##############################################################################
 #                 Basic settings of the plugin system                        #
 ##############################################################################
 plugin-settings:
+  check-for-updates: true
   ##############################################################################
   #      The language in which the messages will be displayed in the game      #
   #                      "en_US" - English language                            #

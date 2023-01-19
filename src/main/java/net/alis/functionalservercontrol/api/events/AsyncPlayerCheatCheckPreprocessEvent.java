@@ -1,23 +1,22 @@
 package net.alis.functionalservercontrol.api.events;
 
+import net.alis.functionalservercontrol.api.events.event.AbstractPlayerEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerCheatCheckPreprocessEvent extends PlayerEvent implements Cancellable {
+public class AsyncPlayerCheatCheckPreprocessEvent extends AbstractPlayerEvent implements Cancellable {
 
     private final static HandlerList handlerList = new HandlerList();
-    private CommandSender initiator;
+    private final CommandSender initiator;
     private String reason;
     private boolean cancelled;
 
 
-
-    public PlayerCheatCheckPreprocessEvent(@NotNull Player who, @NotNull CommandSender initiator, String reason) {
-        super(who);
+    public AsyncPlayerCheatCheckPreprocessEvent(@NotNull Player player, @NotNull CommandSender initiator, String reason) {
+        super(player, true);
         this.initiator = initiator;
         this.reason = reason;
     }

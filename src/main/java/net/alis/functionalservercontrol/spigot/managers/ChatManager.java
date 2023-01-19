@@ -1,8 +1,8 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import org.bukkit.Bukkit;

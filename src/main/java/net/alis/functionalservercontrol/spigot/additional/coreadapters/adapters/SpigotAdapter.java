@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.additional.coreadapters.adapters;
 
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.reflect.PingReflect;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;

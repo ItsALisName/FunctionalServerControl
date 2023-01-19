@@ -5,8 +5,8 @@ import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.Chat;
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.api.events.PlayerAdvertiseEvent;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 

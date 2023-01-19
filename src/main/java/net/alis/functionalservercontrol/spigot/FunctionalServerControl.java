@@ -1,6 +1,9 @@
 package net.alis.functionalservercontrol.spigot;
 
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
+import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UpdateCheckSource;
+import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UpdateChecker;
+import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UserAgentBuilder;
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.Metrics;
 import net.alis.functionalservercontrol.spigot.additional.tasks.PacketLimiterTask;
@@ -220,6 +223,16 @@ public final class FunctionalServerControl extends JavaPlugin {
         }
 
         if(getConfigSettings().isApiEnabled()) FunctionalApi.ApiGetter.setApi(new ApiCore());
+
+        if(getConfigSettings().isCheckForUpdates()) {
+            new UpdateChecker(this, UpdateCheckSource.SPIGOT, String.valueOf(107463))
+                    .checkEveryXHours(1)
+                    .setDonationLink("https://www.donationalerts.com/r/relogg_alis")
+                    .setDownloadLink(107463)
+                    .setSupportLink("https://vk.com/alphatwo")
+                    .checkNow();
+        }
+
     }
 
     @Override
@@ -258,5 +271,4 @@ public final class FunctionalServerControl extends JavaPlugin {
             getServer().getMessenger().unregisterOutgoingPluginChannel(this, "minecraft:brand");
         }
     }
-
 }

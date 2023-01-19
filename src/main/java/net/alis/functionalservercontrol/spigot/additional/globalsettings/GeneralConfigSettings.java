@@ -20,11 +20,12 @@ import static net.alis.functionalservercontrol.spigot.managers.mute.MuteManager.
 public class GeneralConfigSettings {
 
 
+    private boolean checkForUpdates;
     private String serverCoreName;
-    private boolean isOldServerVersion = false;
+    private boolean isOldServerVersion;
     private String globalLanguage = "ru_RU";
-    private boolean isAnnounceWhenLogHided = true;
-    private boolean isAllowedUseRamAsContainer = false;
+    private boolean isAnnounceWhenLogHided;
+    private boolean isAllowedUseRamAsContainer;
     private boolean unsafeActionsConfirmation = true;
     private boolean isBanAllowedWithoutReason = true;
     private boolean isKickAllowedWithoutReason = true;
@@ -722,11 +723,18 @@ public class GeneralConfigSettings {
     public String getSupportedHoverEvents() {
         return supportedHoverEvents;
     }
+    public boolean isCheckForUpdates() {
+        return checkForUpdates;
+    }
+    private void setCheckForUpdates(boolean checkForUpdates) {
+        this.checkForUpdates = checkForUpdates;
+    }
 
     public void loadConfigSettings() {
         setServerCoreName(OtherUtils.getServerCoreName(Bukkit.getServer()));
         setLessInformation(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.less-information"));
         setApiEnabled(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.api"));
+        setCheckForUpdates(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.check-for-updates"));
         switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.chat-listener-priority")) {
             case "LOWEST": {
                 setChatListenerPriority(EventPriority.LOWEST);

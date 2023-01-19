@@ -2,8 +2,8 @@ package net.alis.functionalservercontrol.spigot.listeners.packetlisteners.packet
 import net.alis.functionalservercontrol.api.enums.InventoryClickType;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.PacketListenerPriority;
 import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import net.alis.functionalservercontrol.spigot.additional.misc.AdventureApiUtils;
-import net.alis.functionalservercontrol.spigot.additional.misc.MD5TextUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.AbstractPacketListener;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PacketPlayReceiveEvent;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.packettype.PacketType;

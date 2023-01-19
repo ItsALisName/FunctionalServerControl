@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.misc;
+package net.alis.functionalservercontrol.spigot.additional.textcomponents;
 
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.api.enums.StatsType;
@@ -54,6 +54,17 @@ public class MD5TextUtils {
 
     public static TextComponent stringToTextComponent(String param) {
         return new TextComponent(param);
+    }
+
+    public static TextComponent createHoverOpenURLText(String input, String hoverText, String link) {
+        TextComponent component = new TextComponent(setColors(input));
+        HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, stringToMdText(hoverText));
+        ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, link);
+        return component;
+    }
+
+    public static Text stringToMdText(String input) {
+        return new Text(setColors(input));
     }
 
     @Contract("_, _ -> param1")
@@ -118,6 +129,54 @@ public class MD5TextUtils {
             }
             return component;
         }
+    }
+
+    public static class NoClassComponent {
+
+        private TextComponent component;
+
+        public NoClassComponent() {
+            this.component = new TextComponent("");
+        }
+
+        public NoClassComponent(String text) {
+            this.component = new TextComponent(setColors(text));
+        }
+
+        public NoClassComponent(TextComponent text) {
+            this.component = text;
+        }
+
+        public NoClassComponent addOnStart(String extra) {
+            TextComponent n = new TextComponent(stringToTextComponent(extra));
+            n.addExtra(component);
+            this.component = n;
+            return this;
+        }
+
+        public NoClassComponent addExtra(NoClassComponent extra) {
+            this.component.addExtra(extra.component);
+            return this;
+        }
+
+        public NoClassComponent addExtra(String extra) {
+            this.component.addExtra(stringToTextComponent(extra));
+            return this;
+        }
+
+        public NoClassComponent addExtra(TextComponent extra) {
+            this.component.addExtra(extra);
+            return this;
+        }
+
+        public TextComponent get() {
+            return this.component;
+        }
+
+        public String getString() {
+            return this.component.getText();
+        }
+
     }
 
 }
