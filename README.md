@@ -10,7 +10,7 @@ Supported kernels: Spigot and its forks
 # API
 
 The API is located in the package: net.alis.functionalservercontrol.api.FunctionalApi;
-The events are located in the package: by.alis.functionalservercontrol.api.events;
+The events are located in the package: net.alis.functionalservercontrol.api.events;
 
 Example of getting the API:
 
