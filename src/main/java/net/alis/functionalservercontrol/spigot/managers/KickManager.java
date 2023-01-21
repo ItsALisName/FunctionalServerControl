@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.api.enums.KickType;
 import net.alis.functionalservercontrol.api.events.KickPreprocessEvent;

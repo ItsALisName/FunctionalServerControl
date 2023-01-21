@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.spigot.commands;
 
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.MuteListCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import static net.alis.functionalservercontrol.spigot.managers.mute.MuteManager.
 
 public class MuteListCommand implements CommandExecutor {
 
-    public MuteListCommand(FunctionalServerControl plugin) {
+    public MuteListCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("mutelist").setExecutor(this);
         plugin.getCommand("mutelist").setTabCompleter(new MuteListCompleter());
     }

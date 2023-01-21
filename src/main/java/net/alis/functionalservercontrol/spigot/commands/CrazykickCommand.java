@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.CrazykickCompleter;
@@ -20,7 +20,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class CrazykickCommand implements CommandExecutor {
 
-    public CrazykickCommand(FunctionalServerControl plugin) {
+    public CrazykickCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("crazykick").setExecutor(this);
         plugin.getCommand("crazykick").setTabCompleter(new CrazykickCompleter());
     }

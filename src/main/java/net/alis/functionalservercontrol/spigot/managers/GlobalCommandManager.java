@@ -1,6 +1,8 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
+import net.alis.functionalservercontrol.libraries.org.apache.commons.lang3.StringUtils;
+import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.*;
 import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.stringToMonolith;
 import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
 public class GlobalCommandManager {
@@ -33,213 +36,300 @@ public class GlobalCommandManager {
                 }
             }
         }
+        if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + finalCommand.replace("/", "") + ".bypass")) return true;
         if(getCommandLimiterSettings().isUseGroups()) {
             if (Expansions.getVaultManager().isVaultSetuped()) {
                 String playerGroup = Expansions.getVaultManager().getPlayerGroup(player);
                 if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(playerGroup)) {
-                    if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
-                        World world = player.getWorld();
-                        if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
-                            int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
-                            if (getCommandLimiterSettings().isPerWorldUseAsWhiteList() ? !getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand) : getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand)) {
-                                if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                    return true;
+                    World world = player.getWorld();
+                    if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
+                        int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
+                        if(getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
+                            for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                    if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                        return false;
+                                    }
                                 } else {
+                                    List<String> l = new ArrayList<>();
+                                    for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                    }
+                                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                    if(!l.contains(command)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                        return false;
+                                    }
+                                }
+                            }
+                        } else {
+                            for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                    if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                        return false;
+                                    }
+                                } else {
+                                    List<String> l = new ArrayList<>();
+                                    for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                    }
+                                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                    if(l.contains(command)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(getCommandLimiterSettings().isGlobalUseAsWhiteList()) {
+                        for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                            if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
                                     TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
                                     return false;
                                 }
-                            }
-                        }
-                        if (getCommandLimiterSettings().isGlobalUseAsWhiteList() ? !getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(finalCommand) : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(finalCommand)) {
-                            if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                return true;
                             } else {
-                                player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                return false;
-                            }
-                        }
-                    }
-                    if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("all_args")) {
-                        World world = player.getWorld();
-                        
-                        
-                        if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
-                            int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
-                            if (getCommandLimiterSettings().isPerWorldUseAsWhiteList() ? !getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command) : getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command)) {
-                                if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                    return true;
-                                } else {
+                                List<String> l = new ArrayList<>();
+                                for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                    l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                }
+                                Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                if(!l.contains(command)) {
                                     player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
                                     return false;
                                 }
                             }
                         }
-                        if (getCommandLimiterSettings().isGlobalUseAsWhiteList() ? !getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(command) : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(command)) {
-                            if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                return true;
+                    } else {
+                        for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                            if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                    player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                    return false;
+                                }
                             } else {
-                                player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                return false;
+                                List<String> l = new ArrayList<>();
+                                for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                    l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                }
+                                Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                if(l.contains(command)) {
+                                    player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                    return false;
+                                }
                             }
                         }
                     }
+                    return true;
                 }
             }
             if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
                 if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(Expansions.getLuckPermsManager().getPlayerGroup(player))) {
                     String playerGroup = Expansions.getLuckPermsManager().getPlayerGroup(player);
-                    if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
+                    if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(playerGroup)) {
                         World world = player.getWorld();
-                        
-                        
                         if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
                             int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
-                            if (getCommandLimiterSettings().isPerWorldUseAsWhiteList() ? !getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand) : getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand)) {
-                                if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                                    return true;
-                                } else {
-                                    player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                    return false;
+                            if(getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
+                                for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                    if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                        if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                            return false;
+                                        }
+                                    } else {
+                                        List<String> l = new ArrayList<>();
+                                        for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                            l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                        }
+                                        Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                        if(!l.contains(command)) {
+                                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                            return false;
+                                        }
+                                    }
+                                }
+                            } else {
+                                for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                    if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                        if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                            return false;
+                                        }
+                                    } else {
+                                        List<String> l = new ArrayList<>();
+                                        for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                                            l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                        }
+                                        Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                        if(l.contains(command)) {
+                                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                            return false;
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if (getCommandLimiterSettings().isGlobalUseAsWhiteList() ? !getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(finalCommand) : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(finalCommand)) {
-                            if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                return true;
-                            } else {
-                                player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                return false;
+                        if(getCommandLimiterSettings().isGlobalUseAsWhiteList()) {
+                            for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                    if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                        return false;
+                                    }
+                                } else {
+                                    List<String> l = new ArrayList<>();
+                                    for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                    }
+                                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                    if(!l.contains(command)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                        return false;
+                                    }
+                                }
                             }
+                        } else {
+                            for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                                    if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                                        return false;
+                                    }
+                                } else {
+                                    List<String> l = new ArrayList<>();
+                                    for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup)) {
+                                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                                    }
+                                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                                    if(l.contains(command)) {
+                                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        World world = player.getWorld();
+        if(getCommandLimiterSettings().getPerWorldGroups().contains("global") && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf("global")) == world) {
+            int indexOf = getCommandLimiterSettings().getPerGroupWorlds().indexOf(world);
+            if(getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
+                for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                    if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                        if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                            return false;
+                        }
+                    } else {
+                        List<String> l = new ArrayList<>();
+                        for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                            l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                        }
+                        Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                        if(!l.contains(command)) {
+                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                            return false;
                         }
                     }
-                    if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("all_args")) {
-                        if (getCommandLimiterSettings().isGlobalUseAsWhiteList() ? !getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(command) : getCommandLimiterSettings().getGlobalBlockedCommands().get(playerGroup).contains(command)) {
-                            if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                return true;
-                            } else {
-                                player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                                TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                return false;
-                            }
+                }
+            } else {
+                for(String cmd : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                    if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                        if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                            return false;
                         }
-                        World world = player.getWorld();
-                        if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
-                            int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
-                            if (getCommandLimiterSettings().isPerWorldUseAsWhiteList() ? !getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command) : getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command)) {
-                                if(player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")){
-                                    return true;
-                                } else {
-                                    player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                                    TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                                    return false;
-                                }
-                            }
+                    } else {
+                        List<String> l = new ArrayList<>();
+                        for(String c : getCommandLimiterSettings().getPerGroupCommands().get(indexOf)) {
+                            l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
+                        }
+                        Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                        if(l.contains(command)) {
+                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
+                            return false;
                         }
                     }
                 }
             }
         }
-        if(getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
-            World world = player.getWorld();
-            
-            
-            if(getCommandLimiterSettings().getPerWorldGroups().contains("global") && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf("global")) == world) {
-                int indexOf = getCommandLimiterSettings().getPerGroupWorlds().indexOf(world);
-                if(getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
-                    if(!getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand)) {
-                        if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                            return true;
-                        } else {
-                            player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                            return false;
-                        }
+        if(getCommandLimiterSettings().isGlobalUseAsWhiteList()) {
+            for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get("global")) {
+                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                    if(!cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                        return false;
                     }
                 } else {
-                    if(getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(finalCommand)) {
-                        if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                            return true;
-                        } else {
-                            player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                            return false;
-                        }
+                    List<String> l = new ArrayList<>();
+                    for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get("global")) {
+                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
                     }
-                }
-            }
-            if(getCommandLimiterSettings().isGlobalUseAsWhiteList()) {
-                if(!getCommandLimiterSettings().getGlobalBlockedCommands().get("global").contains(finalCommand)) {
-                    if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                        return true;
-                    } else {
-                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                        return false;
-                    }
-                }
-            } else {
-                if(getCommandLimiterSettings().getGlobalBlockedCommands().get("global").contains(finalCommand)) {
-                    if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                        return true;
-                    } else {
-                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                    if(!l.contains(command)) {
+                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
                         return false;
                     }
                 }
             }
-        }
-        if(getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("all_args")) {
-            World world = player.getWorld();
-            
-            
-            if(getCommandLimiterSettings().getPerWorldGroups().contains("global") && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf("global")) == world) {
-                int indexOf = getCommandLimiterSettings().getPerGroupWorlds().indexOf(world);
-                if (getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {
-                    if(!getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command)) {
-                        if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                            return true;
-                        } else {
-                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                            return false;
-                        }
+        } else {
+            for(String cmd : getCommandLimiterSettings().getGlobalBlockedCommands().get("global")) {
+                if(OtherUtils.getCommandCheckMode(cmd).equalsIgnoreCase("first_arg")) {
+                    if(cmd.split("\\[")[0].equalsIgnoreCase(finalCommand)) {
+                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                        return false;
                     }
                 } else {
-                    if(getCommandLimiterSettings().getPerGroupCommands().get(indexOf).contains(command)) {
-                        if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                            return true;
-                        } else {
-                            player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
-                            TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                            return false;
-                        }
+                    List<String> l = new ArrayList<>();
+                    for(String c : getCommandLimiterSettings().getGlobalBlockedCommands().get("global")) {
+                        l.add(c.replace("[" + StringUtils.substringBetween(c, "[", "]") + "]", ""));
                     }
-                }
-            }
-            if (getCommandLimiterSettings().isGlobalUseAsWhiteList()) {
-                if(!getCommandLimiterSettings().getGlobalBlockedCommands().get("global").contains(command)) {
-                    if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                        return true;
-                    } else {
-                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
-                        return false;
-                    }
-                }
-            } else {
-                if(getCommandLimiterSettings().getGlobalBlockedCommands().get("global").contains(command)) {
-                    if (player.hasPermission("functionalservercontrol.commands.bypass") || player.hasPermission("functionalservercontrol.commands." + command.replace("/", "") + ".bypass")) {
-                        return true;
-                    } else {
-                        player.sendMessage(setColors(getCommandLimiterSettings().getGlobalDenyMessage()));
-                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, finalCommand));
+                    Bukkit.getConsoleSender().sendMessage("AAL: " + l);
+                                    Bukkit.getConsoleSender().sendMessage("CMD: " + command);
+                    if(l.contains(command)) {
+                        player.sendMessage(setColors(getCommandLimiterSettings().getPerWorldDenyMessage()));
+                        TaskManager.preformAsync(() -> notifyAdminsAboutBlockedCommand(player, command));
                         return false;
                     }
                 }
@@ -279,10 +369,10 @@ public class GlobalCommandManager {
     public List<String> getCommandsToFullyHide(Player player, List<String> trueCompletions) {
         List<String> newCompletions = new ArrayList<>(trueCompletions);
         if (getConfigSettings().hideMainCommand()) {
-            newCompletions.removeIf(cmd -> cmd.contains("fsc") || cmd.contains("functionalservercontrol") || cmd.contains("fscontrol"));
+            newCompletions.removeIf(cmd -> cmd.split("\\[")[0].equalsIgnoreCase("fsc") || cmd.split("\\[")[0].equalsIgnoreCase("functionalservercontrol") || cmd.split("\\[")[0].equalsIgnoreCase("fscontrol"));
         }
         if(getCommandLimiterSettings().isBlockSyntaxCommand()) {
-            newCompletions.removeIf(cmd -> cmd.contains(":"));
+            newCompletions.removeIf(cmd -> cmd.split("\\[")[0].equalsIgnoreCase(":"));
         }
         if (getCommandLimiterSettings().isUseGroups()) {
             if (Expansions.getVaultManager().isVaultSetuped()) {
@@ -365,7 +455,7 @@ public class GlobalCommandManager {
         if(getCommandLimiterSettings().isDisableSpigotReloadCommand()) {
             if(sender instanceof ConsoleCommandSender) {
                 if(command.startsWith("reload")) {
-                    sender.sendMessage(setColors("&4This command is disabled by the FunctionalServerControl plugin!"));
+                    sender.sendMessage(setColors("&4This command is disabled by the FunctionalServerControlSpigot plugin!"));
                     sender.sendMessage(setColors("&cIt is really unsafe to use it for the stability of the server!"));
                     sender.sendMessage(setColors("&cIf you still want to enable it, you can do it in the commands-limiter.yml file by setting 'disable-reload-command' to false"));
                     return true;
@@ -374,7 +464,7 @@ public class GlobalCommandManager {
             if(sender instanceof Player) {
                 if(sender.hasPermission("bukkit.command.reload")) {
                     if(command.replace("/", "").startsWith("reload")) {
-                        sender.sendMessage(setColors("&4This command is disabled by the FunctionalServerControl plugin!"));
+                        sender.sendMessage(setColors("&4This command is disabled by the FunctionalServerControlSpigot plugin!"));
                         sender.sendMessage(setColors("&cIt is really unsafe to use it for the stability of the server!"));
                         sender.sendMessage(setColors("&cIf you still want to enable it, you can do it in the commands-limiter.yml file by setting 'disable-reload-command' to false"));
                         return true;
@@ -388,41 +478,40 @@ public class GlobalCommandManager {
     private void notifyAdminsAboutBlockedCommand(Player player, String command) {
         BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_COMMANDS_USED);
         if(getCommandLimiterSettings().isNotifyAdmins()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)));
-                for(Player admin : Bukkit.getOnlinePlayers()) {
-                    if(admin.hasPermission("functionalservercontrol.notification.blocked-command")) {
-                        if(getConfigSettings().isServerSupportsHoverEvents()) {
-                            if(getConfigSettings().isButtonsOnNotifications()) {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(
-                                            MD5TextUtils.appendTwo(
-                                                    MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player),
-                                                    MD5TextUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(
-                                            AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player).append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                            } else {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(
-                                            MD5TextUtils.createPlayerInfoHoverText( setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(
-                                            AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player));
-                                    continue;
-                                }
+            Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)));
+            for(Player admin : Bukkit.getOnlinePlayers()) {
+                if(admin.hasPermission("functionalservercontrol.notification.blocked-command")) {
+                    if(getConfigSettings().isServerSupportsHoverEvents()) {
+                        if(getConfigSettings().isButtonsOnNotifications()) {
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                admin.spigot().sendMessage(
+                                        MD5TextUtils.appendTwo(
+                                                MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player),
+                                                MD5TextUtils.addPunishmentButtons(admin, player.getName())));
+                                continue;
+                            }
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                admin.sendMessage(
+                                        AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player).append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
+                                continue;
                             }
                         } else {
-                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)));
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
+                                admin.spigot().sendMessage(
+                                        MD5TextUtils.createPlayerInfoHoverText( setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player));
+                                continue;
+                            }
+                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
+                                admin.sendMessage(
+                                        AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)), player));
+                                continue;
+                            }
                         }
+                    } else {
+                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-command").replace("%1$f", player.getName()).replace("%2$f", command)));
                     }
                 }
+            }
         }
     }
-
 }

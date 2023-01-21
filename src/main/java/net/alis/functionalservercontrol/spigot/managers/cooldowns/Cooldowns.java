@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.managers.cooldowns;
 
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.libraries.org.apache.commons.lang3.StringUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
@@ -35,12 +35,12 @@ public class Cooldowns {
                         try {
                             a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".per-groups." + group));
                             if(a < 3) {
-                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
+                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
                                 isContinue = false;
                                 break;
                             }
                         } catch (NumberFormatException ignored) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
                             isContinue = false;
                             break;
                         }
@@ -51,22 +51,22 @@ public class Cooldowns {
                     try {
                         a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".time"));
                         if(a < 3) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
                             continue;
                         }
                     } catch (NumberFormatException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
                         continue;
                     }
                     int b = 0;
                     try {
                         b = Integer.parseInt(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".min-args"));
                         if(b < 0) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
                             continue;
                         }
                     } catch (NumberFormatException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
                         continue;
                     }
                     TrackedCommand trackedCommand = new TrackedCommand(
@@ -103,12 +103,12 @@ public class Cooldowns {
                             try {
                                 a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".per-groups." + group));
                                 if(a < 3) {
-                                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
+                                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
                                     isContinue = false;
                                     break;
                                 }
                             } catch (NumberFormatException ignored) {
-                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
+                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
                                 isContinue = false;
                                 break;
                             }
@@ -118,22 +118,22 @@ public class Cooldowns {
                         try {
                             a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".time"));
                             if(a < 3) {
-                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
+                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
                                 continue;
                             }
                         } catch (NumberFormatException ignored) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
                             continue;
                         }
                         int b = 0;
                         try {
                             b = Integer.parseInt(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".min-args"));
                             if(b < 0) {
-                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
+                                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
                                 continue;
                             }
                         } catch (NumberFormatException ignored) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
                             continue;
                         }
                         if(!isContinue1) continue;
@@ -160,12 +160,12 @@ public class Cooldowns {
                     try {
                         a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".per-groups." + group));
                         if(a < 3) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (Time cannot be lower than 3)"));
                             isContinue = false;
                             break;
                         }
                     } catch (NumberFormatException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> per-groups -> " + group + "' (NumberFormatException)"));
                         isContinue = false;
                         break;
                     }
@@ -176,22 +176,22 @@ public class Cooldowns {
                 try {
                     a = Long.parseLong(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".time"));
                     if(a < 3) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (Time cannot be lower than 3)"));
                         continue;
                     }
                 } catch (NumberFormatException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> time' (NumberFormatException)"));
                     continue;
                 }
                 int b = 0;
                 try {
                     b = Integer.parseInt(getFileAccessor().getCooldownsConfig().getString("commands." + cmd + ".min-args"));
                     if(b < 0) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (Minimum arguments cannot be lower than 0)"));
                         continue;
                     }
                 } catch (NumberFormatException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'global-cooldown.yml' file on the path 'commands -> " + cmd + " -> min-args' (NumberFormatException)"));
                     continue;
                 }
                 TrackedCommand trackedCommand = new TrackedCommand(
@@ -211,7 +211,7 @@ public class Cooldowns {
                 this.trackedCommands.add(trackedCommand);
             }
         } else {
-            sender.sendMessage(setColors("&c[FunctionalServerControl] This function disabled in 'global-cooldowns.yml'"));
+            sender.sendMessage(setColors("&c[FunctionalServerControlSpigot] This function disabled in 'global-cooldowns.yml'"));
         }
     }
 

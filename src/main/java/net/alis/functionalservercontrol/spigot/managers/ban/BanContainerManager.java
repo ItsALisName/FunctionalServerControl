@@ -29,7 +29,7 @@ public class BanContainerManager {
                 BaseManager.getBaseManager().getBannedUUIDs(),
                 BaseManager.getBaseManager().getUnbanTimes()
         );
-        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl] Bans loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(BaseManager.getBaseManager().getBannedIds().size()))));
+        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControlSpigot] Bans loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(BaseManager.getBaseManager().getBannedIds().size()))));
     }
 
     public void addToBanContainer(String id, String ip, String playerName, String initiatorName, String reason, BanType banType, String realBanDate, String realBanTime, String uuid, Long time) {

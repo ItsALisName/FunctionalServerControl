@@ -3,7 +3,7 @@ package net.alis.functionalservercontrol.spigot.managers.mute;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.api.events.AsyncMutePreprocessEvent;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;

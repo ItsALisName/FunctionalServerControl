@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners.pluginmessages;
 
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
@@ -70,7 +70,7 @@ public class ClientBrandListener implements PluginMessageListener {
                     }
                     TemporaryCache.setClientBrands(player, clientName);
                 } catch (IOException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
                 }
             });
         } else {
@@ -121,7 +121,7 @@ public class ClientBrandListener implements PluginMessageListener {
                 }
                 TemporaryCache.setClientBrands(player, clientName);
             } catch (IOException ignored) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Failed to get the %player% Minecraft brand".replace("%player%", player.getName())));
             }
         }
     }

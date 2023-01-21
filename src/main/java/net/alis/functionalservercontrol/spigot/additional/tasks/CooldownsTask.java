@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns;
 import net.alis.functionalservercontrol.spigot.managers.cooldowns.TrackedCommand;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;

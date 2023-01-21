@@ -15,7 +15,7 @@ public class PingReflect {
             Field pingField = handle.getClass().getField("ping");
             return pingField.getInt(handle);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] An error occurred while trying to get player ping, are you using an old version of Minecraft server?"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] An error occurred while trying to get player ping, are you using an old version of Minecraft server?"));
             Bukkit.getConsoleSender().sendMessage(setColors("&4============ DO NOT REPORT THIS TO ALis IF YOU HAVE AN OLD VERSION OF MINECRAFT SERVER ============"));
             e.printStackTrace();
             Bukkit.getConsoleSender().sendMessage(setColors("&4============ DO NOT REPORT THIS TO ALis IF YOU HAVE AN OLD VERSION OF MINECRAFT SERVER ============"));

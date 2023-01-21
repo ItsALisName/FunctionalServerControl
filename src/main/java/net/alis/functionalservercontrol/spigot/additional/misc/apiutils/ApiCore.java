@@ -2,8 +2,8 @@ package net.alis.functionalservercontrol.spigot.additional.misc.apiutils;
 
 import net.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
 import net.alis.functionalservercontrol.api.interfaces.FunctionalMuteEntry;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.Adapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.api.FunctionalApi;
 

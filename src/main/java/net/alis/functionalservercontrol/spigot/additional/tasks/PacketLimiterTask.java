@@ -1,8 +1,8 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,8 +16,8 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class PacketLimiterTask implements Runnable {
 
-    FunctionalServerControl plugin;
-    public PacketLimiterTask(FunctionalServerControl plugin) {
+    FunctionalServerControlSpigot plugin;
+    public PacketLimiterTask(FunctionalServerControlSpigot plugin) {
         this.plugin = plugin;
     }
 

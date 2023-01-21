@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -19,7 +19,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class UnbanallCommand implements CommandExecutor {
 
-    public UnbanallCommand(FunctionalServerControl plugin) {
+    public UnbanallCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("unbanall").setExecutor(this);
         plugin.getCommand("unbanall").setTabCompleter(new UnbanallCompleter());
     }

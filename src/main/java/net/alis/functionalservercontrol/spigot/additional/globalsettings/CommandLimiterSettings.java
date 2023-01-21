@@ -14,7 +14,6 @@ public class CommandLimiterSettings {
 
     private boolean functionEnabled;
     private boolean notifyAdmins;
-    private String checkMode;
     private final Collection<String> limitedWorlds = new ArrayList<>();
     private final HashMap<String, List<String>> globalBlockedCommands = new HashMap<>();
     private String globalDenyMessage;
@@ -137,12 +136,6 @@ public class CommandLimiterSettings {
         this.whitelistedSyntaxCommands.clear();
         this.whitelistedSyntaxCommands.addAll(whitelistedSyntaxCommands);
     }
-    private void setCheckMode(String checkMode) {
-        this.checkMode = checkMode;
-    }
-    public String getCheckMode() {
-        return checkMode;
-    }
     private void setUseGroups(boolean useGroups) {
         this.useGroups = useGroups;
     }
@@ -175,12 +168,7 @@ public class CommandLimiterSettings {
             TaskManager.preformAsync(() -> {
                 setNotifyAdmins(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.notify-admins"));
                 setDisableSpigotReloadCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.disable-reload-command"));
-                setCheckMode(getFileAccessor().getCommandsLimiterConfig().getString("settings.commands-check-mode"));
                 setUseGroups(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.use-groups"));
-                if(!getCheckMode().equalsIgnoreCase("first_arg") && !getCheckMode().equalsIgnoreCase("all_args")) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Unknown command validation method(%method%), using 'first_arg'".replace("%method%", getCheckMode())));
-                    setCheckMode("first_arg");
-                }
                 setGlobalDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.global.deny-message"));
                 setGlobalUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.global.use-as-whitelist"));
                 for(String groupName : getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("blocked-commands.global.group").getKeys(false)) {
@@ -203,7 +191,7 @@ public class CommandLimiterSettings {
                             this.perGroupWorlds.add(world);
                             this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         } else {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                         }
                     }
                 }
@@ -241,12 +229,7 @@ public class CommandLimiterSettings {
         setDisableSpigotReloadCommand(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.disable-reload-command"));
         setNotifyAdmins(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.notify-admins"));
         if (isFunctionEnabled()) {
-            setCheckMode(getFileAccessor().getCommandsLimiterConfig().getString("settings.commands-check-mode"));
             setUseGroups(getFileAccessor().getCommandsLimiterConfig().getBoolean("settings.use-groups"));
-            if(!getCheckMode().equalsIgnoreCase("first_arg") && !getCheckMode().equalsIgnoreCase("all_args")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Unknown command validation method(%method%), using 'first_arg'".replace("%method%", getCheckMode())));
-                setCheckMode("first_arg");
-            }
             setGlobalDenyMessage(getFileAccessor().getCommandsLimiterConfig().getString("blocked-commands.global.deny-message"));
             setGlobalUseAsWhiteList(getFileAccessor().getCommandsLimiterConfig().getBoolean("blocked-commands.global.use-as-whitelist"));
             for(String groupName : getFileAccessor().getCommandsLimiterConfig().getConfigurationSection("blocked-commands.global.group").getKeys(false)) {
@@ -274,7 +257,7 @@ public class CommandLimiterSettings {
                             this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         }
                     } else {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                     }
                 }
             }

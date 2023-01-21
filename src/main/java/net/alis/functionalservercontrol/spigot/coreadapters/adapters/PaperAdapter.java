@@ -1,6 +1,6 @@
-package net.alis.functionalservercontrol.spigot.additional.coreadapters.adapters;
+package net.alis.functionalservercontrol.spigot.coreadapters.adapters;
 
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.Adapter;
 import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
 import net.alis.functionalservercontrol.spigot.additional.reflect.PingReflect;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
@@ -17,9 +17,14 @@ import protocolsupport.api.ProtocolSupportAPI;
 
 import java.util.UUID;
 
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static net.alis.functionalservercontrol.spigot.dependencies.Expansions.*;
 
 public class PaperAdapter extends Adapter {
+
+    public PaperAdapter() {
+        Bukkit.getConsoleSender().sendMessage(setColors("&e[net.alis.functionalservercontrol.spigot.coreadapters.adapters.PaperAdapter] Using PaperAdapter as core adapter"));
+    }
 
     @Override
     public String getAdapterName() {
@@ -113,6 +118,21 @@ public class PaperAdapter extends Adapter {
     }
 
     @Override
+    public void sendTitle(@NotNull Player player, String param, @Nullable String param1, int fadeIn, int stay, int fadeOut) {
+        try {
+            Player.class.getMethod("sendTitle", String.class, String.class, int.class, int.class, int.class);
+            player.sendTitle(param, param1, fadeIn, stay, fadeOut);
+        } catch (NoSuchMethodException ignored) {
+            try {
+                Player.class.getMethod("sendTitle", String.class, String.class);
+                player.sendTitle(param, param1);
+            } catch (NoSuchMethodException ignored1) {
+                TitleReflect.sendTitle(player, param + "\n" + param1, fadeIn, stay, fadeOut);
+            }
+        }
+    }
+
+    @Override
     public int getPing(Player player) {
         try {
             Player.class.getMethod("getPing");
@@ -123,7 +143,7 @@ public class PaperAdapter extends Adapter {
     }
 
     public String toString() {
-        return "by.alis.functionalservercontrol.spigot.additional.coreadapters.adapters.PaperAdapter@Hash -> " + Integer.toHexString(hashCode());
+        return "net.alis.functionalservercontrol.spigot.coreadapters.adapters.PaperAdapter@Hash -> " + Integer.toHexString(hashCode());
     }
 
 }

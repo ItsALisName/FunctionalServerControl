@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.DupeIpCompleter;
 import net.alis.functionalservercontrol.spigot.managers.DupeIpManager;
@@ -17,7 +17,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class DupeIpCommand implements CommandExecutor {
 
-    public DupeIpCommand(FunctionalServerControl plugin) {
+    public DupeIpCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("dupeip").setExecutor(this);
         plugin.getCommand("dupeip").setTabCompleter(new DupeIpCompleter());
     }

@@ -1,8 +1,8 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.BanListCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class BanListCommand implements CommandExecutor {
 
-    public BanListCommand(FunctionalServerControl plugin) {
+    public BanListCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("banlist").setExecutor(this);
         plugin.getCommand("banlist").setTabCompleter(new BanListCompleter());
     }

@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -21,7 +21,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class TempMuteCommand implements CommandExecutor {
 
-    public TempMuteCommand(FunctionalServerControl plugin) {
+    public TempMuteCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("tempmute").setExecutor(this);
         plugin.getCommand("tempmute").setTabCompleter(new TempMuteCompleter());
     }

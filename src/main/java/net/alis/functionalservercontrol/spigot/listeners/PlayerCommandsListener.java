@@ -67,7 +67,7 @@ public class PlayerCommandsListener implements Listener {
         }
 
         if(getCommandLimiterSettings().isFunctionEnabled()) {
-            if(!this.commandManager.isPlayerCanUseCommand(player, command.split(" ")[0])) {
+            if(!this.commandManager.isPlayerCanUseCommand(player, command)) {
                 event.setCancelled(true);
             }
         }

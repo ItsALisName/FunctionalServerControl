@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.MuteType;
@@ -23,7 +23,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class MuteCommand implements CommandExecutor {
 
-    public MuteCommand(FunctionalServerControl plugin) {
+    public MuteCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("mute").setExecutor(this);
         plugin.getCommand("mute").setTabCompleter(new MuteCompleter());
     }

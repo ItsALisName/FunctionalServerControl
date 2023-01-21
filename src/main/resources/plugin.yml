@@ -1,6 +1,6 @@
-name: FunctionalServerControl
+name: FunctionalServerControlSpigot
 version: '${project.version}'
-main: net.alis.functionalservercontrol.spigot.FunctionalServerControl
+main: net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot
 api-version: 1.13
 authors: [ ALis ]
 description: Multifunctional control of the server and players

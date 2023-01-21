@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.api;
 
 import net.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
 import net.alis.functionalservercontrol.api.interfaces.FunctionalMuteEntry;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.Adapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.apiutils.FunctionalStatistics;
 import lombok.Getter;
 import lombok.Setter;

@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.spigot.additional.tasks;
 
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.file.SFAccessor;

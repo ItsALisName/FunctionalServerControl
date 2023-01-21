@@ -738,32 +738,32 @@ public class GeneralConfigSettings {
         switch (getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.chat-listener-priority")) {
             case "LOWEST": {
                 setChatListenerPriority(EventPriority.LOWEST);
-                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Chat listener priority set to 'LOWEST'"));
+                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Chat listener priority set to 'LOWEST'"));
                 break;
             }
             case "LOW": {
                 setChatListenerPriority(EventPriority.LOW);
-                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Chat listener priority set to 'LOW'"));
+                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Chat listener priority set to 'LOW'"));
                 break;
             }
             case "NORMAL": {
                 setChatListenerPriority(EventPriority.NORMAL);
-                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Chat listener priority set to 'NORMAL'"));
+                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Chat listener priority set to 'NORMAL'"));
                 break;
             }
             case "HIGH": {
                 setChatListenerPriority(EventPriority.HIGH);
-                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Chat listener priority set to 'HIGH'"));
+                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Chat listener priority set to 'HIGH'"));
                 break;
             }
             case "HIGHEST": {
                 setChatListenerPriority(EventPriority.HIGHEST);
-                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Chat listener priority set to 'HIGHEST'"));
+                if(!isLessInformation()) Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Chat listener priority set to 'HIGHEST'"));
                 break;
             }
             default: {
                 setChatListenerPriority(EventPriority.NORMAL);
-                if(!isLessInformation())  Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Unknown priority value(%priority%) for chat listener! I use 'NORMAL'".replace("%priority%", getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.chat-listener-priority"))));
+                if(!isLessInformation())  Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Unknown priority value(%priority%) for chat listener! I use 'NORMAL'".replace("%priority%", getFileAccessor().getGeneralConfig().getString("plugin-settings.chat-settings.chat-listener-priority"))));
                 break;
             }
         }
@@ -779,27 +779,27 @@ public class GeneralConfigSettings {
             case "sqlite": {
                 setStorageType(StorageType.SQLITE);
                 if(!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                 }
                 break;
             }
             case "mysql": {
                 setStorageType(StorageType.MYSQL);
                 if(!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                 }
                 break;
             }
             case "h2": {
                 setStorageType(StorageType.H2);
                 if(!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot | Storage] Data storage method installed: %storage_method%".replace("%storage_method%", String.valueOf(getStorageType()))));
                 }
                 break;
             }
             default: {
                 setStorageType(StorageType.SQLITE);
-                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Storage] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot | Storage] Unknown data storage type is specified (%unknown_method%), using SQLite".replace("%unknown_method%", getFileAccessor().getGeneralConfig().getString("plugin-settings.storage-method"))));
                 break;
             }
         }
@@ -808,7 +808,7 @@ public class GeneralConfigSettings {
             if(isPermissionsProtectionEnabled()) {
                 if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
                     setPermissionsProtectionDelay(5);
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
                 } else {
                     setPermissionsProtectionDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay"));
                 }
@@ -888,17 +888,17 @@ public class GeneralConfigSettings {
                 setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
                 if(getMaxIpsPerSession() < 1) {
                     setMaxIpsPerSession(1);
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
                 }
                 setDupeIpCheckMode(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.check-mode"));
                 if(!getDupeIpCheckMode().equalsIgnoreCase("join") && !getDupeIpCheckMode().equalsIgnoreCase("timer")) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
                     setDupeIpCheckMode("timer");
                 }
                 setDupeIpTimerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.timer-delay"));
                 if(getDupeIpTimerDelay() < 30) {
                     setDupeIpTimerDelay(30);
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] The value of 'dupe-ip.timer-delay' cannot be less than 30, I use 30"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] The value of 'dupe-ip.timer-delay' cannot be less than 30, I use 30"));
                 }
                 setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
             }
@@ -949,19 +949,19 @@ public class GeneralConfigSettings {
             //Bases
             if(isAllowedUseRamAsContainer()) {
                 if(!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl | Plugin loading] Use RAM for data storage (Allowed by the configuration file)"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot | Plugin loading] Use RAM for data storage (Allowed by the configuration file)"));
                 }
                 getMuteContainerManager().loadMutesIntoRAM();
                 getBanContainerManager().loadBansIntoRAM();
             } else {
                 if (!isLessInformation()) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl | Plugin loading] RAM usage is prohibited, use direct access to the database!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot | Plugin loading] RAM usage is prohibited, use direct access to the database!"));
                 }
             }
             //Bases
             setAnnounceWhenLogHided(getFileAccessor().getGeneralConfig().getBoolean("plugin-settings.console-logger.announce-console-when-message-hidden"));
             if(!isLessInformation()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalServerControl | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalServerControl | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
+                Bukkit.getConsoleSender().sendMessage(setColors(isApiEnabled() ? "&a[FunctionalServerControlSpigot | API Loading] API usage is allowed by configuration settings" : "&e[FunctionalServerControlSpigot | API Loading] API usage is prohibited by configuration settings (This is not an error)"));
             }
             //Tasks
             if(isDupeIdModeEnabled()) {
@@ -1014,7 +1014,7 @@ public class GeneralConfigSettings {
         if(isPermissionsProtectionEnabled()) {
             if(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay") < 1) {
                 setPermissionsProtectionDelay(5);
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in 'general.yml' file, 'permissions protection delay' cannot be less than 1 second. I use 5 seconds"));
             } else {
                 setPermissionsProtectionDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.permissions-protection.check-delay"));
             }
@@ -1073,17 +1073,17 @@ public class GeneralConfigSettings {
             setMaxIpsPerSession(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.max-similar-ips-per-session"));
             if(getMaxIpsPerSession() < 1) {
                 setMaxIpsPerSession(1);
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] The value of 'max-similar-ips-per-session' cannot be less than 1, I use 1"));
             }
             setDupeIpCheckMode(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.check-mode"));
             if(!getDupeIpCheckMode().equalsIgnoreCase("join") && !getDupeIpCheckMode().equalsIgnoreCase("timer")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] Unknown check method 'dupe-ip' %method%, using 'timer'".replace("%method%", getDupeIpCheckMode())));
                 setDupeIpCheckMode("timer");
             }
             setDupeIpTimerDelay(getFileAccessor().getGeneralConfig().getInt("plugin-settings.join-settings.ips-control.dupe-ip.timer-delay"));
             if(getDupeIpTimerDelay() < 1) {
                 setDupeIpTimerDelay(1);
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | Error] The value of 'dupe-ip.timer-delay' cannot be less than 1, I use 1"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | Error] The value of 'dupe-ip.timer-delay' cannot be less than 1, I use 1"));
             }
             setDupeIpAction(getFileAccessor().getGeneralConfig().getString("plugin-settings.join-settings.ips-control.dupe-ip.action"));
         }

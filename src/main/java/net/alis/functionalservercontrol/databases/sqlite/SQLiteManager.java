@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.databases.sqlite;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import org.bukkit.Bukkit;
@@ -21,14 +21,14 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class SQLiteManager extends SQLiteCore {
 
-    public SQLiteManager(FunctionalServerControl plugin) {
+    public SQLiteManager(FunctionalServerControlSpigot plugin) {
         super(plugin);
     }
 
     @Override
     protected Connection getSQLiteConnection() {
         if(!getFileAccessor().getSQLiteFile().exists()) {
-            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("sqlite.db", false);
+            plugin.saveResource("sqlite.db", false);
         }
         if (getFileAccessor().getSQLiteFile().exists()) {
             try {
@@ -36,28 +36,29 @@ public class SQLiteManager extends SQLiteCore {
                 sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
                 return sqlConnection;
             } catch (ClassNotFoundException | SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to connect to the database!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] -> Unknown error, try reinstalling the plugin."));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] No further work possible!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
-                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] -> Unknown error, try reinstalling the plugin."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                plugin.getPluginLoader().disablePlugin(plugin);
                 return null;
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to connect to the database!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] -> File &4&osqlite.db &4has not been found!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] -> File &4&osqlite.db &4has not been found!"));
             Bukkit.getConsoleSender().sendMessage("");
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Attempt to create a file..."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Attempt to create a file..."));
             try {
                 getFileAccessor().getSQLiteFile().createNewFile();
             } catch (IOException ex) {
+                ex.printStackTrace();
             }
             if (getFileAccessor().getSQLiteFile().exists()) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Database file created successfully, reconnecting..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Database file created successfully, reconnecting..."));
                 try {
                     Class.forName("org.sqlite.JDBC");
                     sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
-                    Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalServerControl] Connection to the database was successful."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalServerControlSpigot] Connection to the database was successful."));
                     String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
                     String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
                     String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
@@ -76,17 +77,17 @@ public class SQLiteManager extends SQLiteCore {
                     sqlStatement.close();
                     return sqlConnection;
                 } catch (ClassNotFoundException | SQLException ex) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to connect to the database!"));
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] -> Unknown error, try reinstalling the plugin."));
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] No further work possible!"));
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
-                    this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
+                    ex.printStackTrace();
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] See error for more details!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                    this.plugin.getPluginLoader().disablePlugin(plugin);
                     return null;
                 }
             } else {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] No further work possible!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
-                this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                this.plugin.getPluginLoader().disablePlugin(plugin);
                 return null;
             }
         }
@@ -113,8 +114,8 @@ public class SQLiteManager extends SQLiteCore {
             sqlStatement.executeUpdate(queryTableSeven);
             sqlStatement.close();
         } catch (SQLException a) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
-            throw new RuntimeException(a);
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            a.printStackTrace();
         } finally {
             try {if (sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
             try {if (sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
@@ -134,24 +135,12 @@ public class SQLiteManager extends SQLiteCore {
             String insertInfo = "INSERT INTO playersStats (uuid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + String.valueOf(uuid) + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
             sqlConnection.createStatement().executeUpdate(insertInfo);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ex) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ex) {}
+            try {if(sqlResultSet != null) {sqlResultSet.close();}} catch (SQLException ex) {}
         }
     }
 
@@ -185,7 +174,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -235,7 +224,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -273,7 +262,7 @@ public class SQLiteManager extends SQLiteCore {
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -311,7 +300,7 @@ public class SQLiteManager extends SQLiteCore {
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -339,7 +328,7 @@ public class SQLiteManager extends SQLiteCore {
             String a = "INSERT INTO History (history) VALUES ('" + message + "');";
             sqlConnection.createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -383,7 +372,7 @@ public class SQLiteManager extends SQLiteCore {
                 if(sqlConnection != null) sqlConnection.close();
                 if(sqlResultSet != null) sqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         } else {
@@ -405,7 +394,7 @@ public class SQLiteManager extends SQLiteCore {
                 if(sqlConnection != null) sqlConnection.close();
                 if(sqlResultSet != null) sqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         }
@@ -417,7 +406,7 @@ public class SQLiteManager extends SQLiteCore {
             String a = "DELETE FROM History;";
             getSQLiteConnection().createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -457,7 +446,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -492,7 +481,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (sqlConnection != null) {
@@ -531,7 +520,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : uuid;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -569,7 +558,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : UUID.fromString(uuid);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -605,7 +594,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -639,7 +628,7 @@ public class SQLiteManager extends SQLiteCore {
             String insertName = "INSERT INTO allPlayers (name, uuid, ip) VALUES ('" + name + "', '" + uuid + "', '" + ip + "');";
             sqlConnection.createStatement().executeUpdate(insertName);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -678,7 +667,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -714,7 +703,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -745,7 +734,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -773,7 +762,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -801,7 +790,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -829,7 +818,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -857,7 +846,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
             try {
@@ -885,7 +874,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
             try {
@@ -923,7 +912,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -963,7 +952,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             return ips;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -1001,7 +990,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1040,7 +1029,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1079,7 +1068,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1118,7 +1107,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1157,7 +1146,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1196,7 +1185,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1235,7 +1224,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1274,7 +1263,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1316,7 +1305,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1355,7 +1344,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1394,7 +1383,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1433,7 +1422,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1472,7 +1461,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1511,7 +1500,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1550,7 +1539,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1589,7 +1578,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1628,7 +1617,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1667,7 +1656,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1701,7 +1690,7 @@ public class SQLiteManager extends SQLiteCore {
                 sqlConnection.close();
                 insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -1743,7 +1732,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1782,7 +1771,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1821,7 +1810,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1852,7 +1841,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(b);
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1882,7 +1871,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(b);
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1994,7 +1983,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2033,7 +2022,7 @@ public class SQLiteManager extends SQLiteCore {
             }
             return b;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2070,7 +2059,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2108,7 +2097,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2146,7 +2135,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2184,7 +2173,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2222,7 +2211,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2260,7 +2249,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2298,7 +2287,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }
         return a;
@@ -2320,7 +2309,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2358,7 +2347,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2396,7 +2385,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2434,7 +2423,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            throw new RuntimeException("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!");
+            throw new RuntimeException("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!");
         }finally {
             try {
                 if(sqlConnection != null) {
@@ -2471,7 +2460,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2509,7 +2498,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2547,7 +2536,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2585,7 +2574,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2623,7 +2612,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2661,7 +2650,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2699,7 +2688,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {

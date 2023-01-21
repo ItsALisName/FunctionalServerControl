@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.spigot.commands;
 
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.KickCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.KickManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -22,7 +22,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
  */
 public class KickCommand implements CommandExecutor {
 
-    public KickCommand(FunctionalServerControl plugin) {
+    public KickCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("kick").setExecutor(this);
         plugin.getCommand("kick").setTabCompleter(new KickCompleter());
     }

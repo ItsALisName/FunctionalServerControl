@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.misc;
+package net.alis.functionalservercontrol.spigot.additional.misc.metrics;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -27,6 +27,8 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.net.ssl.HttpsURLConnection;
+
+import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -77,7 +79,7 @@ public class Metrics {
                         enabled,
                         this::appendPlatformData,
                         this::appendServiceData,
-                        submitDataTask -> Bukkit.getScheduler().runTask(plugin, submitDataTask),
+                        TaskManager::preformSync,
                         plugin::isEnabled,
                         (message, error) -> this.plugin.getLogger().log(Level.WARNING, message, error),
                         (message) -> this.plugin.getLogger().log(Level.INFO, message),
@@ -86,10 +88,6 @@ public class Metrics {
                         logResponseStatusText);
     }
 
-
-    public void addCustomChart(CustomChart chart) {
-        metricsBase.addCustomChart(chart);
-    }
 
     private void appendPlatformData(JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());

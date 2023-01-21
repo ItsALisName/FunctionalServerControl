@@ -1,9 +1,9 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.InformationManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.GetInfoCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class GetInfoCommand implements CommandExecutor {
 
-    public GetInfoCommand(FunctionalServerControl plugin) {
+    public GetInfoCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("getinfo").setExecutor(this);
         plugin.getCommand("getinfo").setTabCompleter(new GetInfoCompleter());
     }

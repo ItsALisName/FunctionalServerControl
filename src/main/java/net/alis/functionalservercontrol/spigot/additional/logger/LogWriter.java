@@ -19,17 +19,17 @@ public class LogWriter {
 
 
     private final String currentSession = WorldTimeAndDateClass.getDateA() + "_" + WorldTimeAndDateClass.getTimeA();
-    private final File logFile = new File("plugins/FunctionalServerControl/logs/", "log_" + currentSession + ".log");;
+    private final File logFile = new File("plugins/FunctionalServerControlSpigot/logs/", "log_" + currentSession + ".log");;
 
     public void createLogFile() {
         TaskManager.preformAsync(() -> {
             if(getConfigSettings().isLoggerEnabled()) {
                 try {
-                    Files.createDirectories(Paths.get("plugins/FunctionalServerControl/logs/"));
+                    Files.createDirectories(Paths.get("plugins/FunctionalServerControlSpigot/logs/"));
                     this.logFile.createNewFile();
                     Bukkit.getOfflinePlayers();
                 } catch (IOException w) {
-                    Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to create log file."));
+                    Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to create log file."));
                 }
             }
         });
@@ -43,7 +43,7 @@ public class LogWriter {
             writer.append("\r\n");
             writer.close();
         } catch (IOException ignored) {
-            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to write log to file"));
+            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to write log to file"));
         }
     }
 

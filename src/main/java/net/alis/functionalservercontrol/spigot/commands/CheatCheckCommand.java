@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.CheatCheckCompleter;
@@ -20,7 +20,7 @@ public class CheatCheckCommand implements CommandExecutor {
 
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
 
-    public CheatCheckCommand(FunctionalServerControl plugin) {
+    public CheatCheckCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("cheatcheck").setExecutor(this);
         plugin.getCommand("cheatcheck").setTabCompleter(new CheatCheckCompleter());
     }

@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.BanType;
@@ -26,7 +26,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
  */
 public class BanCommand implements CommandExecutor {
 
-    public BanCommand(FunctionalServerControl plugin) {
+    public BanCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("ban").setExecutor(this);
         plugin.getCommand("ban").setTabCompleter(new BanCompleter());
     }

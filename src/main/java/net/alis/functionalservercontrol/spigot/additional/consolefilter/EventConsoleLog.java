@@ -1,9 +1,9 @@
 package net.alis.functionalservercontrol.spigot.additional.consolefilter;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.api.events.deprecated.ConsoleLogOutEvent;
-import net.alis.functionalservercontrol.spigot.managers.file.FileAccessor;
+import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -12,12 +12,9 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 @Deprecated
 public class EventConsoleLog implements Filter {
-
-    FileAccessor accessor = new FileAccessor();
 
 
     public Filter.Result checkMessage(String message) {
@@ -30,16 +27,11 @@ public class EventConsoleLog implements Filter {
 
     private Result runCheck(String consoleMessage) {
         if(!TextUtils.isTextNotNull(consoleMessage)) return Result.NEUTRAL;
-        String[] message = {consoleMessage};
-
-            if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class))) {
-                (new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ConsoleLogOutEvent consoleLogEvent = new ConsoleLogOutEvent(consoleMessage);
-                        Bukkit.getPluginManager().callEvent(consoleLogEvent);
-                    }
-                }).runTask(FunctionalServerControl.getPlugin(FunctionalServerControl.class));
+        if (Bukkit.getPluginManager().isPluginEnabled(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class))) {
+                TaskManager.preformSync(() -> {
+                    ConsoleLogOutEvent consoleLogEvent = new ConsoleLogOutEvent(consoleMessage);
+                    Bukkit.getPluginManager().callEvent(consoleLogEvent);
+                });
             }
         return Result.NEUTRAL;
     }

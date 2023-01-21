@@ -1,13 +1,13 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class TaskManager {
 
-    private static final FunctionalServerControl plugin = FunctionalServerControl.getPlugin(FunctionalServerControl.class);
+    private static final FunctionalServerControlSpigot plugin = FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class);
     private static final BukkitScheduler scheduler = Bukkit.getScheduler();
 
     public static void preformAsync(BukkitRunnable task) {

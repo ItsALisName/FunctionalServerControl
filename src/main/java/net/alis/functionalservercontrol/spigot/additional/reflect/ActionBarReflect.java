@@ -58,7 +58,7 @@ public class ActionBarReflect {
                     playerConnection.getClass().getMethod("sendPacket", MinecraftReflection.getNMSClass("AbstractPacket")).invoke(playerConnection, packetPlayOutChat);
                 }
             } catch (IllegalAccessException | IllegalArgumentException | java.lang.reflect.InvocationTargetException | NoSuchMethodException | SecurityException | InstantiationException | NoSuchFieldException e) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] An error occurred while trying to send the Actionbar to the player, are you using an old version of Minecraft server?"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] An error occurred while trying to send the Actionbar to the player, are you using an old version of Minecraft server?"));
                 Bukkit.getConsoleSender().sendMessage(setColors("&4============ DO NOT REPORT THIS TO ALis IF YOU HAVE AN OLD VERSION OF MINECRAFT SERVER ============"));
                 e.printStackTrace();
                 Bukkit.getConsoleSender().sendMessage(setColors("&4============ DO NOT REPORT THIS TO ALis IF YOU HAVE AN OLD VERSION OF MINECRAFT SERVER ============"));

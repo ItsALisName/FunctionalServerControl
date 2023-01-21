@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns;
 import net.alis.functionalservercontrol.spigot.managers.InetManager;
@@ -24,7 +24,7 @@ import static org.bukkit.plugin.java.JavaPlugin.getPlugin;
 
 public class FunctionalServerControlCommand implements CommandExecutor {
 
-    public FunctionalServerControlCommand(FunctionalServerControl plugin) {
+    public FunctionalServerControlCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("functionalservercontrol").setExecutor(this);
         plugin.getCommand("functionalservercontrol").setTabCompleter(new FunctionalServerControlCompleter());
     }
@@ -36,7 +36,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
         TaskManager.preformAsync(() -> {
             if(args.length == 0) {
                 if(sender.hasPermission("functionalservercontrol.help")) {
-                    sender.sendMessage(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControl.class).getDescription().getVersion())));
+                    sender.sendMessage(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControlSpigot.class).getDescription().getVersion())));
                 } else {
                     sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.no-permissions")));
                 }
@@ -45,7 +45,7 @@ public class FunctionalServerControlCommand implements CommandExecutor {
 
             if(args[0].equalsIgnoreCase("help")) {
                 if(sender.hasPermission("functionalservercontrol.help")) {
-                    sender.sendMessage(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControl.class).getDescription().getVersion())));
+                    sender.sendMessage(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("commands.help")).replace("%1$f", getPlugin(FunctionalServerControlSpigot.class).getDescription().getVersion())));
                 } else {
                     sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.no-permissions")));
                 }

@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.databases.mysql;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +11,8 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public abstract class MySQLCore {
 
-    FunctionalServerControl plugin;
-    public MySQLCore(FunctionalServerControl plugin) {
+    FunctionalServerControlSpigot plugin;
+    public MySQLCore(FunctionalServerControlSpigot plugin) {
         this.plugin = plugin;
     }
 

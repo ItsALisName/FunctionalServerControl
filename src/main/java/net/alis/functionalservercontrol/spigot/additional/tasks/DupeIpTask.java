@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
+import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,9 +30,7 @@ public class DupeIpTask extends BukkitRunnable {
 
                 if(dupeIpPlayers.size() > getConfigSettings().getMaxIpsPerSession()) {
                     for(Player dupeIpPlayer : dupeIpPlayers) {
-                        Bukkit.getScheduler().runTask(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), () -> {
-                           Bukkit.dispatchCommand(Bukkit.getConsoleSender(), getConfigSettings().getDupeIpAction().replace("%1$f", dupeIpPlayer.getName()));
-                        });
+                        TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), getConfigSettings().getDupeIpAction().replace("%1$f", dupeIpPlayer.getName())));
                     }
                 }
             }

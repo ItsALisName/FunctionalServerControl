@@ -1,4 +1,4 @@
-file-version: "1.09.1"
+file-version: "1.09.3"
 ##############################################################################
 #                 Basic settings of the plugin system                        #
 ##############################################################################
@@ -100,8 +100,8 @@ plugin-settings:
   api: true
   logger:
     enabled: true
-    log-format: "[FunctionalServerControl <-> %1$f] %2$f"
-    messages-to-log: [Your messages from console to log, FunctionalServerControl]
+    log-format: "[FunctionalServerControlSpigot <-> %1$f] %2$f"
+    messages-to-log: [Your messages from console to log, FunctionalServerControlSpigot]
   ##############################################################################
   #                       Settings using reasons                               #
   ##############################################################################

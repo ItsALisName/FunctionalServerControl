@@ -22,17 +22,17 @@ public class ProtocolLibManager {
     public void setupProtocolLib() {
         if(isProtocolLibInstalled()) {
             if(!getConfigSettings().isLessInformation()){
-                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl -> ProtocolLib] ProtocolLib detected, connecting..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot -> ProtocolLib] ProtocolLib detected, connecting..."));
             }
             protocolManager = ProtocolLibrary.getProtocolManager();
             if(protocolManager != null) {
                 protocolLibSetuped = true;
                 if(!getConfigSettings().isLessInformation()){
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl -> ProtocolLib] Connection to ProtocolLib was successful."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot -> ProtocolLib] Connection to ProtocolLib was successful."));
                 }
             } else {
                 protocolLibSetuped = false;
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl -> ProtocolLib] Failed to connect to ProtocolLib"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot -> ProtocolLib] Failed to connect to ProtocolLib"));
             }
         }
     }

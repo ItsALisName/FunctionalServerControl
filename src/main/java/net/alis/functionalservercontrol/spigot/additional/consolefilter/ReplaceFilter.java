@@ -21,14 +21,19 @@ public class ReplaceFilter implements Filter {
             TaskManager.preformAsync(() -> {
                 String exception = "UnknownException";
                 for(String ex : message.split(" ")) {
-                    if(ex.startsWith("java.lang") && ex.endsWith("Exception")) {
-                        exception = ex.replace("java.lang.", "");
+                    String[] eArgs = ex.split("\\.");
+                    if(ex.startsWith("java.lang") && ex.replace(":", "").endsWith("Exception")) {
+                        exception = eArgs[eArgs.length - 1].replace("java.lang.", "");
+                        break;
+                    }
+                    if(ex.startsWith("org.bukkit.event") && ex.replace(":", "").endsWith("Exception")) {
+                        exception = eArgs[eArgs.length - 1].replace(":", "");
                         break;
                     }
                 }
                 for(Player admin : Bukkit.getOnlinePlayers()) {
                     if(admin.hasPermission("functionalservercontrol.notification.plugin-error")) {
-                        admin.sendMessage(setColors("&4[FunctionalServerControl] An %e% exception was thrown while the plugin was running. Check the console for details and contact the plugin author to fix the bug!").replace("%e%", exception));
+                        admin.sendMessage(setColors("&4[FunctionalServerControlSpigot] An '%e%' exception was thrown while the plugin was running. Check the console for details and contact the plugin author to fix the bug!").replace("%e%", exception));
                     }
                 }
             });
@@ -46,7 +51,7 @@ public class ReplaceFilter implements Filter {
             } else {
                 playerName = player.getName();
             }
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", ConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", ConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
             return Filter.Result.DENY;
         }
         return Filter.Result.NEUTRAL;

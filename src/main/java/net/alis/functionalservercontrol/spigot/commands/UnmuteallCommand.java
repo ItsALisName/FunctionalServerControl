@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.managers.mute.UnmuteManager;
@@ -19,7 +19,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class UnmuteallCommand implements CommandExecutor {
 
-    public UnmuteallCommand(FunctionalServerControl plugin) {
+    public UnmuteallCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("unmuteall").setExecutor(this);
         plugin.getCommand("unmuteall").setTabCompleter(new UnmuteAllCompleter());
     }

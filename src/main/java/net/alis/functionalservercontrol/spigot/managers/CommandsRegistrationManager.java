@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
@@ -11,11 +11,11 @@ import java.util.Arrays;
 
 public class CommandsRegistrationManager extends Command implements PluginIdentifiableCommand {
 
-    protected FunctionalServerControl plugin;
+    protected FunctionalServerControlSpigot plugin;
     protected CommandExecutor owner;
     protected Object registeredWith;
 
-    public CommandsRegistrationManager(String[] aliases, String desc, String usage, CommandExecutor owner, Object registeredWith, FunctionalServerControl plugin) {
+    public CommandsRegistrationManager(String[] aliases, String desc, String usage, CommandExecutor owner, Object registeredWith, FunctionalServerControlSpigot plugin) {
         super(aliases[0], desc, usage, Arrays.asList(aliases));
         this.owner = owner;
         this.plugin = plugin;
@@ -40,7 +40,7 @@ public class CommandsRegistrationManager extends Command implements PluginIdenti
         }
     }
 
-    public static void registerCommand(FunctionalServerControl plugin, CommandExecutor commandExecutor, String[] aliases, String description, String usage) {
+    public static void registerCommand(FunctionalServerControlSpigot plugin, CommandExecutor commandExecutor, String[] aliases, String description, String usage) {
         try {
             CommandsRegistrationManager reg = new CommandsRegistrationManager(aliases, description, usage, commandExecutor, new Object(), plugin);
             Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");

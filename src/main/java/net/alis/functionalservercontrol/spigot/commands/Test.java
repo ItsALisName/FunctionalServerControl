@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.spigot.commands;
 
 import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
 import net.alis.functionalservercontrol.spigot.additional.reflect.PingReflect;
 import net.alis.functionalservercontrol.spigot.managers.ImportManager;
@@ -21,8 +21,8 @@ import static net.alis.functionalservercontrol.spigot.additional.containers.Stat
 public class Test implements CommandExecutor {
 
     private final String TEST_COMMAND = "JUST TEST COMMAND, FOR SOME TESTS";
-    FunctionalServerControl plugin;
-    public Test(FunctionalServerControl plugin) {
+    FunctionalServerControlSpigot plugin;
+    public Test(FunctionalServerControlSpigot plugin) {
         this.plugin = plugin;
         plugin.getCommand("test").setExecutor(this);
     }

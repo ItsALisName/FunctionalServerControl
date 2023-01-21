@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.managers.mute;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.api.events.AsyncUnmutePreprocessEvent;
 import net.alis.functionalservercontrol.spigot.managers.IdsManager;

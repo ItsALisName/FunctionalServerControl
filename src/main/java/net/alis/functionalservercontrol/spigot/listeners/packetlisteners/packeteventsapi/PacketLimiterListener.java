@@ -4,7 +4,7 @@ import net.alis.functionalservercontrol.libraries.io.github.retrooper.packeteven
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.PacketListenerPriority;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PacketPlayReceiveEvent;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.packettype.PacketType;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.tasks.PacketLimiterTask;
 import org.bukkit.entity.Player;
 
@@ -12,9 +12,9 @@ import static net.alis.functionalservercontrol.spigot.additional.globalsettings.
 
 public class PacketLimiterListener extends AbstractPacketListener {
 
-    FunctionalServerControl plugin;
+    FunctionalServerControlSpigot plugin;
     PacketLimiterTask packetLimiterTask;
-    public PacketLimiterListener(FunctionalServerControl plugin, PacketLimiterTask packetLimiterTask) {
+    public PacketLimiterListener(FunctionalServerControlSpigot plugin, PacketLimiterTask packetLimiterTask) {
         super(PacketListenerPriority.LOW);
         this.plugin = plugin;
         this.packetLimiterTask = packetLimiterTask;

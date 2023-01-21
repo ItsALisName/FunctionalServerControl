@@ -1,9 +1,9 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.GetClientCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,8 +18,8 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class GetClientCommand implements CommandExecutor {
 
-    FunctionalServerControl plugin;
-    public GetClientCommand(FunctionalServerControl plugin) {
+    FunctionalServerControlSpigot plugin;
+    public GetClientCommand(FunctionalServerControlSpigot plugin) {
         this.plugin = plugin;
         plugin.getCommand("getclient").setExecutor(this);
         plugin.getCommand("getclient").setTabCompleter(new GetClientCompleter());

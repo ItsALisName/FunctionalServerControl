@@ -26,33 +26,16 @@ public class ConsoleSendCommandListener implements Listener {
         }
         if(getCommandLimiterSettings().isFunctionEnabled()) {
             if(getCommandLimiterSettings().isConsoleBlockedCommandsUseAsWhiteList()) {
-                if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
-                    if(!getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command.split(" ")[0])) {
-                        sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-                if(getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("all_args")) {
-                    if(!getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command)) {
-                        sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
-                        event.setCancelled(true);
-                        return;
-                    }
+                if(!getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command.split(" ")[0])) {
+                    sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
+                    event.setCancelled(true);
+                    return;
                 }
             } else {
-                if (getCommandLimiterSettings().getCheckMode().equalsIgnoreCase("first_arg")) {
-                    if(getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command.split(" ")[0])) {
-                        sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
-                        event.setCancelled(true);
-                        return;
-                    }
-                } else {
-                    if(getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command)) {
-                        sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
-                        event.setCancelled(true);
-                        return;
-                    }
+                if(getCommandLimiterSettings().getConsoleBlockedCommands().contains("/" + command.split(" ")[0])) {
+                    sender.sendMessage(TextUtils.setColors(getCommandLimiterSettings().getConsoleCommandsDenyMessage()));
+                    event.setCancelled(true);
+                    return;
                 }
             }
         }
@@ -72,7 +55,7 @@ public class ConsoleSendCommandListener implements Listener {
         }
 
         if(ConsoleFilterHelper.getConsoleFilterHelper().getPluginCommands().contains("/" + command.split(" ")[0])) {
-            sender.sendMessage(TextUtils.setColors("&e[FunctionalServerControl | Log] Console used the command: &6%command%".replace("%command%", "/" + event.getCommand())));
+            sender.sendMessage(TextUtils.setColors("&e[FunctionalServerControlSpigot | Log] Console used the command: &6%command%".replace("%command%", "/" + event.getCommand())));
         }
     }
 

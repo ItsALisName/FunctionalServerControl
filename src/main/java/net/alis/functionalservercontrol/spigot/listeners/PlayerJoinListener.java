@@ -1,7 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
 import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UpdateChecker;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import net.alis.functionalservercontrol.spigot.additional.tasks.PacketLimiterTask;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
@@ -11,7 +10,6 @@ import net.alis.functionalservercontrol.spigot.managers.DupeIpManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.managers.ban.BanChecker;
 import net.alis.functionalservercontrol.spigot.managers.mute.MuteManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

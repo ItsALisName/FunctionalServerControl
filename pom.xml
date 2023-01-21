@@ -6,7 +6,7 @@
 
     <groupId>as</groupId>
     <artifactId>as</artifactId>
-    <version>1.09.1</version>
+    <version>1.09.3</version>
     <packaging>jar</packaging>
 
     <name>As</name>
@@ -51,7 +51,7 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>by.alis.functionalservercontrol.spigot</shadedPattern>
+                            <shadedPattern>net.alis.functionalservercontrol.spigot</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

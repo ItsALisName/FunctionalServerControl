@@ -2,7 +2,7 @@ package net.alis.functionalservercontrol.spigot.managers.ban;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.api.events.AsyncUnbanPreprocessEvent;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.IdsManager;
@@ -80,7 +80,7 @@ public class UnbanManager {
                 }
                 return;
             } catch (NullPointerException ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to unban player %player%".replace("%player%", player.getName())));
             }
 
         } else {
@@ -89,7 +89,7 @@ public class UnbanManager {
                 BaseManager.getBaseManager().insertIntoHistory(SFAccessor.getFileAccessor().getLang().getString("other.history-formats.unban").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", TextUtils.isTextNotNull(unbanReason) ? unbanReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
                 if(unbanInitiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)unbanInitiator, StatsType.Administrator.STATS_UNBANS);
             } catch (NullPointerException ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to unban player %player%".replace("%player%", player.getName())));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to unban player %player%".replace("%player%", player.getName())));
             }
             if(!TextUtils.isTextNotNull(unbanReason)) {
                 if(announceUnban) {

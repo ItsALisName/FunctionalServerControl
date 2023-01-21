@@ -1,10 +1,10 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
 import net.alis.functionalservercontrol.api.enums.Chat;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.commands.completers.ClearChatCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +18,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class ClearChatCommand implements CommandExecutor {
 
-    public ClearChatCommand(FunctionalServerControl plugin) {
+    public ClearChatCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("clearchat").setExecutor(this);
         plugin.getCommand("clearchat").setTabCompleter(new ClearChatCompleter());
     }

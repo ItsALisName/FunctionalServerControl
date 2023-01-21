@@ -3,9 +3,8 @@ package net.alis.functionalservercontrol.spigot;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UpdateCheckSource;
 import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UpdateChecker;
-import net.alis.functionalservercontrol.libraries.com.jeff_media.updatechecker.UserAgentBuilder;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
-import net.alis.functionalservercontrol.spigot.additional.misc.Metrics;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.additional.misc.metrics.Metrics;
 import net.alis.functionalservercontrol.spigot.additional.tasks.PacketLimiterTask;
 import net.alis.functionalservercontrol.spigot.commands.*;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
@@ -44,7 +43,7 @@ import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.
  * <p>
  * Author ALis
  */
-public final class FunctionalServerControl extends JavaPlugin {
+public final class FunctionalServerControlSpigot extends JavaPlugin {
     private final FileManager fileManager = new FileManager(this);
     private final LogWriter writer = new LogWriter();
     private Filter consoleFilterCore;
@@ -62,20 +61,20 @@ public final class FunctionalServerControl extends JavaPlugin {
     public void onEnable() {
         String version = OtherUtils.getServerVersion(getServer()).toString();
         if(OtherUtils.isSuppotedVersion(getServer()) && !OtherUtils.getServerCoreName(getServer()).toLowerCase().contains("bukkit")) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &a(Supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &a(Supported)"));
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &c(Not supported)"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Disabling..."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Starting on " + OtherUtils.getServerCoreName(getServer()) + " " + version + " server version &c(Not supported)"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Disabling..."));
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
         if(version.startsWith("1.8") || version.startsWith("1.9") || version.startsWith("1.10") || version.startsWith("1.11") || version.startsWith("1.12") || version.startsWith("1.13") || version.startsWith("1.14") || version.startsWith("1.15")) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] You are using an old version of the Minecraft server!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] This version greatly limits the capabilities of the plugin"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Please update the Minecraft server version!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] You can download the new version of the server by following the links"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Spigot: &6https://getbukkit.org/download/spigot"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl] Paper: &6https://papermc.io/downloads"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] You are using an old version of the Minecraft server!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] This version greatly limits the capabilities of the plugin"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Please update the Minecraft server version!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] You can download the new version of the server by following the links"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Spigot: &6https://getbukkit.org/download/spigot"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Paper: &6https://papermc.io/downloads"));
         }
         OtherUtils.plugmanInjection();
         if(!CoreAdapter.setAdapter()) {

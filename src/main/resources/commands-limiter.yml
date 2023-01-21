@@ -1,51 +1,50 @@
-file-version: "1.09.1"
+file-version: "1.09.3"
 settings:
-  disable-reload-command: true #---> Version: v1.05
+  disable-reload-command: true
   enabled: true
   use-groups: false
   modify-tab-completions: true
-  notify-admins: true #---> Version: v1.05
-
+  notify-admins: true
   ##############################################################################
   #       Settings for checking the command entered by the players             #
   # "first_arg" - meaning that the command will be checked only by the         #
   #   first argument                                                           #
   # "all_args" - meaning that the fully entered command will be checked        #
   ##############################################################################
-  commands-check-mode: "first_arg"
 
 blocked-commands:
   syntax-commands:
     block: true
     deny-message: "&cСинтаксисные команды запрещено использовать"
     whitelisted-syntax-commands:
-    - /your:commands
+    - /your:commands #Here [checkMode={mode}] not working
 
   console:
     use-as-whitelist: false
     deny-message: "&cДанная команда отключена для консоли"
     commands:
-    - /your
-    - /commands
+    - /your #Here [checkMode={mode}] not working
+    - /commands #Here [checkMode={mode}] not working
 
   global:
     deny-message: "&cДанная команда заблокирована"
     use-as-whitelist: false
     group:
       default:
-      - /commands
-      - /to
+      - /commands[checkMode=first_arg] # If you set unknown check mode, mode "first_arg" will be used
+      - /to # If "[checkMode={mode}]" is not specified, mode "first_arg" will be used
+      - /ban ALis[checkMode=all_args] # If command written here has words length bigger than 1, mode should be "all_args"
       moder:
-      - /be
-      - /blocked
+      - /be[checkMode=first_arg]
+      - /blocked[checkMode=first_arg]
 
     ##############################################################################
     #      Used if a plugin that supports groups is not installed on the         #
     #       server (LuckPerms, etc.) or if "use-groups" is set to "false"        #
     ##############################################################################
     global:
-    - /command1
-    - /command2
+    - /command1[checkMode=first_arg]
+    - /command2[checkMode=first_arg]
 
   per-world:
     deny-message: "&cДанная команда запрещена в данном мире!"
@@ -53,19 +52,20 @@ blocked-commands:
     world1:
       group:
         default:
-        - /commands
-        - /to
+        - /commands[checkMode=first_arg]
+        - /to[checkMode=first_arg]
         moder:
-        - /be
-        - /blocked
+        - /be[checkMode=first_arg]
+        - /blocked[checkMode=first_arg]
 
       ##############################################################################
       #      Used if a plugin that supports groups is not installed on the         #
       #       server (LuckPerms, etc.) or if "use-groups" is set to "false"        #
       ##############################################################################
       global:
-      - /command1
-      - /command2
+      - /command1[checkMode=first_arg]
+      - /command2[checkMode=first_arg]
+      - /command3 alok[checkMode=all_args]
 
 tab-completions:
   ##############################################################################

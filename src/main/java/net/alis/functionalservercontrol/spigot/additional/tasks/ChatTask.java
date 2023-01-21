@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -13,7 +13,7 @@ import static net.alis.functionalservercontrol.spigot.additional.globalsettings.
 public class ChatTask extends BukkitRunnable {
 
     public ChatTask() {
-        new RepeatingMessagesRemover().runTaskTimerAsynchronously(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class), 0, 240L);
+        TaskManager.preformAsyncTimerTask(new RepeatingMessagesRemover(),0, 240L);
     }
 
     @Override

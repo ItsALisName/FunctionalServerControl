@@ -21,17 +21,17 @@ public class VaultManager {
         if(vaultInstalled()) {
             if(permissionsProviderInstalled()) {
                 if(!getConfigSettings().isLessInformation()){
-                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl -> Vault] Vault detected, connecting..."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot -> Vault] Vault detected, connecting..."));
                 }
                 permission = getPermissionRegisteredServiceProvider().getProvider();
                 if(permission != null) {
                     this.vaultSetuped = true;
                     if(!getConfigSettings().isLessInformation()){
-                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl -> Vault] Connection to Vault was successful"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot -> Vault] Connection to Vault was successful"));
                     }
                 } else {
                     this.vaultSetuped = false;
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl -> Vault] Failed to connect to Vault"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot -> Vault] Failed to connect to Vault"));
                 }
             }
         }

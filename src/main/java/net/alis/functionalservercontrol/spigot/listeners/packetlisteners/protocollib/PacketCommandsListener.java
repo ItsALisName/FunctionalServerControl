@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners.packetlisteners.protocollib;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import net.alis.functionalservercontrol.spigot.managers.GlobalCommandManager;
@@ -12,18 +12,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getCommandLimiterSettings;
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
 
 public class PacketCommandsListener {
-    private final FunctionalServerControl plugin;
-    public PacketCommandsListener(FunctionalServerControl plugin) {
+    private final FunctionalServerControlSpigot plugin;
+    public PacketCommandsListener(FunctionalServerControlSpigot plugin) {
         this.plugin = plugin;
-        if(!getConfigSettings().isLessInformation()) Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a&o[FunctionalServerControl | ProtocolLib] Added packet listener PacketCommandsListener"));
+        if(!getConfigSettings().isLessInformation()) Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a&o[FunctionalServerControlSpigot | ProtocolLib] Added packet listener PacketCommandsListener"));
     }
     public void onTabComplete() {
-        Expansions.getProtocolLibManager().getProtocolManager().addPacketListener(new PacketAdapter(this.plugin, ListenerPriority.HIGH, PacketType.Play.Server.TAB_COMPLETE) {
+        Expansions.getProtocolLibManager().getProtocolManager().addPacketListener(new PacketAdapter(this.plugin, ListenerPriority.HIGH, Collections.singletonList(PacketType.Play.Server.TAB_COMPLETE), ListenerOptions.ASYNC) {
             @Override
             public void onPacketSending(PacketEvent e){
                 if (e.getPacketType() == PacketType.Play.Server.TAB_COMPLETE) {
@@ -38,6 +39,5 @@ public class PacketCommandsListener {
                 }
             }
         });
-
     }
 }

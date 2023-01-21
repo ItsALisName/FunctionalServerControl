@@ -1,4 +1,4 @@
-package net.alis.functionalservercontrol.spigot.additional.coreadapters;
+package net.alis.functionalservercontrol.spigot.coreadapters;
 
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import org.bukkit.OfflinePlayer;
@@ -32,6 +32,8 @@ public abstract class Adapter {
 
     public abstract void kick(@NotNull Player player, @Nullable String reason);
 
-    public abstract void sendTitle(@NotNull Player player, String param, String param1);
+    public abstract void sendTitle(@NotNull Player player, String param, @Nullable String param1);
+
+    public abstract void sendTitle(@NotNull Player player, String param, @Nullable String param1, int fadeIn, int stay, int fadeOut);
 
 }

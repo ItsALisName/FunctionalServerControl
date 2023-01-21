@@ -29,7 +29,7 @@ public class MuteContainerManager {
                 BaseManager.getBaseManager().getMutedUUIDs(),
                 BaseManager.getBaseManager().getUnmuteTimes()
         );
-        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl] Mutes loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getMutedPlayersContainer().getIdsContainer().size()))));
+        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControlSpigot] Mutes loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getMutedPlayersContainer().getIdsContainer().size()))));
     }
 
     public void addToMuteContainer(String id, String ip, String playerName, String initiatorName, String reason, MuteType muteType, String realBanDate, String realBanTime, String uuid, Long time) {

@@ -3,7 +3,7 @@ package net.alis.functionalservercontrol.spigot.commands;
 import net.alis.functionalservercontrol.spigot.additional.misc.device.DeviceInformation;
 import net.alis.functionalservercontrol.spigot.commands.completers.DeviceInfoCompleter;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class DeviceInfoCommand implements CommandExecutor {
 
-    public DeviceInfoCommand(FunctionalServerControl plugin) {
+    public DeviceInfoCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("deviceinfo").setExecutor(this);
         plugin.getCommand("deviceinfo").setTabCompleter(new DeviceInfoCompleter());
     }

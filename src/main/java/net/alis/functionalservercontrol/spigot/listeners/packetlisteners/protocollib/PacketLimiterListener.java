@@ -1,11 +1,10 @@
 package net.alis.functionalservercontrol.spigot.listeners.packetlisteners.protocollib;
 
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.tasks.PacketLimiterTask;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.*;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -15,9 +14,9 @@ import static net.alis.functionalservercontrol.spigot.additional.globalsettings.
 
 public class PacketLimiterListener {
 
-    FunctionalServerControl plugin;
+    FunctionalServerControlSpigot plugin;
     PacketLimiterTask packetLimiterTask;
-    public PacketLimiterListener(FunctionalServerControl plugin, PacketLimiterTask packetLimiterTask) {
+    public PacketLimiterListener(FunctionalServerControlSpigot plugin, PacketLimiterTask packetLimiterTask) {
         this.plugin = plugin;
         this.packetLimiterTask = packetLimiterTask;
     }

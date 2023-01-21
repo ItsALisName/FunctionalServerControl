@@ -2,11 +2,12 @@ package net.alis.functionalservercontrol.spigot.additional.misc;
 
 import net.alis.functionalservercontrol.api.enums.Chat;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.libraries.org.apache.commons.lang3.StringUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -234,7 +235,7 @@ public class OtherUtils {
         if (!versionSuffix.startsWith("v")) {
             serverVersion = ProtocolVersions.V17_1;
         } else {
-            serverVersion = ProtocolVersions.V8.valueOf("V" + versionSuffix.replace("v1_", "").replace("R", ""));
+            serverVersion = ProtocolVersions.valueOf("V" + versionSuffix.replace("v1_", "").replace("R", ""));
         }
         return serverVersion;
     }
@@ -244,17 +245,44 @@ public class OtherUtils {
             if(Bukkit.getPluginManager().getPlugin("PlugManX") != null) {
                 try {
                     File pManConfigFile = new File("plugins/PlugManX/", "config.yml");
-                    if(pManConfigFile.exists()) {
+                    if (pManConfigFile.exists()) {
                         FileConfiguration pManConfig = YamlConfiguration.loadConfiguration(pManConfigFile);
                         List<String> a = new ArrayList<>(Arrays.asList(StringUtils.substringBetween(pManConfig.getString("ignored-plugins"), "[", "]").split(",")));
-                        if(a.contains("FunctionalServerControl")) return;
-                        a.add("FunctionalServerControl");
+                        if (a.contains("FunctionalServerControlSpigot")) return;
+                        a.add("FunctionalServerControlSpigot");
                         pManConfig.set("ignored-plugins", TextUtils.stringToMonolith("[" + String.join(",", a) + "]"));
                         pManConfig.save(pManConfigFile);
                     }
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
             }
         });
+    }
+
+    public static List<Material> getLegacyMaterial(String material, String[] alternatives) {
+        material = material.toUpperCase();
+        if(Material.getMaterial(material) == null) {
+            if(Material.getMaterial("LEGACY_" + material) != null) return Collections.singletonList(Material.valueOf("LEGACY_" + material));
+            List<Material> materials = new ArrayList<>();
+            for(String alternative : alternatives) {
+                if(Material.getMaterial(alternative) != null) materials.add(Material.valueOf(alternative));
+            }
+            return materials;
+        } else {
+            return Collections.singletonList(Material.valueOf(material));
+        }
+    }
+
+    public static String getCommandCheckMode(String cmd) {
+        String checkMode = "first_arg";
+        if(StringUtils.substringBetween(cmd, "[", "]").contains("checkMode=")) {
+            checkMode = StringUtils.substringBetween(cmd, "[", "]").replace("checkMode=", "");
+            if(checkMode.equalsIgnoreCase("first_arg") || checkMode.equalsIgnoreCase("all_args")) {
+                return checkMode;
+            }
+            return "first_arg";
+        }
+        return checkMode;
     }
 
     public static void loadCachedPlayers() {

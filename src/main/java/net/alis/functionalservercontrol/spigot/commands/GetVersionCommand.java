@@ -1,9 +1,9 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.GetVersionCompleter;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +18,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class GetVersionCommand implements CommandExecutor {
 
-    public GetVersionCommand(FunctionalServerControl plugin) {
+    public GetVersionCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("getversion").setExecutor(this);
         plugin.getCommand("getversion").setTabCompleter(new GetVersionCompleter());
     }

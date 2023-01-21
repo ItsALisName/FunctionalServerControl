@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.managers.file;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class FileAccessor {
 
-    private final FileManager fileManager = new FileManager(FunctionalServerControl.getPlugin(FunctionalServerControl.class));
+    private final FileManager fileManager = new FileManager(FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class));
 
     public FileConfiguration getGeneralConfig() {
         return this.fileManager.configuration;
@@ -46,12 +46,12 @@ public class FileAccessor {
 
     public void reloadLang() throws IOError {
         if(!this.fileManager.langFileRU.exists()) {
-            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_ru.yml", false);
+            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_ru.yml", false);
             this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
         }
         this.fileManager.langRU = YamlConfiguration.loadConfiguration(this.fileManager.langFileRU);
         if (!this.fileManager.langFileEN.exists()) {
-            FunctionalServerControl.getPlugin(FunctionalServerControl.class).saveResource("language/lang_en.yml", false);
+            FunctionalServerControlSpigot.getPlugin(FunctionalServerControlSpigot.class).saveResource("language/lang_en.yml", false);
             this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);
         }
         this.fileManager.langEN = YamlConfiguration.loadConfiguration(this.fileManager.langFileEN);

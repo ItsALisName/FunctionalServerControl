@@ -1,8 +1,8 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.Adapter;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.Adapter;
+import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

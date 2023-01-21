@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.UnbanCompleter;
@@ -21,7 +21,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
  */
 public class UnbanCommand implements CommandExecutor {
 
-    public UnbanCommand(FunctionalServerControl plugin) {
+    public UnbanCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("unban").setExecutor(this);
         plugin.getCommand("unban").setTabCompleter(new UnbanCompleter());
     }

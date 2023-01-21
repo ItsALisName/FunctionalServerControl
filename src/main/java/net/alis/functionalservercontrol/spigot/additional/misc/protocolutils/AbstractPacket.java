@@ -16,11 +16,11 @@ public abstract class AbstractPacket {
 
     protected AbstractPacket(PacketContainer handle, PacketType type) {
         if (handle == null) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] AbstractPacket handle must not be null"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] AbstractPacket handle must not be null"));
             return;
         }
         if (!Objects.equal(handle.getType(), type)) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] " + handle.getHandle() + " is not a packet of type " + type));
+            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] " + handle.getHandle() + " is not a packet of type " + type));
             return;
         }
         this.handle = handle;
@@ -34,9 +34,9 @@ public abstract class AbstractPacket {
         try {
             Expansions.getProtocolLibManager().getProtocolManager().sendServerPacket(receiver, getHandle());
         } catch (InvocationTargetException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Failed to send packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Failed to send packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
             e.printStackTrace();
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Failed to send packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Failed to send packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
         }
     }
 
@@ -50,9 +50,9 @@ public abstract class AbstractPacket {
             ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
                     getHandle());
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
             e.printStackTrace();
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
         }
     }
 
@@ -61,9 +61,9 @@ public abstract class AbstractPacket {
             ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
                     getHandle());
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
             e.printStackTrace();
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot] Cannot receive packet. Before reporting this to ALis, check if you have the latest version of ProtocolLib"));
         }
     }
 }

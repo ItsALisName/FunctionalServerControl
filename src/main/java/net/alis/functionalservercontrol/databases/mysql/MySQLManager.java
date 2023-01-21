@@ -3,7 +3,7 @@ package net.alis.functionalservercontrol.databases.mysql;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class MySQLManager extends MySQLCore {
 
-    public MySQLManager(FunctionalServerControl plugin) {
+    public MySQLManager(FunctionalServerControlSpigot plugin) {
         super(plugin);
     }
 
@@ -32,13 +32,13 @@ public class MySQLManager extends MySQLCore {
             return mysqlConnection;
         } catch (SQLException | ClassNotFoundException e) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4BEFORE REPORTING THIS TO ALis's, MAKE SURE THAT EVERYTHING IS SET UP ON YOUR SIDE!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to connect to the database!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] -> Unknown error, try reinstalling the plugin."));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] No further work possible!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] Disabling the plugin..."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to connect to the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] -> Unknown error, try reinstalling the plugin."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] No further work possible!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] Disabling the plugin..."));
             e.printStackTrace();
             Bukkit.getConsoleSender().sendMessage(setColors("&4BEFORE REPORTING THIS TO ALis's, MAKE SURE THAT EVERYTHING IS SET UP ON YOUR SIDE!"));
-            this.plugin.getPluginLoader().disablePlugin(FunctionalServerControl.getProvidingPlugin(FunctionalServerControl.class));
+            this.plugin.getPluginLoader().disablePlugin(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class));
             return null;
         }
     }
@@ -64,7 +64,7 @@ public class MySQLManager extends MySQLCore {
             mysqlStatement.executeUpdate(queryTableSeven);
             mysqlStatement.close();
         } catch (SQLException a) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(a);
         } finally {
             try { if (mysqlConnection != null) { mysqlConnection.close();} } catch (SQLException ignored) { }
@@ -85,7 +85,7 @@ public class MySQLManager extends MySQLCore {
             String insertInfo = "INSERT INTO playersStats (uuid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + String.valueOf(uuid) + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
             mysqlConnection.createStatement().executeUpdate(insertInfo);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -136,7 +136,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -186,7 +186,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -224,7 +224,7 @@ public class MySQLManager extends MySQLCore {
                 mysqlConnection.createStatement().executeUpdate(a);
                 mysqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -262,7 +262,7 @@ public class MySQLManager extends MySQLCore {
                 mysqlConnection.createStatement().executeUpdate(a);
                 mysqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -290,7 +290,7 @@ public class MySQLManager extends MySQLCore {
             String a = "INSERT INTO History (history) VALUES ('" + message + "');";
             mysqlConnection.createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -334,7 +334,7 @@ public class MySQLManager extends MySQLCore {
                 if(mysqlConnection != null) mysqlConnection.close();
                 if(mysqlResultSet != null) mysqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         } else {
@@ -356,7 +356,7 @@ public class MySQLManager extends MySQLCore {
                 if(mysqlConnection != null) mysqlConnection.close();
                 if(mysqlResultSet != null) mysqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         }
@@ -368,7 +368,7 @@ public class MySQLManager extends MySQLCore {
             String a = "DELETE FROM History;";
             getMysqlConnection().createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -408,7 +408,7 @@ public class MySQLManager extends MySQLCore {
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (mysqlConnection != null) {
@@ -443,7 +443,7 @@ public class MySQLManager extends MySQLCore {
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
         } finally {
             try {
                 if (mysqlConnection != null) {
@@ -482,7 +482,7 @@ public class MySQLManager extends MySQLCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : uuid;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -520,7 +520,7 @@ public class MySQLManager extends MySQLCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : UUID.fromString(uuid);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -556,7 +556,7 @@ public class MySQLManager extends MySQLCore {
             }
             return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -590,7 +590,7 @@ public class MySQLManager extends MySQLCore {
             String insertName = "INSERT INTO allPlayers (name, uuid, ip) VALUES ('" + name + "', '" + uuid + "', '" + ip + "');";
             mysqlConnection.createStatement().executeUpdate(insertName);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -629,7 +629,7 @@ public class MySQLManager extends MySQLCore {
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -665,7 +665,7 @@ public class MySQLManager extends MySQLCore {
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -696,7 +696,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -724,7 +724,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -752,7 +752,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -780,7 +780,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -808,7 +808,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
             try {
@@ -836,7 +836,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
             try {
@@ -874,7 +874,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -914,7 +914,7 @@ public class MySQLManager extends MySQLCore {
             }
             return ips;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -951,7 +951,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -990,7 +990,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1029,7 +1029,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1068,7 +1068,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1107,7 +1107,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1146,7 +1146,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1185,7 +1185,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1224,7 +1224,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1266,7 +1266,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1305,7 +1305,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1344,7 +1344,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1383,7 +1383,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1422,7 +1422,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1461,7 +1461,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1500,7 +1500,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1539,7 +1539,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1578,7 +1578,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1617,7 +1617,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1651,7 +1651,7 @@ public class MySQLManager extends MySQLCore {
                 mysqlConnection.close();
                 insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
@@ -1693,7 +1693,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1732,7 +1732,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1771,7 +1771,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1802,7 +1802,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(b);
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1832,7 +1832,7 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(b);
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1944,7 +1944,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -1983,7 +1983,7 @@ public class MySQLManager extends MySQLCore {
             }
             return b;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2020,7 +2020,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2058,7 +2058,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2096,7 +2096,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2134,7 +2134,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2172,7 +2172,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2210,7 +2210,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2248,7 +2248,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }
         return a;
@@ -2270,7 +2270,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2308,7 +2308,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2346,7 +2346,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2384,7 +2384,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            throw new RuntimeException("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!");
+            throw new RuntimeException("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!");
         }finally {
             try {
                 if(mysqlConnection != null) {
@@ -2421,7 +2421,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2459,7 +2459,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2497,7 +2497,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2535,7 +2535,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2573,7 +2573,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2611,7 +2611,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {
@@ -2649,7 +2649,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
             try {

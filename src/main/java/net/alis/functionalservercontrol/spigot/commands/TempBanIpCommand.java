@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.BanType;
@@ -22,7 +22,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class TempBanIpCommand implements CommandExecutor {
 
-    public TempBanIpCommand(FunctionalServerControl plugin) {
+    public TempBanIpCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("tempbanip").setExecutor(this);
         plugin.getCommand("tempbanip").setTabCompleter(new TempBanIpCompleter());
     }

@@ -1,6 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
-import net.alis.functionalservercontrol.spigot.FunctionalServerControl;
+import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.KickAllCompleter;
 import net.alis.functionalservercontrol.spigot.managers.KickManager;
@@ -19,7 +19,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
  */
 public class KickAllCommand implements CommandExecutor {
 
-    public KickAllCommand(FunctionalServerControl plugin) {
+    public KickAllCommand(FunctionalServerControlSpigot plugin) {
         plugin.getCommand("kickall").setExecutor(this);
         plugin.getCommand("kickall").setTabCompleter(new KickAllCompleter());
     }
