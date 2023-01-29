@@ -178,7 +178,7 @@ public class WrappedPacket implements WrapperPacketReader, WrapperPacketWriter
     
     @Override
     public int readInt(final int index) {
-        return this.read(index, (Class<? extends Integer>)Integer.TYPE);
+        return this.read(index, Integer.TYPE);
     }
     
     @Override

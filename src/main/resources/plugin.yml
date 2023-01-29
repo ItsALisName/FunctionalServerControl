@@ -1,4 +1,4 @@
-name: FunctionalServerControlSpigot
+name: FunctionalServerControl
 version: '${project.version}'
 main: net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot
 api-version: 1.13
@@ -7,6 +7,7 @@ description: Multifunctional control of the server and players
 website: https://vk.com/alphatwo
 softdepend: [Vault, LuckPerms, ProtocolLib, ViaVersion, ProtocolSupport, packetevents]
 commands:
+  test:
   deviceinfo:
     aliases: [dinfo]
   kick:

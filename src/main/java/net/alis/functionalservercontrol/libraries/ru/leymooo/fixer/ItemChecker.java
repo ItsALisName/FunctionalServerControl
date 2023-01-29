@@ -1,5 +1,7 @@
 package net.alis.functionalservercontrol.libraries.ru.leymooo.fixer;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
@@ -10,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.potion.PotionEffect;
@@ -27,12 +28,29 @@ public class ItemChecker {
     private final HashSet<Material> tiles = new HashSet<>();
 
     public ItemChecker() {
-        nbt.addAll(Arrays.asList("ActiveEffects", "Command", "CustomName", "AttributeModifiers", "Unbreakable"));
-        getProtectionSettings().getItemFixerIgnoredTags().forEach(nbt::remove);
-        tiles.addAll(Arrays.asList(
-                Material.FURNACE, Material.CHEST, Material.TRAPPED_CHEST, Material.DROPPER, Material.DISPENSER, Material.LEGACY_COMMAND_MINECART, Material.HOPPER_MINECART,
-                Material.HOPPER, Material.LEGACY_BREWING_STAND_ITEM, Material.BEACON, Material.LEGACY_SIGN, Material.LEGACY_MOB_SPAWNER, Material.NOTE_BLOCK, Material.LEGACY_COMMAND, Material.JUKEBOX
-        ));
+        TaskManager.preformAsync(() -> {
+            nbt.addAll(Arrays.asList("ActiveEffects", "Command", "CustomName", "AttributeModifiers", "Unbreakable"));
+            getProtectionSettings().getItemFixerIgnoredTags().forEach(nbt::remove);
+            tiles.addAll(Arrays.asList(
+                    Material.FURNACE,
+                    Material.CHEST,
+                    Material.TRAPPED_CHEST,
+                    Material.DROPPER,
+                    Material.DISPENSER,
+                    Material.HOPPER_MINECART,
+                    Material.HOPPER,
+                    Material.BEACON,
+                    Material.NOTE_BLOCK,
+                    Material.JUKEBOX
+            ));
+            try {
+                tiles.addAll(OtherUtils.getLegacyMaterial("BREWING_STAND_ITEM", new String[]{"BREWING_STAND"}));
+                tiles.addAll(OtherUtils.getLegacyMaterial("SIGN", new String[]{"OAK_SIGN", "ACACIA_SIGN", "SPRUCE_SIGN", "BIRCH_SIGN", "CRIMSON_SIGN", "DARK_OAK_SIGN", "JUNGLE_SIGN", "WARPED_SIGN"}));
+                tiles.addAll(OtherUtils.getLegacyMaterial("MOB_SPAWNER", new String[]{"SPAWNER"}));
+                tiles.addAll(OtherUtils.getLegacyMaterial("COMMAND", new String[]{"COMMAND_BLOCK"}));
+                tiles.addAll(OtherUtils.getLegacyMaterial("COMMAND_MINECART", new String[]{"COMMAND_BLOCK_MINECART"}));
+            } catch (RuntimeException ignored) {}
+        });
     }
 
     @SuppressWarnings("rawtypes")
@@ -88,7 +106,7 @@ public class ItemChecker {
         return false;
     }
 
-    private boolean checkEnchants(ItemStack stack, Player player) {
+    private boolean checkEnchants(ItemStack stack, FunctionalPlayer player) {
         boolean cheat = false;
         if (getProtectionSettings().isCheckEnchants() && !player.hasPermission("functionalservercontrol.itemfixer.enchantments.bypass") && stack.hasItemMeta() && stack.getItemMeta().hasEnchants()) {
             final ItemMeta meta = stack.getItemMeta();
@@ -97,7 +115,7 @@ public class ItemChecker {
                 enchantments = meta.getEnchants();
             } catch (Exception e) {
                 clearData(stack);
-                player.updateInventory();
+                player.getBukkitPlayer().updateInventory();
                 return true;
             }
             for (Map.Entry<Enchantment, Integer> mEnchant : enchantments.entrySet()) {
@@ -122,7 +140,7 @@ public class ItemChecker {
         return cheat;
     }
 
-    private boolean checkNbt(ItemStack stack, Player p) {
+    private boolean checkNbt(ItemStack stack, FunctionalPlayer p) {
         boolean cheat = false;
         try {
             if (p.hasPermission("functionalservercontrol.itemfixer.nbt.bypass")) return false;
@@ -174,7 +192,7 @@ public class ItemChecker {
         return (material == Material.LEGACY_BANNER || material == Material.SHIELD);
     }
 
-    private void checkShulkerBox(ItemStack stack, Player p) {
+    private void checkShulkerBox(ItemStack stack, FunctionalPlayer p) {
         if (!isShulkerBox(stack, stack)) return;
         BlockStateMeta meta = (BlockStateMeta) stack.getItemMeta();
         ShulkerBox box = (ShulkerBox) meta.getBlockState();
@@ -212,7 +230,7 @@ public class ItemChecker {
         return false;
     }
 
-    private boolean checkPotion(ItemStack stack, Player p) {
+    private boolean checkPotion(ItemStack stack, FunctionalPlayer p) {
         boolean cheat = false;
         if (!p.hasPermission("functionalservercontrol.itemfixer.potion.bypass")) {
             PotionMeta meta = (PotionMeta) stack.getItemMeta();
@@ -243,7 +261,7 @@ public class ItemChecker {
         return meta.getBlockState() instanceof ShulkerBox;
     }
 
-    public boolean isHackedItem(ItemStack stack, Player player) {
+    public boolean isHackedItem(ItemStack stack, FunctionalPlayer player) {
         if (stack == null || stack.getType() == Material.AIR) return false;
         this.checkShulkerBox(stack, player);
         if (this.checkNbt(stack, player)) {

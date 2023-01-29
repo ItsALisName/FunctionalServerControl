@@ -5,6 +5,8 @@ package net.alis.functionalservercontrol.libraries.io.github.retrooper.packeteve
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.PacketEvents;
 import org.bukkit.Bukkit;
 
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+
 public enum ServerVersion
 {
     v_1_7_10(5), 
@@ -76,7 +78,7 @@ public enum ServerVersion
                     fallbackVersion = ServerVersion.v_1_8_8;
                 }
             }
-            PacketEvents.get().getPlugin().getLogger().warning("[packetevents] Your server software is preventing us from checking the server version. This is what we found: " + Bukkit.getBukkitVersion() + ". We will assume the server version is " + fallbackVersion.name() + "...");
+            PacketEvents.get().getPlugin().getLogger().warning(setColors("&e[FunctionalServerControl | PacketEvents] Your server software is preventing us from checking the server version. This is what we found: " + Bukkit.getBukkitVersion() + ". We will assume the server version is " + fallbackVersion.name() + "..."));
             return fallbackVersion;
         }
         return ServerVersion.ERROR;

@@ -30,7 +30,7 @@ public class ReplacedMessagesContainer {
                     }
                 }
             } catch (RuntimeException ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] The list of replacement messages in the console could not be loaded into RAM"));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] The list of replacement messages in the console could not be loaded into RAM"));
             }
         });
     }
@@ -45,9 +45,9 @@ public class ReplacedMessagesContainer {
                 }
             }
         } catch (RuntimeException exception) {
-            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot] Failed to reload the list of commands to replace in the console"));
+            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl] Failed to reload the list of commands to replace in the console"));
             Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4" + exception.fillInStackTrace().getMessage()));
-            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot] Failed to reload the list of commands to replace in the console"));
+            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl] Failed to reload the list of commands to replace in the console"));
         }
     }
 

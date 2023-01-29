@@ -1,8 +1,8 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandSendEvent;
@@ -14,9 +14,9 @@ public class ServerSendCommandsListener implements Listener {
 
     @EventHandler
     public void onServerSendCommand(PlayerCommandSendEvent event) {
-        Player player = event.getPlayer();
+        FunctionalPlayer player = FunctionalPlayer.get(event.getPlayer().getName());
         if (getConfigSettings().hideMainCommand() && !player.hasPermission("functionalservercontrol.commands.bypass")) {
-            event.getCommands().removeIf(cmd -> cmd.contains("fsc") || cmd.contains("functionalservercontrol") || cmd.contains("fscontrol"));
+            event.getCommands().removeIf(cmd -> cmd.contains("get") || cmd.contains("functionalservercontrol") || cmd.contains("fscontrol"));
         }
         if (getCommandLimiterSettings().isHideCompletionsFully()) {
             if (getCommandLimiterSettings().isBlockSyntaxCommand()) {
@@ -26,7 +26,7 @@ public class ServerSendCommandsListener implements Listener {
                 if (Expansions.getVaultManager().isVaultSetuped()) {
                     String playerGroup = Expansions.getVaultManager().getPlayerGroup(player);
                     if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(playerGroup)) {
-                        World world = player.getWorld();
+                        World world = player.world();
                         
                         
                         if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
@@ -51,7 +51,7 @@ public class ServerSendCommandsListener implements Listener {
                 if (Expansions.getLuckPermsManager().isLuckPermsSetuped()) {
                     if (getCommandLimiterSettings().getGlobalBlockedCommands().containsKey(Expansions.getLuckPermsManager().getPlayerGroup(player))) {
                         String playerGroup = Expansions.getLuckPermsManager().getPlayerGroup(player);
-                        World world = player.getWorld();
+                        World world = player.world();
                          
                         if (getCommandLimiterSettings().getPerWorldGroups().contains(playerGroup) && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup)) == world) {
                             int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf(playerGroup);
@@ -73,7 +73,7 @@ public class ServerSendCommandsListener implements Listener {
                     }
                 }
             }
-            World world = player.getWorld();
+            World world = player.world();
             if (getCommandLimiterSettings().getPerWorldGroups().contains("global") && getCommandLimiterSettings().getPerGroupWorlds().get(getCommandLimiterSettings().getPerWorldGroups().indexOf("global")) == world) {
                 int indexOf = getCommandLimiterSettings().getPerWorldGroups().indexOf("global");
                 if (getCommandLimiterSettings().isPerWorldUseAsWhiteList()) {

@@ -55,7 +55,7 @@ public class ConsoleSendCommandListener implements Listener {
         }
 
         if(ConsoleFilterHelper.getConsoleFilterHelper().getPluginCommands().contains("/" + command.split(" ")[0])) {
-            sender.sendMessage(TextUtils.setColors("&e[FunctionalServerControlSpigot | Log] Console used the command: &6%command%".replace("%command%", "/" + event.getCommand())));
+            sender.sendMessage(TextUtils.setColors("&e[FunctionalServerControl | Log] Console used the command: &6%command%".replace("%command%", "/" + event.getCommand())));
         }
     }
 

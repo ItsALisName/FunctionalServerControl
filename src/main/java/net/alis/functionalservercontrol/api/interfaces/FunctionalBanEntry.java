@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.api.interfaces;
 
 import net.alis.functionalservercontrol.api.enums.BanType;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,6 +62,8 @@ public interface FunctionalBanEntry {
      * @return UUID
      */
     @Nullable UUID getUniqueId();
+
+    @Nullable FID getFunctionalId();
 
     /**
      * Returns the unban time in milliseconds

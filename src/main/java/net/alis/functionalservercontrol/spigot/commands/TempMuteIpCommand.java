@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -74,7 +75,7 @@ public class TempMuteIpCommand implements CommandExecutor {
 
                                 if(OtherUtils.isNotNullIp(args[0])) {
                                     if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                         if(!player.isOnline()) {
                                             if(!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -107,7 +108,7 @@ public class TempMuteIpCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                            OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
                             if(!OtherUtils.isNotNullPlayer(args[0])) {
                                 if(!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -156,7 +157,7 @@ public class TempMuteIpCommand implements CommandExecutor {
 
                                     if(OtherUtils.isNotNullIp(args[1])) {
                                         if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                            OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                             if(!player.isOnline()) {
                                                 if(!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -189,7 +190,7 @@ public class TempMuteIpCommand implements CommandExecutor {
                                     }
                                 }
 
-                                OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                                OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
                                 if(!OtherUtils.isNotNullPlayer(args[1])) {
                                     if(!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -237,7 +238,7 @@ public class TempMuteIpCommand implements CommandExecutor {
 
                                     if(OtherUtils.isNotNullIp(args[1])) {
                                         if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                            OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                            OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                             if (!player.isOnline()) {
                                                 if (!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -270,7 +271,7 @@ public class TempMuteIpCommand implements CommandExecutor {
                                     }
                                 }
 
-                                OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                                OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
                                 if (!OtherUtils.isNotNullPlayer(args[1])) {
                                     if (!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -316,7 +317,7 @@ public class TempMuteIpCommand implements CommandExecutor {
 
                                 if(OtherUtils.isNotNullIp(args[0])) {
                                     if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                         if (!player.isOnline()) {
                                             if (!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -349,7 +350,7 @@ public class TempMuteIpCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                            OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
                             if (!OtherUtils.isNotNullPlayer(args[0])) {
                                 if (!sender.hasPermission("functionalservercontrol.tempmuteip.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));

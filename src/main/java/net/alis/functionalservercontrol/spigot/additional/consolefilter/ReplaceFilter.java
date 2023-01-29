@@ -1,5 +1,7 @@
 package net.alis.functionalservercontrol.spigot.additional.consolefilter;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -9,7 +11,6 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
@@ -30,10 +31,14 @@ public class ReplaceFilter implements Filter {
                         exception = eArgs[eArgs.length - 1].replace(":", "");
                         break;
                     }
+                    if(ex.startsWith("org.bukkit.command") && ex.replace(":", "").endsWith("Exception")) {
+                        exception = eArgs[eArgs.length - 1].replace(":", "");
+                        break;
+                    }
                 }
-                for(Player admin : Bukkit.getOnlinePlayers()) {
+                for(FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                     if(admin.hasPermission("functionalservercontrol.notification.plugin-error")) {
-                        admin.sendMessage(setColors("&4[FunctionalServerControlSpigot] An '%e%' exception was thrown while the plugin was running. Check the console for details and contact the plugin author to fix the bug!").replace("%e%", exception));
+                        admin.sendMessage(setColors("&4[FunctionalServerControl] An '%e%' exception was thrown while the plugin was running. Check the console for details and contact the plugin author to fix the bug!").replace("%e%", exception));
                     }
                 }
             });
@@ -45,13 +50,13 @@ public class ReplaceFilter implements Filter {
         }
         if (ConsoleFilterHelper.getConsoleFilterHelper().isFunctionalServerControlCommand(message)) {
             String playerName = message.split(" ")[0];
-            Player player = Bukkit.getPlayer(playerName);
+            FunctionalPlayer player = FunctionalPlayer.get(playerName);
             if(player == null) {
                 playerName = getGlobalVariables().getConsoleVariableName();
             } else {
                 playerName = player.getName();
             }
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", ConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
+            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl | Log] Player %player% &eused the command: &6%command%".replace("%player%", playerName).replace("%command%", ConsoleFilterHelper.getConsoleFilterHelper().getUsedFunctionalServerControlCommand(message))));
             return Filter.Result.DENY;
         }
         return Filter.Result.NEUTRAL;

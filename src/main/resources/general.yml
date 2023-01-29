@@ -1,4 +1,4 @@
-file-version: "1.09.3"
+file-version: "1.10.0"
 ##############################################################################
 #                 Basic settings of the plugin system                        #
 ##############################################################################
@@ -100,8 +100,8 @@ plugin-settings:
   api: true
   logger:
     enabled: true
-    log-format: "[FunctionalServerControlSpigot <-> %1$f] %2$f"
-    messages-to-log: [Your messages from console to log, FunctionalServerControlSpigot]
+    log-format: "[FunctionalServerControl <-> %1$f] %2$f"
+    messages-to-log: [Your messages from console to log, FunctionalServerControl]
   ##############################################################################
   #                       Settings using reasons                               #
   ##############################################################################
@@ -167,7 +167,7 @@ plugin-settings:
   ##############################################################################
   permissions-protection: #---> Version v1.04
     ##############################################################################
-    #           Is the feature enabled? Not changed by '/fsc reload'             #
+    #           Is the feature enabled? Not changed by '/get reload'             #
     ##############################################################################
     enabled: true #---> Version v1.04
     ##############################################################################
@@ -225,7 +225,7 @@ plugin-settings:
     # "HIGH" - Event call is of high importance.                                 #
     # "HIGHEST" - Event call is critical and must have the final say in what     #
     #   happens to the event.                                                    #
-    #               Not changed by the "/fsc reload" command                     #
+    #               Not changed by the "/get reload" command                     #
     ##############################################################################
     chat-listener-priority: "NORMAL"
     disabled-commands-when-muted: [/bc, /tell, /msg, /r, /reply, /m, /message]

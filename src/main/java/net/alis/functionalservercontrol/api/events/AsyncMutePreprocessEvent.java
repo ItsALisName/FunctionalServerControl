@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.api.events;
 
 import net.alis.functionalservercontrol.api.enums.MuteType;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -17,17 +18,18 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
     private long time;
     private final String muteId;
     private final String translatedTime;
-    private OfflinePlayer player;
+    private OfflinePlayer bukkitPlayer;
+    private OfflineFunctionalPlayer player;
     private final CommandSender initiator;
     private final String realTime;
     private final String realDate;
     private String nullPlayer;
 
 
-
-    public AsyncMutePreprocessEvent(String muteId, OfflinePlayer player, CommandSender initiator, MuteType muteType, long time, String reason, String realTime, String realDate, String translatedTime) {
+    public AsyncMutePreprocessEvent(String muteId, OfflineFunctionalPlayer player, CommandSender initiator, MuteType muteType, long time, String reason, String realTime, String realDate, String translatedTime) {
         super(true);
         this.player = player;
+        this.bukkitPlayer = player.getOfflineBukkitPlayer();
         this.time = time;
         this.reason = reason;
         this.muteType = muteType;
@@ -51,16 +53,33 @@ public class AsyncMutePreprocessEvent extends Event implements Cancellable {
         this.translatedTime = translatedTime;
     }
 
+    @Deprecated
+    public AsyncMutePreprocessEvent(String muteId, OfflinePlayer player, CommandSender initiator, MuteType muteType, long time, String reason, String realTime, String realDate, String translatedTime) {
+        super(true);
+        this.bukkitPlayer = player;
+        this.time = time;
+        this.reason = reason;
+        this.muteType = muteType;
+        this.muteId = muteId;
+        this.translatedTime = translatedTime;
+        this.initiator = initiator;
+        this.realTime = realTime;
+        this.realDate = realDate;
+    }
+
+    public OfflineFunctionalPlayer getPlayer() {
+        return player;
+    }
     public String getMuteId() {
         return this.muteId;
     }
 
     public String getNullPlayer() {
-        return player != null ? "There is no need to use it now" : nullPlayer;
+        return bukkitPlayer != null ? "There is no need to use it now" : nullPlayer;
     }
 
-    public OfflinePlayer getPlayer() {
-        return player;
+    public OfflinePlayer getBukkitPlayer() {
+        return bukkitPlayer;
     }
 
     public CommandSender getInitiator() {

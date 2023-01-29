@@ -154,7 +154,7 @@ public class GlobalVariables {
                 VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
                 VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
             } catch (ExceptionInInitializerError ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to reload global variables"));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to reload global variables"));
             }
         return;
     }
@@ -187,7 +187,7 @@ public class GlobalVariables {
                 VAR_UNBANNED = getFileAccessor().getGeneralConfig().getString("global-variables.unbanned");
                 VAR_UNMUTED = getFileAccessor().getGeneralConfig().getString("global-variables.unmuted");
             } catch (ExceptionInInitializerError ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to reload global variables"));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to reload global variables"));
             }
         });
     }

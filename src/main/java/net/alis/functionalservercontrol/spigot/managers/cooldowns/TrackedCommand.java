@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.spigot.managers.cooldowns;
 
-import org.bukkit.entity.Player;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +15,7 @@ public class TrackedCommand {
 
     private boolean checkAliases;
 
-    private final TreeMap<UUID, Long> players = new TreeMap<>();
+    private final HashMap<FID, Long> players = new HashMap<>();
 
     private @Nullable List<String> aliases;
 
@@ -117,15 +118,15 @@ public class TrackedCommand {
         return groupsTime;
     }
 
-    public void addPlayer(Player player, long start) {
-        this.players.put(player.getUniqueId(), start);
+    public void addPlayer(FunctionalPlayer player, long start) {
+        this.players.put(player.getFunctionalId(), start);
     }
 
-    public void removePlayer(Player player) {
-        this.players.remove(player.getUniqueId());
+    public void removePlayer(FunctionalPlayer player) {
+        this.players.remove(player.getFunctionalId());
     }
 
-    public TreeMap<UUID, Long> getPlayers() {
+    public HashMap<FID, Long> getPlayers() {
         return players;
     }
 

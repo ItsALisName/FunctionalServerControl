@@ -1,12 +1,12 @@
 package net.alis.functionalservercontrol.spigot.listeners.outdated;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.managers.AdvertiseManager;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.ChatManager;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.spigot.managers.mute.MuteManager;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
@@ -21,7 +21,7 @@ public class OldAsyncChatListener implements Listener, EventExecutor {
     private final TimeSettingsAccessor timeSettingsAccessor = new TimeSettingsAccessor();
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
+        FunctionalPlayer player = FunctionalPlayer.get(event.getPlayer().getName());
         String message = event.getMessage();
         if(isPlayerMuted(player)) {
             if(!event.isCancelled()) {

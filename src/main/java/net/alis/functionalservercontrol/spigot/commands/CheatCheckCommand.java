@@ -1,15 +1,14 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.CheatCheckCompleter;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -36,12 +35,11 @@ public class CheatCheckCommand implements CommandExecutor {
                         try {
                             Integer.parseInt(args[2]);
                             param = true;
-                        } catch (NumberFormatException ignored) {
-                        }
+                        } catch (NumberFormatException ignored) {}
                     }
 
                     if(args.length == 2 && args[0].equalsIgnoreCase("start")) {
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;
@@ -60,7 +58,7 @@ public class CheatCheckCommand implements CommandExecutor {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.zero-time")));
                             return;
                         }
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;
@@ -85,7 +83,7 @@ public class CheatCheckCommand implements CommandExecutor {
                                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.zero-time")));
                                 return;
                             }
-                            Player player = Bukkit.getPlayer(args[1]);
+                            FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                             if(player == null) {
                                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                                 return;
@@ -109,7 +107,7 @@ public class CheatCheckCommand implements CommandExecutor {
                                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.zero-time")));
                                 return;
                             }
-                            Player player = Bukkit.getPlayer(args[1]);
+                            FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                             if(player == null) {
                                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                                 return;
@@ -129,7 +127,7 @@ public class CheatCheckCommand implements CommandExecutor {
                             return;
                         }
 
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;
@@ -139,7 +137,7 @@ public class CheatCheckCommand implements CommandExecutor {
                     }
 
                     if(args.length == 2 && args[0].equalsIgnoreCase("stop")) {
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;
@@ -159,7 +157,7 @@ public class CheatCheckCommand implements CommandExecutor {
                     }
 
                     if(args.length == 2 && args[0].equalsIgnoreCase("confirm")) {
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;
@@ -179,7 +177,7 @@ public class CheatCheckCommand implements CommandExecutor {
                     }
 
                     if(args.length == 2 && args[0].equalsIgnoreCase("refute")) {
-                        Player player = Bukkit.getPlayer(args[1]);
+                        FunctionalPlayer player = FunctionalPlayer.get(args[1]);
                         if(player == null) {
                             sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                             return;

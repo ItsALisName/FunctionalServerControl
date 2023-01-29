@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.api.events;
 
 import net.alis.functionalservercontrol.api.events.event.AbstractPlayerEvent;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -14,8 +15,14 @@ public class AsyncPlayerCheatCheckPreprocessEvent extends AbstractPlayerEvent im
     private String reason;
     private boolean cancelled;
 
-
+    @Deprecated
     public AsyncPlayerCheatCheckPreprocessEvent(@NotNull Player player, @NotNull CommandSender initiator, String reason) {
+        super(player, true);
+        this.initiator = initiator;
+        this.reason = reason;
+    }
+
+    public AsyncPlayerCheatCheckPreprocessEvent(@NotNull FunctionalPlayer player, CommandSender initiator, String reason) {
         super(player, true);
         this.initiator = initiator;
         this.reason = reason;

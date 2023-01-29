@@ -1,7 +1,7 @@
-file-version: "1.09.3"
+file-version: "1.10.0"
 settings:
   ##############################################################################
-  #        This parameter is not changed by the '/fsc reload' command.         #
+  #        This parameter is not changed by the '/get reload' command.         #
   ##############################################################################
   enabled: true
   use-groups: true

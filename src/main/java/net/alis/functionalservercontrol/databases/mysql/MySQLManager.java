@@ -4,14 +4,14 @@ import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -32,10 +32,10 @@ public class MySQLManager extends MySQLCore {
             return mysqlConnection;
         } catch (SQLException | ClassNotFoundException e) {
             Bukkit.getConsoleSender().sendMessage(setColors("&4BEFORE REPORTING THIS TO ALis's, MAKE SURE THAT EVERYTHING IS SET UP ON YOUR SIDE!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to connect to the database!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] -> Unknown error, try reinstalling the plugin."));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] No further work possible!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] Disabling the plugin..."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to connect to the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] -> Unknown error, try reinstalling the plugin."));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] No further work possible!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] Disabling the plugin..."));
             e.printStackTrace();
             Bukkit.getConsoleSender().sendMessage(setColors("&4BEFORE REPORTING THIS TO ALis's, MAKE SURE THAT EVERYTHING IS SET UP ON YOUR SIDE!"));
             this.plugin.getPluginLoader().disablePlugin(FunctionalServerControlSpigot.getProvidingPlugin(FunctionalServerControlSpigot.class));
@@ -46,12 +46,12 @@ public class MySQLManager extends MySQLCore {
     @Override
     public void setupTables() {
         mysqlConnection = getMysqlConnection();
-        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
-        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
-        String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
-        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
+        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24), fid varchar(128));";
+        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
+        String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (fid varchar(128), uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
+        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
         String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
         try {
             mysqlStatement = mysqlConnection.createStatement();
@@ -64,7 +64,7 @@ public class MySQLManager extends MySQLCore {
             mysqlStatement.executeUpdate(queryTableSeven);
             mysqlStatement.close();
         } catch (SQLException a) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(a);
         } finally {
             try { if (mysqlConnection != null) { mysqlConnection.close();} } catch (SQLException ignored) { }
@@ -73,50 +73,38 @@ public class MySQLManager extends MySQLCore {
         }
     }
 
-    public void insertIntoPlayersPunishInfo(UUID uuid) {
+    public void insertIntoPlayersPunishInfo(FID fid) {
         mysqlConnection = getMysqlConnection();
-        String getUUID = "SELECT uuid FROM playersStats;";
+        String getUUID = "SELECT fid FROM playersStats;";
         try {
             mysqlResultSet = mysqlConnection.createStatement().executeQuery(getUUID);
             while (mysqlResultSet.next()) {
-                String rUuid = mysqlResultSet.getString("uuid");
-                if(rUuid == null || rUuid.equalsIgnoreCase(String.valueOf(uuid))) return;
+                String rUuid = mysqlResultSet.getString("fid");
+                if(rUuid == null || rUuid.equalsIgnoreCase(fid.toString())) return;
             }
-            String insertInfo = "INSERT INTO playersStats (uuid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + String.valueOf(uuid) + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
+            String insertInfo = "INSERT INTO playersStats (fid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + fid.toString() + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
             mysqlConnection.createStatement().executeUpdate(insertInfo);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public String getPlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+    public String getPlayerStatsInfo(FID fid, StatsType.Player statsType) {
         mysqlConnection = getMysqlConnection();
         try {
             String a = "";
             switch (statsType) {
-                case STATS_BANS: a = "SELECT totalBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_KICKS: a = "SELECT totalKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_MUTES: a = "SELECT totalMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case BLOCKED_WORDS_USED: a = "SELECT blockedWordsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case BLOCKED_COMMANDS_USED: a = "SELECT blockedCommandsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case ADVERTISE_ATTEMPTS: a = "SELECT advertiseAttempts FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_BANS: a = "SELECT totalBans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_KICKS: a = "SELECT totalKicks FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_MUTES: a = "SELECT totalMutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case BLOCKED_WORDS_USED: a = "SELECT blockedWordsUsed FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case BLOCKED_COMMANDS_USED: a = "SELECT blockedCommandsUsed FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case ADVERTISE_ATTEMPTS: a = "SELECT advertiseAttempts FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
             }
             mysqlResultSet = mysqlConnection.createStatement().executeQuery(a);
             String info = "null";
@@ -136,37 +124,25 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public String getAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
+    public String getAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
         mysqlConnection = getMysqlConnection();
         try {
             String a = "";
             switch (statsType) {
-                case STATS_BANS: a = "SELECT didBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_KICKS: a = "SELECT didKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_MUTES: a = "SELECT didMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_UNBANS: a = "SELECT didUnbans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_UNMUTES: a = "SELECT didUnmutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_BANS: a = "SELECT didBans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_KICKS: a = "SELECT didKicks FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_MUTES: a = "SELECT didMutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_UNBANS: a = "SELECT didUnbans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_UNMUTES: a = "SELECT didUnmutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
             }
             if(mysqlConnection == null) mysqlConnection = getMysqlConnection();
             mysqlResultSet = mysqlConnection.createStatement().executeQuery(a);
@@ -186,100 +162,88 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void updatePlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
-        if (getPlayerStatsInfo(player, statsType) != null) {
-            int total = Integer.parseInt(getPlayerStatsInfo(player, statsType));
+    public void updatePlayerStatsInfo(FID fid, StatsType.Player statsType) {
+        if (getPlayerStatsInfo(fid, statsType) != null) {
+            int total = Integer.parseInt(getPlayerStatsInfo(fid, statsType));
             mysqlConnection = getMysqlConnection();
             try {
                 String a = "null";
                 switch (statsType) {
-                    case STATS_BANS: a = "UPDATE playersStats SET totalBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_KICKS: a = "UPDATE playersStats SET totalKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_MUTES: a = "UPDATE playersStats SET totalMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case BLOCKED_COMMANDS_USED: a = "UPDATE playersStats SET blockedCommandsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case BLOCKED_WORDS_USED: a = "UPDATE playersStats SET blockedWordsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case ADVERTISE_ATTEMPTS: a = "UPDATE playersStats SET advertiseAttempts='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_BANS: a = "UPDATE playersStats SET totalBans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET totalKicks='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET totalMutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case BLOCKED_COMMANDS_USED: a = "UPDATE playersStats SET blockedCommandsUsed='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case BLOCKED_WORDS_USED: a = "UPDATE playersStats SET blockedWordsUsed='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case ADVERTISE_ATTEMPTS: a = "UPDATE playersStats SET advertiseAttempts='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
                 }
                 mysqlConnection.createStatement().executeUpdate(a);
                 mysqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
                     if(mysqlConnection != null) {
                         mysqlConnection.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
                 try {
                     if(mysqlStatement != null) {
                         mysqlStatement.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
                 try {
                     if(mysqlResultSet != null) {
                         mysqlResultSet.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
             }
         }
     }
 
-    public void updateAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
-        if (getAdminStatsInfo(player, statsType) != null) {
-            int total = Integer.parseInt(getAdminStatsInfo(player, statsType));
+    public void updateAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
+        if (getAdminStatsInfo(fid, statsType) != null) {
+            int total = Integer.parseInt(getAdminStatsInfo(fid, statsType));
             mysqlConnection = getMysqlConnection();
             try {
                 String a = "null";
                 switch (statsType) {
-                    case STATS_BANS: a = "UPDATE playersStats SET didBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_KICKS: a = "UPDATE playersStats SET didKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_MUTES: a = "UPDATE playersStats SET didMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_UNBANS: a = "UPDATE playersStats SET didUnbans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_UNMUTES: a = "UPDATE playersStats SET didUnmutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_BANS: a = "UPDATE playersStats SET didBans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET didKicks='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET didMutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_UNBANS: a = "UPDATE playersStats SET didUnbans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_UNMUTES: a = "UPDATE playersStats SET didUnmutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
                 }
                 mysqlConnection.createStatement().executeUpdate(a);
                 mysqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
                 try {
                     if(mysqlConnection != null) {
                         mysqlConnection.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
                 try {
                     if(mysqlStatement != null) {
                         mysqlStatement.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
                 try {
                     if(mysqlResultSet != null) {
                         mysqlResultSet.close();
                     }
-                } catch (SQLException ex) {}
+                } catch (SQLException ignored) {}
             }
         }
     }
@@ -290,24 +254,12 @@ public class MySQLManager extends MySQLCore {
             String a = "INSERT INTO History (history) VALUES ('" + message + "');";
             mysqlConnection.createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -334,7 +286,7 @@ public class MySQLManager extends MySQLCore {
                 if(mysqlConnection != null) mysqlConnection.close();
                 if(mysqlResultSet != null) mysqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         } else {
@@ -356,7 +308,7 @@ public class MySQLManager extends MySQLCore {
                 if(mysqlConnection != null) mysqlConnection.close();
                 if(mysqlResultSet != null) mysqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         }
@@ -368,24 +320,12 @@ public class MySQLManager extends MySQLCore {
             String a = "DELETE FROM History;";
             getMysqlConnection().createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -405,29 +345,17 @@ public class MySQLManager extends MySQLCore {
             } else if(expression.equalsIgnoreCase("-u")) {
                 String a = "DELETE FROM mutedPlayers WHERE uuid = '" + param + "';";
                 mysqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM mutedPlayers WHERE fid = '" + param + "';";
+                mysqlConnection.createStatement().executeUpdate(a);
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
         } finally {
-            try {
-                if (mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -440,29 +368,17 @@ public class MySQLManager extends MySQLCore {
             } else if(expression.equalsIgnoreCase("-id")) {
                 String a = "DELETE FROM nullMutedPlayers WHERE id = '" + param + "';";
                 mysqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM nullMutedPlayers WHERE fid = '" + param + "';";
+                mysqlConnection.createStatement().executeUpdate(a);
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
         } finally {
-            try {
-                if (mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -482,7 +398,7 @@ public class MySQLManager extends MySQLCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : uuid;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -501,7 +417,30 @@ public class MySQLManager extends MySQLCore {
                 if (mysqlResultSet != null) {
                     mysqlResultSet.close();
                 }
-            } catch (SQLException ex) {}
+            } catch (SQLException ignored) {}
+        }
+    }
+
+    public FID getFunctionalIdByName(String playerName) {
+        mysqlConnection = getMysqlConnection();
+        try {
+            String a = "SELECT fid FROM allPlayers WHERE name = '" + playerName + "';";
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(a);
+            FID fid = null;
+            while (mysqlResultSet.next()) {
+                fid = FID.fromString(mysqlResultSet.getString("fid"));
+                if(fid != null) {
+                    return fid;
+                }
+            }
+            return null;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) { mysqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -520,7 +459,7 @@ public class MySQLManager extends MySQLCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : UUID.fromString(uuid);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -539,11 +478,31 @@ public class MySQLManager extends MySQLCore {
                 if (mysqlResultSet != null) {
                     mysqlResultSet.close();
                 }
-            } catch (SQLException ex) {}
+            } catch (SQLException ignored) {}
         }
     }
 
-
+    public FID getFunctionalIdByIp(String ip) {
+        mysqlConnection = getMysqlConnection();
+        try {
+            String a = "SELECT fid FROM allPlayers WHERE ip = '" + ip + "';";
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(a);
+            while (mysqlResultSet.next()) {
+                FID fid = FID.fromString(mysqlResultSet.getString("fid"));
+                if(fid != null) {
+                    return fid;
+                }
+            }
+            return null;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) { mysqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+    }
 
     public String getIpByUUID(UUID uuid) {
         mysqlConnection = getMysqlConnection();
@@ -556,58 +515,55 @@ public class MySQLManager extends MySQLCore {
             }
             return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-
-    public void insertIntoAllPlayers(String name, UUID uuid, String ip) {
+    public String getIpByFunctionalId(FID fid) {
         mysqlConnection = getMysqlConnection();
-        String getUUID = "SELECT uuid FROM allPlayers;";
+        String select = "SELECT ip FROM allPlayers WHERE fid = '" + fid + "';";
         try {
-            mysqlResultSet = mysqlConnection.createStatement().executeQuery(getUUID);
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(select);
+            String ip = "UNKNOWN_ERROR";
             while (mysqlResultSet.next()) {
-                String rUuid = mysqlResultSet.getString("uuid");
-                if(rUuid == null || rUuid.equalsIgnoreCase(String.valueOf(uuid))) return;
+                ip = mysqlResultSet.getString("ip");
             }
-            String insertName = "INSERT INTO allPlayers (name, uuid, ip) VALUES ('" + name + "', '" + uuid + "', '" + ip + "');";
-            mysqlConnection.createStatement().executeUpdate(insertName);
+            return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+    }
+
+    public boolean insertIntoAllPlayers(String name, UUID uuid, String ip, FID fid) {
+        mysqlConnection = getMysqlConnection();
+        String getFID = "SELECT fid FROM allPlayers;";
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(getFID);
+            while (mysqlResultSet.next()) {
+                if(fid.equalsIgnoreCase(mysqlResultSet.getString("fid"))) {
+                    return false;
                 }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            }
+            String insertName = "INSERT INTO allPlayers (name, uuid, ip, fid) VALUES ('" + name + "', '" + uuid.toString() + "', '" + ip + "', '" + fid.toString() + "');";
+            mysqlConnection.createStatement().executeUpdate(insertName);
+            return true;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -626,30 +582,18 @@ public class MySQLManager extends MySQLCore {
             } else if(expression.equalsIgnoreCase("-u")) {
                 String a = "DELETE FROM bannedPlayers WHERE uuid = '" + param + "';";
                 mysqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM bannedPlayers WHERE fid = '" + param + "';";
+                mysqlConnection.createStatement().executeUpdate(a);
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -662,198 +606,114 @@ public class MySQLManager extends MySQLCore {
             } else if(expression.equalsIgnoreCase("-id")) {
                 String a = "DELETE FROM nullBannedPlayers WHERE id = '" + param + "';";
                 mysqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM nullBannedPlayers WHERE fid = '" + param + "';";
+                mysqlConnection.createStatement().executeUpdate(a);
             }
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime) {
+    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime, FID fid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO bannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unbanTime + "');";
+            String insert = "INSERT INTO bannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unbanTime + "', '" + fid.toString() +"');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime) {
+    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime, FID fid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO mutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unmuteTime + "');";
+            String insert = "INSERT INTO mutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unmuteTime + "', '" + fid.toString() +"');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime) {
+    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime, FID fid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid + "', '" + unbanTime + "');";
+            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid + "', '" + unbanTime + "', '" + fid.toString() +"');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime) {
+    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime, FID fid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + uuid + "', '" + unmuteTime + "');";
+            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + uuid + "', '" + unmuteTime + "', '" + fid.toString() + "');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime) {
+    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime, UUID randomUuid, FID randomFid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', 'NULL_PLAYER', '" + unbanTime + "');";
+            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + randomUuid.toString() + "', '" + unbanTime + "', '" + randomFid.toString() + "');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime) {
+    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime, UUID randomUuid, FID randomFid) {
         mysqlConnection = getMysqlConnection();
         try {
-            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', 'NULL_PLAYER', '" + unmuteTime + "');";
+            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + randomUuid.toString() + "', '" + unmuteTime + "', '" + randomFid.toString() + "');";
             mysqlConnection.createStatement().executeUpdate(insert);
             mysqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -874,24 +734,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return unbanTimes;
     }
@@ -914,24 +762,12 @@ public class MySQLManager extends MySQLCore {
             }
             return ips;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -951,24 +787,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -990,24 +814,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banDates;
     }
@@ -1029,24 +841,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banTimes;
     }
@@ -1068,24 +868,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1107,24 +895,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return names;
     }
@@ -1146,24 +922,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return iNames;
     }
@@ -1185,24 +949,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return reasons;
     }
@@ -1224,28 +976,38 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banTypes;
     }
 
+    public List<FID> fidsFromNullBannedPlayers() {
+        mysqlConnection = getMysqlConnection();
+        String taskOne = "SELECT fid FROM nullBannedPlayers;";
+        List<FID> fids = new ArrayList<>();
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(taskOne);
+            String fid = "BAN_TYPE_ERROR";
+            while (mysqlResultSet.next()) {
+                fid = mysqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+        return fids;
+    }
+    
     // nullBannedPlayersTable
 
     // bannedPlayer table
@@ -1266,24 +1028,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1305,24 +1055,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1344,24 +1082,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return names;
     }
@@ -1383,24 +1109,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return initiators;
     }
@@ -1422,24 +1136,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return reasons;
     }
@@ -1461,24 +1163,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banTypes;
     }
@@ -1500,24 +1190,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banDates;
     }
@@ -1539,24 +1217,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return banTimes;
     }
@@ -1578,24 +1244,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -1617,63 +1271,61 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return unbanTimes;
     }
+    
+    public List<FID> fidsFromBannedPlayers() {
+        mysqlConnection = getMysqlConnection();
+        List<FID> fids = new ArrayList<>();
+        String taskOne = "SELECT fid FROM bannedPlayers;";
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(taskOne);
+            String fid;
+            while (mysqlResultSet.next()) {
+                fid = mysqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+        return fids;
+    }
+    
     //bannedPlayer table
 
-    public void updateAllPlayers(Player player) {
-        if (!getIpByUUID(player.getUniqueId()).equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()) || !getUuidByName(player.getName()).equalsIgnoreCase(String.valueOf(player.getUniqueId()))) {
+    public boolean updateAllPlayers(String name, UUID uuid, String address, FID fid) {
+        if (!getIpByFunctionalId(fid).equalsIgnoreCase(address) || !getUuidByName(name).equalsIgnoreCase(String.valueOf(uuid)) || !fid.equals(new FID(name))) {
             mysqlConnection = getMysqlConnection();
             try {
-                String a = "DELETE FROM allPlayers WHERE uuid = '" + String.valueOf(player.getUniqueId()) + "';";
-                String b = "DELETE FROM allPlayer WHERE name = '" + player.getName() + "';";
+                String a = "DELETE FROM allPlayers WHERE fid = '" + fid.toString() + "';";
+                String b = "DELETE FROM allPlayers WHERE name = '" + name + "';";
                 mysqlConnection.createStatement().executeUpdate(a);
                 mysqlConnection.createStatement().executeUpdate(b);
-                mysqlConnection.close();
-                insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
+                String insertName = "INSERT INTO allPlayers (name, uuid, ip, fid) VALUES ('" + name + "', '" + uuid.toString() + "', '" + address + "', '" + fid.toString() + "');";
+                mysqlConnection.createStatement().executeUpdate(insertName);
+                return true;
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
-                try {
-                    if (mysqlConnection != null) {
-                        mysqlConnection.close();
-                    }
-                } catch (SQLException ex) {
-                }
-                try {
-                    if (mysqlStatement != null) {
-                        mysqlStatement.close();
-                    }
-                } catch (SQLException ex) {
-                }
-                try {
-                    if (mysqlResultSet != null) {
-                        mysqlResultSet.close();
-                    }
-                } catch (SQLException ex) {
-                }
+                try {if (mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ex) {}
+                try {if (mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ex) {}
+                try {if (mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ex) {}
             }
         }
+        return false;
     }
 
     public List<String> getNamesFromAllPlayers() {
@@ -1693,31 +1345,19 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return names;
     }
 
-    public List<String> getUUIDsFromAllPlayers() {
+    public List<UUID> getUUIDsFromAllPlayers() {
         mysqlConnection = getMysqlConnection();
-        List<String> uuids = new ArrayList<>();
+        List<UUID> uuids = new ArrayList<>();
         String taskOne = "SELECT uuid FROM allPlayers;";
         try {
             mysqlResultSet = mysqlConnection.createStatement().executeQuery(taskOne);
@@ -1726,30 +1366,18 @@ public class MySQLManager extends MySQLCore {
                 uuid = mysqlResultSet.getString("uuid");
                 if(uuid == null) {
                     uuid = "NULL";
-                    uuids.add(uuid);
+                    uuids.add(UUID.fromString(uuid));
                 } else {
-                    uuids.add(uuid);
+                    uuids.add(UUID.fromString(uuid));
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -1771,26 +1399,36 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return ips;
+    }
+
+    public List<FID> getFidsFromAllPlayers() {
+        mysqlConnection = getMysqlConnection();
+        List<FID> fids = new ArrayList<>();
+        String taskOne = "SELECT fid FROM allPlayers;";
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery(taskOne);
+            String fid = "NULL";
+            while (mysqlResultSet.next()) {
+                fid = mysqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public void clearBans() {
@@ -1802,24 +1440,12 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(b);
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -1832,24 +1458,12 @@ public class MySQLManager extends MySQLCore {
             mysqlConnection.createStatement().executeUpdate(b);
             mysqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -1925,6 +1539,13 @@ public class MySQLManager extends MySQLCore {
         return unbanTimes;
     }
 
+    public List<FID> getBannedFids() {
+        List<FID> fids = new ArrayList<>();
+        fids.addAll(fidsFromBannedPlayers());
+        fids.addAll(fidsFromNullBannedPlayers());
+        return fids;
+    }
+
     //Combining nullBannedPlayers and bannedPlayers list
 
 
@@ -1944,24 +1565,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -1983,24 +1592,12 @@ public class MySQLManager extends MySQLCore {
             }
             return b;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
@@ -2020,24 +1617,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return b;
     }
@@ -2058,24 +1643,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2096,24 +1669,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2134,24 +1695,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2172,24 +1721,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2210,24 +1747,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2248,7 +1773,7 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }
         return a;
@@ -2270,26 +1795,35 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
+    }
+
+    public List<FID> fidsFromNullMutedPlayers() {
+        mysqlConnection = getMysqlConnection();
+        List<FID> fids = new ArrayList<>();
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery("SELECT muteType FROM nullMutedPlayers;");
+            String fid = "BAN_TYPE_ERROR";
+            while (mysqlResultSet.next()) {
+                fid = mysqlResultSet.getString("muteType");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public List<String> idsFromMutedPlayersTable() {
@@ -2308,24 +1842,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2346,24 +1868,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2384,23 +1894,11 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            throw new RuntimeException("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!");
+            throw new RuntimeException("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!");
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2421,24 +1919,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2459,24 +1945,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2497,24 +1971,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2535,24 +1997,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2573,24 +2023,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2611,24 +2049,12 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2649,26 +2075,35 @@ public class MySQLManager extends MySQLCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | MySQL] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(mysqlConnection != null) {
-                    mysqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlStatement != null) {
-                    mysqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(mysqlResultSet != null) {
-                    mysqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
         }
         return a;
+    }
+
+    public List<FID> fidsFromMutedPlayers() {
+        mysqlConnection = getMysqlConnection();
+        List<FID> fids = new ArrayList<>();
+        try {
+            mysqlResultSet = mysqlConnection.createStatement().executeQuery("SELECT fid FROM mutedPlayers;");
+            String fid = "-1";
+            while (mysqlResultSet.next()) {
+                fid = mysqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | MySQL] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(mysqlConnection != null) {mysqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(mysqlStatement != null) {mysqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(mysqlResultSet != null) {mysqlResultSet.close();}} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public List<String> getMutedIds() {
@@ -2739,6 +2174,13 @@ public class MySQLManager extends MySQLCore {
         a.addAll(unmuteTimesFromMutedPlayersTable());
         a.addAll(unmuteTimesFromNullMutedPlayersTable());
         return a;
+    }
+
+    public List<FID> getMutedFids() {
+        List<FID> fids = new ArrayList<>();
+        fids.addAll(fidsFromMutedPlayers());
+        fids.addAll(fidsFromNullMutedPlayers());
+        return fids;
     }
     
 }

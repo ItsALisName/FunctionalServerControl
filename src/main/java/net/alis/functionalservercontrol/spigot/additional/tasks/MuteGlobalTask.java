@@ -1,15 +1,15 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.MuteType;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.libraries.net.md_5.bungee.api.ChatMessageType;
 import net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers;
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.file.SFAccessor;
 import net.alis.functionalservercontrol.spigot.managers.mute.UnmuteManager;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -21,7 +21,7 @@ public class MuteGlobalTask extends BukkitRunnable {
     @Override
     public void run() {
         if(getConfigSettings().isSendActionbarWhileMuted()) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (FunctionalPlayer player : FunctionalApi.getOnlinePlayers()) {
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     if (StaticContainers.getMutedPlayersContainer().getUUIDContainer().contains(String.valueOf(player.getUniqueId()))) {
                         int indexOf = StaticContainers.getMutedPlayersContainer().getUUIDContainer().indexOf(String.valueOf(player.getUniqueId()));
@@ -36,7 +36,7 @@ public class MuteGlobalTask extends BukkitRunnable {
                                 break;
                             }
                         }
-                        CoreAdapter.getAdapter().sendActionBar(player, TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", TextUtils.setColors(translatedUnmuteTime))));
+                        player.expansion().message(ChatMessageType.ACTION_BAR, TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", TextUtils.setColors(translatedUnmuteTime))));
                     }
                 } else {
                     if (BaseManager.getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()))) {
@@ -52,7 +52,7 @@ public class MuteGlobalTask extends BukkitRunnable {
                                 break;
                             }
                         }
-                        CoreAdapter.getAdapter().sendActionBar(player, TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", TextUtils.setColors(translatedUnmuteTime))));
+                        player.expansion().message(ChatMessageType.ACTION_BAR, TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.actionbar.mute-format").replace("%1$f", TextUtils.setColors(translatedUnmuteTime))));
                     }
                 }
             }

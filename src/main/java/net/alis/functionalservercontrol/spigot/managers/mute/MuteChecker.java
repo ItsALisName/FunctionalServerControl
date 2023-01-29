@@ -1,7 +1,8 @@
 package net.alis.functionalservercontrol.spigot.managers.mute;
 
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
-import org.bukkit.OfflinePlayer;
 
 import static net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -14,10 +15,11 @@ public class MuteChecker {
      * @return true if nickname muted
      */
     public static boolean isPlayerMuted(String nullPlayerName) {
+        FID fid = new FID(nullPlayerName);
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getMutedPlayersContainer().getNameContainer().contains(nullPlayerName);
+            return getMutedPlayersContainer().getFids().contains(fid);
         } else {
-            return BaseManager.getBaseManager().getMutedPlayersNames().contains(nullPlayerName);
+            return BaseManager.getBaseManager().getMutedFids().contains(fid);
         }
     }
 
@@ -26,11 +28,11 @@ public class MuteChecker {
      * @param player - player to be tested
      * @return true if player muted
      */
-    public static boolean isPlayerMuted(OfflinePlayer player) {
+    public static boolean isPlayerMuted(OfflineFunctionalPlayer player) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getMutedPlayersContainer().getNameContainer().contains(player.getName()) && getMutedPlayersContainer().getUUIDContainer().contains(String.valueOf(player.getUniqueId()));
+            return getMutedPlayersContainer().getFids().contains(player.getFunctionalId());
         } else {
-            return BaseManager.getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
+            return BaseManager.getBaseManager().getMutedFids().contains(player.getFunctionalId());
         }
     }
 
@@ -52,11 +54,11 @@ public class MuteChecker {
      * @param player - player whose ip will be verified
      * @return true if player ip is muted
      */
-    public static boolean isIpMuted(OfflinePlayer player) {
+    public static boolean isIpMuted(OfflineFunctionalPlayer player) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getMutedPlayersContainer().getIpContainer().contains(BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()));
+            return getMutedPlayersContainer().getIpContainer().contains(BaseManager.getBaseManager().getIpByFunctionalId(player.getFunctionalId()));
         } else {
-            return BaseManager.getBaseManager().getMutedIps().contains(BaseManager.getBaseManager().getIpByUUID(player.getUniqueId())) && BaseManager.getBaseManager().getMutedUUIDs().contains(String.valueOf(player.getUniqueId()));
+            return BaseManager.getBaseManager().getMutedIps().contains(BaseManager.getBaseManager().getIpByFunctionalId(player.getFunctionalId()));
         }
     }
 

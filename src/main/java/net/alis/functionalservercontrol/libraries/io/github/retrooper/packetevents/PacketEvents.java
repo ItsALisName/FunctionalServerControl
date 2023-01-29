@@ -1,7 +1,7 @@
 package net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents;
 
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.packetwrappers.WrappedPacket;
-import net.alis.functionalservercontrol.spigot.additional.coreadapters.CoreAdapter;
+
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PostPlayerInjectEvent;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.manager.EventManager;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.manager.PEEventManager;
@@ -32,6 +32,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
+
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 
 public final class PacketEvents implements Listener, EventManager {
     private static PacketEvents instance;
@@ -122,7 +124,6 @@ public final class PacketEvents implements Listener, EventManager {
             if (!injectorReady.get()) {
                 injector.load();
                 lateBind = !injector.isBound();
-                //If late-bind is enabled, we will inject a bit later.
                 if (!lateBind) {
                     injector.inject();
                 }
@@ -136,6 +137,7 @@ public final class PacketEvents implements Listener, EventManager {
 
     @Deprecated
     public void loadAsyncNewThread() {
+        Bukkit.getConsoleSender().sendMessage(setColors("&3[FunctionalServerControl | PacketEvents] &3&oNew async thread loaded!"));
         new Thread(this::load).start();
     }
 
@@ -168,7 +170,7 @@ public final class PacketEvents implements Listener, EventManager {
                         injector.injectPlayer(p);
                         getEventManager().callEvent(new PostPlayerInjectEvent(p, false));
                     } catch (Exception ex) {
-                        CoreAdapter.getAdapter().kick(p, "Failed to inject... Please rejoin!");
+                        p.kickPlayer(setColors("&6[FunctionalServerControl <-> PacketEvents] \n&eFailed to inject your... Please rejoin!"));
                     }
                 }
             };

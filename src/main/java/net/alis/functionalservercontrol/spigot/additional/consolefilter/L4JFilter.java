@@ -10,7 +10,6 @@ public class L4JFilter implements Filter {
     @Override
     public void eventLog() {
         ((Logger) LogManager.getRootLogger()).addFilter(new EventAsyncConsoleLog());
-        ((Logger) LogManager.getRootLogger()).addFilter(new EventConsoleLog());
         ((Logger) LogManager.getRootLogger()).addFilter(new ConsoleMessageListener());
     }
 

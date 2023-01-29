@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -139,18 +140,20 @@ public class UnbanCommand implements CommandExecutor {
                         return;
                     }
                     if(args.length == 2) {
-                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
+                        if (player == null) {
                             unbanManager.preformUnban(args[1], sender, null, false);
                         } else {
-                            unbanManager.preformUnban(Bukkit.getOfflinePlayer(args[1]), sender, null, false);
+                            unbanManager.preformUnban(player, sender, null, false);
                         }
                         return;
                     }
                     if(args.length > 2) {
-                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
+                        if (player == null) {
                             unbanManager.preformUnban(args[1], sender, getReason(args, 2), false);
                         } else {
-                            unbanManager.preformUnban(Bukkit.getOfflinePlayer(args[1]), sender, getReason(args, 2), false);
+                            unbanManager.preformUnban(player, sender, getReason(args, 2), false);
                         }
                         return;
                     }
@@ -158,19 +161,21 @@ public class UnbanCommand implements CommandExecutor {
                 }
 
                 if(args.length == 1) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                    if (player == null) {
                         unbanManager.preformUnban(args[0], sender, null, true);
                     } else {
-                        unbanManager.preformUnban(Bukkit.getOfflinePlayer(args[0]), sender, null, true);
+                        unbanManager.preformUnban(player, sender, null, true);
                     }
                     return;
                 }
 
                 if(args.length > 1) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                    if (player == null) {
                         unbanManager.preformUnban(args[0], sender, getReason(args, 1), true);
                     } else {
-                        unbanManager.preformUnban(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
+                        unbanManager.preformUnban(player, sender, getReason(args, 1), true);
                     }
                     return;
                 }

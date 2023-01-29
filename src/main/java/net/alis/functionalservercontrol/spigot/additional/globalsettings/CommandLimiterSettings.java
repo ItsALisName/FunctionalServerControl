@@ -191,7 +191,7 @@ public class CommandLimiterSettings {
                             this.perGroupWorlds.add(world);
                             this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         } else {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                         }
                     }
                 }
@@ -257,7 +257,7 @@ public class CommandLimiterSettings {
                             this.perGroupCommands.add(getFileAccessor().getCommandsLimiterConfig().getStringList("blocked-commands.per-world." + worldName + ".global"));
                         }
                     } else {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] World '%world%' not found, check file 'commands-limiter.yml'".replace("%world%", worldName)));
                     }
                 }
             }

@@ -1,12 +1,12 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,7 @@ public class ImportManager {
             if(namesBans.size() != 0) {
                 for (BanEntry entry : namesBans) {
                     String aNem = entry.getTarget();
-                    OfflinePlayer target = CoreAdapter.getAdapter().getOfflinePlayer(aNem);
+                    OfflineFunctionalPlayer target = OfflineFunctionalPlayer.get(aNem);
                     String reason = entry.getReason();
                     String initiatorName = entry.getSource();
                     if (initiatorName.equalsIgnoreCase("ServerInfo")) {
@@ -51,11 +51,11 @@ public class ImportManager {
                     }
                     String realBanDate = getDate(entry.getCreated());
                     String realBanTime = getTime(entry.getCreated());
-                    String name = target.getName();
+                    String name = target.nickname();
                     UUID uuid;
                     if(BaseManager.getBaseManager().getUuidByName(name).equalsIgnoreCase("null")) {
                         uuid = target.getUniqueId();
-                        BaseManager.getBaseManager().insertIntoAllPlayers(target.getName(), uuid, generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber());
+                        BaseManager.getBaseManager().insertIntoAllPlayers(target.nickname(), uuid, generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber(), target.getFunctionalId());
                     } else {
                         uuid = UUID.fromString(BaseManager.getBaseManager().getUuidByName(name));
                     }
@@ -71,10 +71,10 @@ public class ImportManager {
                         type = BanType.TIMED_NOT_IP;
                     }
                     if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                        getBannedPlayersContainer().addToBansContainer(id, ip, name, initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(uuid), time);
+                        getBannedPlayersContainer().addToBansContainer(id, ip, name, initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(uuid), time, target.getFunctionalId());
                     }
-                    BaseManager.getBaseManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, type, realBanDate, realBanTime, uuid, time);
-                    Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControlSpigot] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", name).replace("%id%", id)));
+                    BaseManager.getBaseManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, type, realBanDate, realBanTime, uuid, time, target.getFunctionalId());
+                    Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControl] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", name).replace("%id%", id)));
                 }
                 for(BanEntry entry : namesBans) {
                     Bukkit.getBanList(BanList.Type.NAME).pardon(entry.getTarget());
@@ -100,49 +100,49 @@ public class ImportManager {
                         type = BanType.TIMED_IP;
                         time = entry.getExpiration().getTime();
                     }
-                    UUID uuid;
                     if (OtherUtils.isArgumentIP(nameOrIp)) {
                         if (OtherUtils.getOnlinePlayerByIP(nameOrIp) != null) {
-                            OfflinePlayer player = OtherUtils.getOnlinePlayerByIP(nameOrIp);
-                            if(BaseManager.getBaseManager().getUuidByName(player.getName()).equalsIgnoreCase("null")) {
-                                uuid = player.getUniqueId();
-                                BaseManager.getBaseManager().insertIntoAllPlayers(player.getName(), uuid, generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber());
-                            } else {
-                                uuid = UUID.fromString(BaseManager.getBaseManager().getUuidByName(player.getName()));
+                            OfflineFunctionalPlayer player = OtherUtils.getOnlinePlayerByIP(nameOrIp);
+                            if(BaseManager.getBaseManager().getUuidByName(player.nickname()).equalsIgnoreCase("null")) {
+                                UUID uuid = player.getUniqueId();
+                                BaseManager.getBaseManager().insertIntoAllPlayers(player.nickname(), uuid, generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber(), new FID(player.nickname()));
                             }
                             if (getConfigSettings().isAllowedUseRamAsContainer()) {
-                                getBannedPlayersContainer().addToBansContainer(id, nameOrIp, player.getName(), initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(uuid), time);
+                                getBannedPlayersContainer().addToBansContainer(id, nameOrIp, player.nickname(), initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(player.getUniqueId()), time, player.getFunctionalId());
                             }
-                            BaseManager.getBaseManager().insertIntoBannedPlayers(id, nameOrIp, player.getName(), initiatorName, reason, type, realBanDate, realBanTime, uuid, time);
-                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControlSpigot] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", player.getName()).replace("%id%", id)));
+                            BaseManager.getBaseManager().insertIntoBannedPlayers(id, nameOrIp, player.nickname(), initiatorName, reason, type, realBanDate, realBanTime, player.getUniqueId(), time, new FID(player.nickname()));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControl] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", player.nickname()).replace("%id%", id)));
                         } else {
+                            FID fid = FID.random();
+                            UUID uuid = UUID.randomUUID();
                             if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                                getBanContainerManager().addToBanContainer(id, nameOrIp, "NULL_PLAYER", initiatorName, reason, type, realBanDate, realBanTime, "NULL_PLAYER", time);
+                                getBanContainerManager().addToBanContainer(id, nameOrIp, "NULL_PLAYER", initiatorName, reason, type, realBanDate, realBanTime, uuid.toString(), time, fid);
                             }
-                            BaseManager.getBaseManager().insertIntoNullBannedPlayersIP(id, nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, time);
-                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControlSpigot] &eBan for IP '%player%' imported, ID generated: '%id%'".replace("%player%", nameOrIp).replace("%id%", id)));
+                            BaseManager.getBaseManager().insertIntoNullBannedPlayersIP(id, nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, time, uuid, fid);
+                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControl] &eBan for IP '%player%' imported, ID generated: '%id%'".replace("%player%", nameOrIp).replace("%id%", id)));
                         }
                     } else {
-                        if(OtherUtils.isNotNullPlayer(nameOrIp)) {
-                            OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(nameOrIp);
-                            BaseManager.getBaseManager().insertIntoBannedPlayers(id, BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realBanDate, realBanTime, player.getUniqueId(), -1);
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(nameOrIp);
+                        if(player != null) {
+                            BaseManager.getBaseManager().insertIntoBannedPlayers(id, BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()), player.nickname(), initiatorName, reason, type, realBanDate, realBanTime, player.getUniqueId(), -1, player.getFunctionalId());
                             if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                                getBannedPlayersContainer().addToBansContainer(id, BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()), player.getName(), initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(player.getUniqueId()), -1L);
+                                getBannedPlayersContainer().addToBansContainer(id, BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()), player.nickname(), initiatorName, reason, type, realBanDate, realBanTime, String.valueOf(player.getUniqueId()), -1L, player.getFunctionalId());
                             }
-                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControlSpigot] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", player.getName()).replace("%id%", id)));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControl] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", player.nickname()).replace("%id%", id)));
                         } else {
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(nameOrIp);
-                            BaseManager.getBaseManager().insertIntoNullBannedPlayers(id, nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, player.getUniqueId(), time);
+                            FID fid = FID.random();
+                            UUID uuid = UUID.randomUUID();
+                            BaseManager.getBaseManager().insertIntoNullBannedPlayers(id, nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, player.getUniqueId(), time, new FID(player.nickname()));
                             if(getConfigSettings().isAllowedUseRamAsContainer()) {
-                                getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, "NULL_PLAYER", time);
+                                getBanContainerManager().addToBanContainer(id, "NULL_PLAYER", nameOrIp, initiatorName, reason, type, realBanDate, realBanTime, uuid.toString(), time, fid);
                             }
-                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControlSpigot] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", nameOrIp).replace("%id%", id)));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&6[FunctionalServerControl] &eBan for player '%player%' imported, ID generated: '%id%'".replace("%player%", nameOrIp).replace("%id%", id)));
                         }
                     }
                     Bukkit.getBanList(BanList.Type.IP).pardon(nameOrIp);
                 }
             }
-            Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Importing finished, clearing data from Vanilla Bans"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Importing finished, clearing data from Vanilla Bans"));
             sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.import.importing-ended").replace("%1$f", "Vanilla Bans")));
         });
     }

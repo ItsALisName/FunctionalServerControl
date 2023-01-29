@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.managers.CheatCheckerManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +15,7 @@ public class PlayerInteractionListener implements Listener {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
                 if(getConfigSettings().isPreventInteractionDuringCheatCheck()) {
-                    if(CheatCheckerManager.getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
+                    if(CheatCheckerManager.getCheatCheckerManager().isPlayerChecking(FunctionalPlayer.get(event.getPlayer().getUniqueId()))) event.setCancelled(true);
                 }
             }
         }

@@ -27,7 +27,7 @@ public class InetManager {
                     .replace("%3$f", String.valueOf((int)result[2]))
                     .replace("%4$f", String.valueOf((int)result[3]))
             ));
-            File testFolder = new File("plugins/FunctionalServerControlSpigot/inetspeedtests");
+            File testFolder = new File("plugins/FunctionalServerControl/inetspeedtests");
             if (testFolder.exists())
                 try {
                     for (File testFile : testFolder.listFiles())
@@ -45,7 +45,7 @@ public class InetManager {
         String testUrl = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jquery-speedtest/100MB.txt";
         try {
             ReadableByteChannel readableByteChannel = Channels.newChannel(runChannel(testUrl));
-            File testFolder = new File("plugins/FunctionalServerControlSpigot/inetspeedtests");
+            File testFolder = new File("plugins/FunctionalServerControl/inetspeedtests");
             if (!testFolder.exists())
                 testFolder.mkdir();
             File testFile = new File(testFolder, "inet_speed_test.txt");

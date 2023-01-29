@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners.outdated;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -15,7 +16,7 @@ public class PlayerItemPickupEvent implements Listener {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
                 if(getConfigSettings().isPreventPickupItemDuringCheatCheck()) {
-                    if (getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
+                    if (getCheatCheckerManager().isPlayerChecking(FunctionalPlayer.get(event.getPlayer().getUniqueId()))) event.setCancelled(true);
                 }
             }
         }

@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.dependencies.soft.luckperms;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import org.bukkit.Bukkit;
@@ -43,6 +44,14 @@ public class LuckPermsManager {
     }
 
     public String getPlayerGroup(Player player) {
+        try {
+            return this.luckPermsProvider.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
+        } catch (NullPointerException ignored) {
+            return null;
+        }
+    }
+
+    public String getPlayerGroup(FunctionalPlayer player) {
         try {
             return this.luckPermsProvider.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
         } catch (NullPointerException ignored) {

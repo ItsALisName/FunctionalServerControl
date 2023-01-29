@@ -1,25 +1,50 @@
 package net.alis.functionalservercontrol.api.events.event;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractPlayerEvent extends Event {
 
-    protected Player player;
+    private final Player bukkitPlayer;
 
-    protected AbstractPlayerEvent(@NotNull Player player) {
-        this.player = player;
+    private FunctionalPlayer functionalPlayer;
+
+    @Deprecated
+    public AbstractPlayerEvent(@NotNull Player player) {
+        this.bukkitPlayer = player;
     }
 
-    protected AbstractPlayerEvent(@NotNull Player player, boolean async) {
+    @Deprecated
+    public AbstractPlayerEvent(@NotNull Player player, boolean async) {
         super(async);
-        this.player = player;
+        this.bukkitPlayer = player;
     }
 
-    public @NotNull Player getPlayer() {
-        return player;
+    public AbstractPlayerEvent(@NotNull FunctionalPlayer player) {
+        this.functionalPlayer = player;
+        this.bukkitPlayer = player.getBukkitPlayer();
     }
 
+    public AbstractPlayerEvent(@NotNull FunctionalPlayer player, boolean async) {
+        super(async);
+        this.functionalPlayer = player;
+        this.bukkitPlayer = player.getBukkitPlayer();
+    }
 
+    /**
+     * Returns player from called event
+     * @return player from called event
+     * <p>
+     * @deprecated in favor of the <b>AbstractPlayerEvent#getFunctionalPlayer</b> method
+     */
+    @Deprecated
+    public @NotNull Player getBukkitPlayer() {
+        return bukkitPlayer;
+    }
+
+    public @NotNull FunctionalPlayer getFunctionalPlayer() {
+        return functionalPlayer;
+    }
 }

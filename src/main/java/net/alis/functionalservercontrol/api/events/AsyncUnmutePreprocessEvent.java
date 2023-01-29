@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.api.events;
 
 
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -13,7 +14,8 @@ public class AsyncUnmutePreprocessEvent extends Event implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
     private boolean cancelled;
-    private OfflinePlayer player;
+    private OfflinePlayer bukkitPlayer;
+    private OfflineFunctionalPlayer player;
     private CommandSender initiator;
     private String reason;
     private String nullPlayer;
@@ -21,6 +23,14 @@ public class AsyncUnmutePreprocessEvent extends Event implements Cancellable {
     public AsyncUnmutePreprocessEvent(OfflinePlayer player, CommandSender initiator, String reason) {
         super(true);
         this.initiator = initiator;
+        this.bukkitPlayer = player;
+        this.reason = reason;
+    }
+
+    public AsyncUnmutePreprocessEvent(OfflineFunctionalPlayer player, CommandSender initiator, String reason) {
+        super(true);
+        this.initiator = initiator;
+        this.bukkitPlayer = player.getOfflineBukkitPlayer();
         this.player = player;
         this.reason = reason;
     }
@@ -35,6 +45,13 @@ public class AsyncUnmutePreprocessEvent extends Event implements Cancellable {
     public AsyncUnmutePreprocessEvent(OfflinePlayer player, String reason) {
         super(true);
         this.reason = reason;
+        this.bukkitPlayer = player;
+    }
+
+    public AsyncUnmutePreprocessEvent(OfflineFunctionalPlayer player, String reason) {
+        super(true);
+        this.reason = reason;
+        this.bukkitPlayer = player.getBukkitPlayer();
         this.player = player;
     }
 
@@ -69,8 +86,8 @@ public class AsyncUnmutePreprocessEvent extends Event implements Cancellable {
     }
 
     @Nullable
-    public OfflinePlayer getPlayer() {
-        return player;
+    public OfflinePlayer getBukkitPlayer() {
+        return bukkitPlayer;
     }
 
     @Nullable

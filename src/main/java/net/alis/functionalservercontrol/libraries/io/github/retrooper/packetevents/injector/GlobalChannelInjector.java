@@ -8,9 +8,12 @@ import net.alis.functionalservercontrol.libraries.io.github.retrooper.packeteven
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.injector.modern.late.LateChannelInjectorModern;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PlayerEjectEvent;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PlayerInjectEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.injector.legacy.late.LateChannelInjectorLegacy;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.nms.NMSUtils;
+
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 
 public class GlobalChannelInjector
 {
@@ -39,7 +42,7 @@ public class GlobalChannelInjector
                 PacketEvents.get().getSettings().compatInjector(true);
                 this.load();
                 this.injector.inject();
-                PacketEvents.get().getPlugin().getLogger().warning("[packetevents] Failed to inject with the Early Injector. Reverting to the Compatibility/Late Injector... This is just a warning, but please report this!");
+                Bukkit.getConsoleSender().sendMessage(setColors("[FunctionalServerControl | PacketEvents] Failed to inject with the Early Injector. Reverting to the Compatibility/Late Injector..."));
                 ex.printStackTrace();
             }
         }

@@ -1,4 +1,4 @@
-file-version: "1.09.3"
+file-version: "1.10.0"
 ################################################################################
 #       Settings for limiting packets sent by the player to the server         #
 # ATTENTION! Specify the number of packets depending on the specified interval #
@@ -7,7 +7,7 @@ file-version: "1.09.3"
 packet-limiter:
   enabled: true
   max-player-packets: 250
-  check-interval: 5 # <-- Not changed by '/fsc reload'
+  check-interval: 5 # <-- Not changed by '/get reload'
   notify-admins: true
   punishments:
   - "kick %1$f Вы отправляете слишком много пакетов"

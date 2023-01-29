@@ -1,14 +1,12 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.GetVersionCompleter;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -37,12 +35,12 @@ public class GetVersionCommand implements CommandExecutor {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.too-many-arguments").replace("%1$f", getReason(args, 1))));
                     return;
                 }
-                Player target = Bukkit.getPlayer(args[0]);
+                FunctionalPlayer target = FunctionalPlayer.get(args[0]);
                 if(target == null) {
                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[0])));
                     return;
                 }
-                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getversion.success").replace("%1$f", target.getName()).replace("%2$f", CoreAdapter.getAdapter().getPlayerVersion(target).toString())));
+                sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.getversion.success").replace("%1$f", target.nickname()).replace("%2$f", target.minecraftVersionName())));
             } else {
                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-permissions")));
             }

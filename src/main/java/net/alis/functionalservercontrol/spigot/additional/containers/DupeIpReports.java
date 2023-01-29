@@ -1,10 +1,10 @@
 package net.alis.functionalservercontrol.spigot.additional.containers;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.KickManager;
 import net.alis.functionalservercontrol.spigot.managers.file.SFAccessor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public class DupeIpReports {
     private String reportInitiator;
     private String time;
     private final List<String> dupeIps = new ArrayList<>();
-    private final Map<Player, String> dupePlayers = new HashMap<>();
+    private final Map<FunctionalPlayer, String> dupePlayers = new HashMap<>();
 
     public boolean isReportExists() {
         return reportExists;
@@ -31,7 +31,7 @@ public class DupeIpReports {
         return dupeIps;
     }
 
-    public Map<Player, String> getDupePlayers() {
+    public Map<FunctionalPlayer, String> getDupePlayers() {
         return dupePlayers;
     }
 
@@ -43,8 +43,8 @@ public class DupeIpReports {
         this.dupeIps.add(ip);
     }
 
-    public void setDupePlayers(Player player) {
-        this.dupePlayers.put(player, player.getAddress().getAddress().getHostAddress());
+    public void setDupePlayers(FunctionalPlayer player) {
+        this.dupePlayers.put(player, player.address());
     }
 
     public void setReportInitiator(String reportInitiator) {
@@ -71,12 +71,12 @@ public class DupeIpReports {
             for(int b = 0; b < a; b++) {
                 String ip = getDupeIps().get(b);
                 List<String> names = new ArrayList<>();
-                for(Map.Entry<Player, String> e : getDupePlayers().entrySet()) {
-                    if(!names.contains(e.getKey().getName())) {
+                for(Map.Entry<FunctionalPlayer, String> e : getDupePlayers().entrySet()) {
+                    if(!names.contains(e.getKey().nickname())) {
                         if (e.getValue().equalsIgnoreCase(ip)) {
                             if(e.getKey() != null) {
                                 c = c + 1;
-                                names.add(e.getKey().getName());
+                                names.add(e.getKey().nickname());
                             }
                         }
                     }
@@ -90,12 +90,12 @@ public class DupeIpReports {
             for(int b = 0; b <= a; b++) {
                 String ip = getDupeIps().get(b);
                 List<String> names = new ArrayList<>();
-                for(Map.Entry<Player, String> e : getDupePlayers().entrySet()) {
-                    if(!names.contains(e.getKey().getName())) {
+                for(Map.Entry<FunctionalPlayer, String> e : getDupePlayers().entrySet()) {
+                    if(!names.contains(e.getKey().nickname())) {
                         if (e.getValue().equalsIgnoreCase(ip)) {
                             if(e.getKey() != null) {
                                 c = c + 1;
-                                names.add(e.getKey().getName());
+                                names.add(e.getKey().nickname());
                             }
                         }
                     }
@@ -119,10 +119,10 @@ public class DupeIpReports {
     public void preformKickDupeip(@NotNull CommandSender initiator, @Nullable String reason, boolean announceKick) {
         KickManager kickManager = new KickManager();
         int count = 0;
-        boolean a = initiator instanceof Player;
-        for(Map.Entry<Player, String> e : getDupePlayers().entrySet()) {
+        boolean a = initiator instanceof FunctionalPlayer;
+        for(Map.Entry<FunctionalPlayer, String> e : getDupePlayers().entrySet()) {
             if(a)
-                if(e.getKey().equals((Player) initiator)) continue;
+                if(e.getKey().equals(initiator)) continue;
             count = count + 1;
             kickManager.preformKick(e.getKey(), initiator, reason, announceKick);
         }

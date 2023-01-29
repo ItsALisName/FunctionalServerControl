@@ -1,9 +1,10 @@
 package net.alis.functionalservercontrol.spigot.additional.tasks;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -12,7 +13,7 @@ public class PermissionsControlTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for(FunctionalPlayer player : FunctionalApi.getOnlinePlayers()) {
             if(player.isOp() && !getConfigSettings().getOpAllowedPlayers().contains(player.getName())) {
                 if(getConfigSettings().isPermissionsProtectionAutoDeop()) player.setOp(false);
                 for(String action : getConfigSettings().getOpProtectionActions()) TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName())));

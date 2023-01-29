@@ -1,7 +1,10 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
+
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.api.enums.KickType;
 import net.alis.functionalservercontrol.api.events.KickPreprocessEvent;
@@ -9,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +34,11 @@ public class KickManager {
      * @param reason The reason the player was kicked
      * @param announceKick Will it be reported in the global chat?
      */
-    public void preformKick(@NotNull Player player, CommandSender initiator, @Nullable String reason, boolean announceKick) {
+    public void preformKick(@NotNull FunctionalPlayer player, CommandSender initiator, @Nullable String reason, boolean announceKick) {
         String finalReason;
         String initiatorName;
-        if(initiator instanceof Player) {
+
+        if(initiator instanceof FunctionalPlayer) {
             initiatorName = initiator.getName();
         } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
@@ -57,7 +60,7 @@ public class KickManager {
                 return;
             }
         }
-        if(!announceKick && initiator instanceof Player) {
+        if(!announceKick && initiator instanceof FunctionalPlayer) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
                 initiator.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                 kickPreprocessEvent.setCancelled(true);
@@ -65,7 +68,7 @@ public class KickManager {
             }
         }
         if(getConfigSettings().isProhibitYourselfInteraction()) {
-            if(initiator.getName().equalsIgnoreCase(player.getName())) {
+            if(initiator.getName().equalsIgnoreCase(player.nickname())) {
                 initiator.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.no-yourself-actions")));
                 kickPreprocessEvent.setCancelled(true);
                 return;
@@ -86,13 +89,14 @@ public class KickManager {
             return;
         }
 
-        CoreAdapter.getAdapter().kick(player, TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", finalReason).replace("%2$f", initiatorName)));
+
+        player.kick(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", finalReason).replace("%2$f", initiatorName)));
         if(announceKick) {
-            CoreAdapter.getAdapter().broadcast(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
+            Bukkit.broadcastMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", finalReason)));
         }
-        BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
-        if(initiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
-        BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+        BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
+        if(initiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(FunctionalPlayer.get(initiator.getName()).getFunctionalId(), StatsType.Administrator.STATS_KICKS);
+        BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.STATS_KICKS);
         return;
 
     }
@@ -118,7 +122,7 @@ public class KickManager {
 
         int count = 0;
 
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for(FunctionalPlayer player : FunctionalApi.getOnlinePlayers()) {
             KickPreprocessEvent kickPreprocessEvent = new KickPreprocessEvent(true, player, initiator, finalReason, KickType.GLOBAL);
             if(getConfigSettings().isApiEnabled()) {
                 Bukkit.getPluginManager().callEvent(kickPreprocessEvent);
@@ -134,7 +138,7 @@ public class KickManager {
                 }
             }
 
-            if(!announceKick && initiator instanceof Player) {
+            if(!announceKick && initiator instanceof FunctionalPlayer) {
                 if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
                     initiator.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                     kickPreprocessEvent.setCancelled(true);
@@ -157,24 +161,24 @@ public class KickManager {
 
             String anotherFinalReason = finalReason;
             String finalInitiatorName = initiatorName;
-            TaskManager.preformSync(() -> CoreAdapter.getAdapter().kick(player, TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName))));
+            TaskManager.preformSync(() -> player.kick(TextUtils.setColors(String.join("\n", getFileAccessor().getLang().getStringList("kick-format")).replace("%1$f", anotherFinalReason).replace("%2$f", finalInitiatorName))));
 
             if(announceKick) {
-                CoreAdapter.getAdapter().broadcast(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
+                Bukkit.broadcastMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", finalReason)));
             }
             BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.kick").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", reason == null ? getGlobalVariables().getDefaultReason() : reason).replace("%4$f", getDate() + ", " + getTime()));
-            if(initiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)initiator, StatsType.Administrator.STATS_KICKS);
-            BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.STATS_KICKS);
+            if(initiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer) initiator).getFunctionalId(), StatsType.Administrator.STATS_KICKS);
+            BaseManager.getBaseManager().updatePlayerStatsInfo(new FID(player.getName()), StatsType.Player.STATS_KICKS);
         }
         initiator.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick-all.success")).replace("%1$f", String.valueOf(count)));
         return;
     }
 
-    public void preformCrazyKick(@NotNull Player player, CommandSender initiator, ChatColor color, boolean announceKick) {
+    public void preformCrazyKick(@NotNull FunctionalPlayer player, CommandSender initiator, ChatColor color, boolean announceKick) {
 
         String initiatorName = null;
-        if(initiator instanceof Player) {
-            initiatorName = ((Player) initiator).getName();
+        if(initiator instanceof FunctionalPlayer) {
+            initiatorName = initiator.getName();
         } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
@@ -196,7 +200,7 @@ public class KickManager {
             }
         }
 
-        if(!announceKick && initiator instanceof Player) {
+        if(!announceKick && initiator instanceof FunctionalPlayer) {
             if(!initiator.hasPermission("functionalservercontrol.use.silently")) {
                 initiator.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.flag-no-perms").replace("%1$f", "-s")));
                 kickPreprocessEvent.setCancelled(true);
@@ -212,9 +216,9 @@ public class KickManager {
             return;
         }
 
-        CoreAdapter.getAdapter().kick(player, color + "鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁");
+        player.kick(color + "鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶鸵郦剜哪婀弱能陶粵躲遞鸲鸧闾稂税粵躲遞鸲鸧闾稂税遞粵逾鸺獀阔遁魁");
         if(announceKick) {
-            CoreAdapter.getAdapter().broadcast(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", "Crazy")));
+            Bukkit.broadcastMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.kick.broadcast-message").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", "Crazy")));
         }
 
     }

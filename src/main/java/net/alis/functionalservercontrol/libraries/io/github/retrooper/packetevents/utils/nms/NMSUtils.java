@@ -33,6 +33,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.util.Random;
 
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
+
 public final class NMSUtils
 {
     public static final String NMS_DIR;
@@ -130,7 +132,7 @@ public final class NMSUtils
             getNettyClass("channel.Channel");
         }
         catch (Exception ex) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[packetevents] Failed to locate the netty package location for your server version. Searching...");
+            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl | PacketEvents] Failed to locate the netty package location for your server version. Searching..."));
             if (NMSUtils.legacyNettyImportMode) {
                 NMSUtils.legacyNettyImportMode = false;
                 NMSUtils.nettyPrefix = newNettyPrefix;

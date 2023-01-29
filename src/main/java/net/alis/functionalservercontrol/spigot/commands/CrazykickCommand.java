@@ -1,18 +1,18 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.commands.completers.CrazykickCompleter;
-
 import net.alis.functionalservercontrol.spigot.managers.KickManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -48,7 +48,7 @@ public class CrazykickCommand implements CommandExecutor {
                         return;
                     }
 
-                    Player target = Bukkit.getPlayer(args[1]);
+                    FunctionalPlayer target = FunctionalPlayer.get(args[1]);
                     if(target == null) {
                         sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[1])));
                         return;
@@ -87,7 +87,7 @@ public class CrazykickCommand implements CommandExecutor {
                     return;
                 }
 
-                Player target = Bukkit.getPlayer(args[0]);
+                FunctionalPlayer target = FunctionalPlayer.get(args[0]);
                 if(target == null) {
                     sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[0])));
                     return;

@@ -1,14 +1,14 @@
 package net.alis.functionalservercontrol.spigot.managers.mute;
 
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.Component;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.MuteType;
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import static net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getMutedPlayersContainer;
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -27,12 +27,13 @@ public class MuteContainerManager {
                 BaseManager.getBaseManager().getMuteDates(),
                 BaseManager.getBaseManager().getMuteTimes(),
                 BaseManager.getBaseManager().getMutedUUIDs(),
-                BaseManager.getBaseManager().getUnmuteTimes()
+                BaseManager.getBaseManager().getUnmuteTimes(),
+                BaseManager.getBaseManager().getMutedFids()
         );
-        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControlSpigot] Mutes loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getMutedPlayersContainer().getIdsContainer().size()))));
+        Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl] Mutes loaded into RAM(Total: %count%)".replace("%count%", String.valueOf(getMutedPlayersContainer().getIdsContainer().size()))));
     }
 
-    public void addToMuteContainer(String id, String ip, String playerName, String initiatorName, String reason, MuteType muteType, String realBanDate, String realBanTime, String uuid, Long time) {
+    public void addToMuteContainer(String id, String ip, String playerName, String initiatorName, String reason, MuteType muteType, String realBanDate, String realBanTime, String uuid, Long time, FID fid) {
         getMutedPlayersContainer().addToMuteContainer(
                 id,
                 ip,
@@ -43,7 +44,8 @@ public class MuteContainerManager {
                 realBanDate,
                 realBanTime,
                 uuid,
-                time
+                time,
+                fid
         );
     }
 
@@ -62,6 +64,7 @@ public class MuteContainerManager {
                 getMutedPlayersContainer().getRealMuteTimeContainer().remove(indexOf);
                 getMutedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getMutedPlayersContainer().getMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getFids().remove(indexOf);
                 return;
             }
             return;
@@ -80,6 +83,7 @@ public class MuteContainerManager {
                 getMutedPlayersContainer().getRealMuteTimeContainer().remove(indexOf);
                 getMutedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getMutedPlayersContainer().getMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getFids().remove(indexOf);
                 return;
             }
             return;
@@ -98,6 +102,7 @@ public class MuteContainerManager {
                 getMutedPlayersContainer().getRealMuteTimeContainer().remove(indexOf);
                 getMutedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getMutedPlayersContainer().getMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getFids().remove(indexOf);
                 return;
             }
             return;
@@ -116,9 +121,29 @@ public class MuteContainerManager {
                 getMutedPlayersContainer().getRealMuteTimeContainer().remove(indexOf);
                 getMutedPlayersContainer().getUUIDContainer().remove(indexOf);
                 getMutedPlayersContainer().getMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getFids().remove(indexOf);
                 return;
             }
             return;
+        }
+        if(expression.equalsIgnoreCase("-fid")) {
+            FID fid = new FID(param);
+            if(getMutedPlayersContainer().getFids().contains(fid)) {
+                getMutedPlayersContainer().getMuteEntries().removeIf(entry -> String.valueOf(entry.getFunctionalId()).equalsIgnoreCase(param));
+                int indexOf = getMutedPlayersContainer().getFids().indexOf(fid);
+                getMutedPlayersContainer().getIdsContainer().remove(indexOf);
+                getMutedPlayersContainer().getIpContainer().remove(indexOf);
+                getMutedPlayersContainer().getNameContainer().remove(indexOf);
+                getMutedPlayersContainer().getInitiatorNameContainer().remove(indexOf);
+                getMutedPlayersContainer().getReasonContainer().remove(indexOf);
+                getMutedPlayersContainer().getMuteTypesContainer().remove(indexOf);
+                getMutedPlayersContainer().getRealMuteDateContainer().remove(indexOf);
+                getMutedPlayersContainer().getRealMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getUUIDContainer().remove(indexOf);
+                getMutedPlayersContainer().getMuteTimeContainer().remove(indexOf);
+                getMutedPlayersContainer().getFids().remove(indexOf);
+                return;
+            }
         }
     }
 
@@ -144,52 +169,27 @@ public class MuteContainerManager {
                 String format = getFileAccessor().getLang().getString("commands.mutelist.format");
                 String hoverText = getFileAccessor().getLang().getString("commands.mutelist.hover-text");
                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.mutelist.success").replace("%1$f", String.valueOf(page))));
-                if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
-                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                        do {
-                            sender.spigot().sendMessage(
-                                    MD5TextUtils.appendTwo(
-                                            MD5TextUtils.createHoverText(TextUtils.setColors(
-                                                            "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
-                                                    TextUtils.setColors(hoverText
-                                                            .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
-                                                            .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
-                                                            .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
-                                                            .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
-                                                            .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
-                                                            .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
-                                            ),
-                                            MD5TextUtils.addPardonButtons((Player) sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start))
-                                    )
-                            );
-                            start = start + 1;
-                        } while (start < stop);
-                        return;
-                    }
-                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                        do {
-                            sender.sendMessage(
-                                    AdventureApiUtils.createHoverText(
-                                            TextUtils.setColors("&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
-                                            TextUtils.setColors(hoverText
-                                                    .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
-                                                    .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
-                                                    .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
-                                                    .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
-                                                    .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
-                                                    .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
-                                    ).append(AdventureApiUtils.addPardonButtons((Player)sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
-                            );
-                            start = start + 1;
-                        } while (start < stop);
-                        return;
-                    }
+                if(sender instanceof FunctionalPlayer) {
+                    do {
+                        ((FunctionalPlayer) sender).expansion().message(Component.createHoverText(TextUtils.setColors(
+                                        "&e" + (start + 1) + ". " + format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))),
+                                        TextUtils.setColors(hoverText
+                                                .replace("%1$f", getMutedPlayersContainer().getInitiatorNameContainer().get(start))
+                                                .replace("%2$f", getMutedPlayersContainer().getNameContainer().get(start)))
+                                                .replace("%3$f", getMutedPlayersContainer().getRealMuteDateContainer().get(start))
+                                                .replace("%4$f", getMutedPlayersContainer().getRealMuteTimeContainer().get(start))
+                                                .replace("%5$f", getMutedPlayersContainer().getReasonContainer().get(start))
+                                                .replace("%6$f", getMutedPlayersContainer().getIdsContainer().get(start))
+                                        ).append(Component.addPardonButtons((FunctionalPlayer) sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
+                                        .translateDefaultColorCodes()
+                        );
+                        start = start + 1;
+                    } while (start < stop);
                 } else {
                     do {
                         sender.sendMessage(TextUtils.setColors("&e" + (start + 1) + ". " +format.replace("%1$f", getMutedPlayersContainer().getNameContainer().get(start)).replace("%2$f", getMutedPlayersContainer().getIdsContainer().get(start))));
                         start = start + 1;
                     } while (start < stop);
-                    return;
                 }
             } else {
                 if(BaseManager.getBaseManager().getMutedIds().size() == 0) {
@@ -211,52 +211,27 @@ public class MuteContainerManager {
                 String format = getFileAccessor().getLang().getString("commands.mutelist.format");
                 String hoverText = getFileAccessor().getLang().getString("commands.mutelist.hover-text");
                 sender.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("commands.mutelist.success").replace("%1$f", String.valueOf(page))));
-                if(getConfigSettings().isServerSupportsHoverEvents() && sender instanceof Player) {
-                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                        do {
-                            sender.spigot().sendMessage(
-                                    MD5TextUtils.appendTwo(
-                                            MD5TextUtils.createHoverText(TextUtils.setColors(
-                                                            "&e" + (start + 1) + ". " + format.replace("%1$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)).replace("%2$f", BaseManager.getBaseManager().getMutedIds().get(start))),
-                                                    TextUtils.setColors(hoverText
-                                                            .replace("%1$f", BaseManager.getBaseManager().getMuteInitiators().get(start))
-                                                            .replace("%2$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
-                                                            .replace("%3$f", BaseManager.getBaseManager().getMuteDates().get(start))
-                                                            .replace("%4$f", BaseManager.getBaseManager().getMuteTimes().get(start))
-                                                            .replace("%5$f", BaseManager.getBaseManager().getMuteReasons().get(start))
-                                                            .replace("%6$f", BaseManager.getBaseManager().getMutedIds().get(start))
-                                            ),
-                                            MD5TextUtils.addPardonButtons((Player) sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start))
-                                    )
-                            );
-                            start = start + 1;
-                        } while (start < stop);
-                        return;
-                    }
-                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                        do {
-                            sender.sendMessage(
-                                    AdventureApiUtils.createHoverText(
-                                            TextUtils.setColors("&e" + (start + 1) + ". " + format.replace("%1$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)).replace("%2$f", BaseManager.getBaseManager().getMutedIds().get(start))),
-                                            TextUtils.setColors(hoverText
-                                                    .replace("%1$f", BaseManager.getBaseManager().getMuteInitiators().get(start))
-                                                    .replace("%2$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
-                                                    .replace("%3$f", BaseManager.getBaseManager().getMuteDates().get(start))
-                                                    .replace("%4$f", BaseManager.getBaseManager().getMuteTimes().get(start))
-                                                    .replace("%5$f", BaseManager.getBaseManager().getMuteReasons().get(start))
-                                                    .replace("%6$f", BaseManager.getBaseManager().getMutedIds().get(start))
-                                    ).append(AdventureApiUtils.addPardonButtons((Player)sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
-                            );
-                            start = start + 1;
-                        } while (start < stop);
-                        return;
-                    }
+                if(sender instanceof FunctionalPlayer) {
+                    do {
+                        ((FunctionalPlayer) sender).expansion().message(Component.createHoverText(TextUtils.setColors(
+                                                        "&e" + (start + 1) + ". " + format.replace("%1$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)).replace("%2$f", BaseManager.getBaseManager().getMutedIds().get(start))),
+                                                TextUtils.setColors(hoverText
+                                                                .replace("%1$f", BaseManager.getBaseManager().getMuteInitiators().get(start))
+                                                                .replace("%2$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
+                                                        .replace("%3$f", BaseManager.getBaseManager().getMuteDates().get(start))
+                                                        .replace("%4$f", BaseManager.getBaseManager().getMuteTimes().get(start))
+                                                        .replace("%5$f", BaseManager.getBaseManager().getMuteReasons().get(start))
+                                                        .replace("%6$f", BaseManager.getBaseManager().getMutedIds().get(start))
+                                        ).append(Component.addPardonButtons((FunctionalPlayer) sender, BaseManager.getBaseManager().getMutedPlayersNames().get(start)))
+                                                .translateDefaultColorCodes()
+                        );
+                        start = start + 1;
+                    } while (start < stop);
                 } else {
                     do {
                         sender.sendMessage(TextUtils.setColors("&e" + (start + 1) + ". " +format.replace("%1$f", BaseManager.getBaseManager().getMutedPlayersNames().get(start)).replace("%2$f", BaseManager.getBaseManager().getMutedIds().get(start))));
                         start = start + 1;
                     } while (start < stop);
-                    return;
                 }
             }
         });

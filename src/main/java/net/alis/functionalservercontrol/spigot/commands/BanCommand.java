@@ -1,18 +1,18 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.spigot.commands.completers.BanCompleter;
 import net.alis.functionalservercontrol.spigot.managers.ban.BanManager;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -48,7 +48,7 @@ public class BanCommand implements CommandExecutor {
                         if(OtherUtils.isArgumentIP(args[0])) {
                             if(OtherUtils.isNotNullIp(args[0])) {
                                 if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                    OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                    OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                     if(player.isOnline()) {
                                         if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -62,7 +62,7 @@ public class BanCommand implements CommandExecutor {
                                         }
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                                     } else {
                                         banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                                     }
@@ -73,7 +73,7 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true, false);
                                     } else {
                                         banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, false);
                                     }
@@ -85,7 +85,7 @@ public class BanCommand implements CommandExecutor {
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true, true);
                                 } else {
                                     banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true, true);
                                 }
@@ -93,18 +93,19 @@ public class BanCommand implements CommandExecutor {
                             return;
                         }
 
-                        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                        if(!OtherUtils.isNotNullPlayer(new FID(args[0]))) {
                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                 return;
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                             } else {
                                 banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                             }
                         } else {
+                            
                             if(player.isOnline()) {
                                 if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -118,7 +119,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                             } else {
                                 banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, true);
                             }
@@ -132,7 +133,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[1])) {
                                 if(OtherUtils.isNotNullIp(args[1])) {
                                     if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[1]);
                                         if(player.isOnline()) {
                                             if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -150,7 +151,7 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                         } else {
                                             banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                         }
@@ -161,7 +162,7 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, false);
+                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false, false);
                                         } else {
                                             banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, false);
                                         }
@@ -173,7 +174,7 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false, true);
                                     } else {
                                         banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false, true);
                                     }
@@ -181,18 +182,19 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            FunctionalPlayer player = FunctionalPlayer.get(args[1]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                 } else {
                                     banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                 }
                             } else {
+                                
                                 if(player.isOnline()) {
                                     if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -210,7 +212,7 @@ public class BanCommand implements CommandExecutor {
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                 } else {
                                     banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getGlobalVariables().getDefaultReason(), sender, -1, false);
                                 }
@@ -228,7 +230,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[1])) {
                                 if(OtherUtils.isNotNullIp(args[1])) {
                                     if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[1]);
                                         if(player.isOnline()) {
                                             if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -242,7 +244,7 @@ public class BanCommand implements CommandExecutor {
                                             }
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                            banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                         } else {
                                             banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                         }
@@ -253,7 +255,7 @@ public class BanCommand implements CommandExecutor {
                                             return;
                                         }
                                         if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, false);
+                                            banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false, false);
                                         } else {
                                             banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, false);
                                         }
@@ -265,7 +267,7 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false, true);
+                                        banManager.preformBanByIp(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false, true);
                                     } else {
                                         banManager.preformBanByIp(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false, true);
                                     }
@@ -273,18 +275,19 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            FunctionalPlayer player = FunctionalPlayer.get(args[1]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                    banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                 } else {
                                     banManager.preformBan(args[1], BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                 }
                             } else {
+                                
                                 if(player.isOnline()) {
                                     if(player.getPlayer().hasPermission("functionalservercontrol.ban.bypass") && !sender.hasPermission("functionalservercontrol.bypass-break")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("commands.ban.target-bypass")));
@@ -298,7 +301,7 @@ public class BanCommand implements CommandExecutor {
                                     }
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), false);
+                                    banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 2), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), false);
                                 } else {
                                     banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 2), sender, -1, false);
                                 }
@@ -317,7 +320,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[0])) {
                                 if(OtherUtils.isNotNullIp(args[0])) {
                                     if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                         if(!player.isOnline()) {
                                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -350,8 +353,8 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
@@ -359,6 +362,7 @@ public class BanCommand implements CommandExecutor {
                                 banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, true);
                                 return;
                             } else {
+                                
                                 if(!player.isOnline()) {
                                     if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -386,7 +390,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[1])) {
                                 if(OtherUtils.isNotNullIp(args[1])) {
                                     if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[1]);
                                         if(!player.isOnline()) {
                                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -419,8 +423,8 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
@@ -428,6 +432,7 @@ public class BanCommand implements CommandExecutor {
                                 banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getGlobalVariables().getDefaultReason(), sender, time, false);
                                 return;
                             } else {
+                                
                                 if(!player.isOnline()) {
                                     if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -456,7 +461,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[0])) {
                                 if(OtherUtils.isNotNullIp(args[0])) {
                                     if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                         if(!player.isOnline()) {
                                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -489,8 +494,8 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
@@ -498,6 +503,7 @@ public class BanCommand implements CommandExecutor {
                                 banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 2), sender, time, true);
                                 return;
                             } else {
+                                
                                 if(!player.isOnline()) {
                                     if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -525,7 +531,7 @@ public class BanCommand implements CommandExecutor {
                             if(OtherUtils.isArgumentIP(args[1])) {
                                 if(OtherUtils.isNotNullIp(args[1])) {
                                     if(OtherUtils.getPlayerByIP(args[1]) != null) {
-                                        OfflinePlayer player = OtherUtils.getPlayerByIP(args[1]);
+                                        OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[1]);
                                         if(!player.isOnline()) {
                                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -558,8 +564,8 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
 
-                            OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                            if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                            FunctionalPlayer player = FunctionalPlayer.get(args[1]);
+                            if(player == null) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                     return;
@@ -567,6 +573,7 @@ public class BanCommand implements CommandExecutor {
                                 banManager.preformBan(args[1], BanType.TIMED_NOT_IP, getReason(args, 3), sender, time, false);
                                 return;
                             } else {
+                                
                                 if(!player.isOnline()) {
                                     if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -589,7 +596,7 @@ public class BanCommand implements CommandExecutor {
                         if(OtherUtils.isArgumentIP(args[0])) {
                             if(OtherUtils.isNotNullIp(args[0])) {
                                 if(OtherUtils.getPlayerByIP(args[0]) != null) {
-                                    OfflinePlayer player = OtherUtils.getPlayerByIP(args[0]);
+                                    OfflineFunctionalPlayer player = OtherUtils.getPlayerByIP(args[0]);
                                     if(!player.isOnline()) {
                                         if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                             sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -603,7 +610,7 @@ public class BanCommand implements CommandExecutor {
                                         }
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                        banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                                     } else {
                                         banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                                     }
@@ -614,7 +621,7 @@ public class BanCommand implements CommandExecutor {
                                         return;
                                     }
                                     if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, false);
+                                        banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true, false);
                                     } else {
                                         banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, false);
                                     }
@@ -626,7 +633,7 @@ public class BanCommand implements CommandExecutor {
                                     return;
                                 }
                                 if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true, true);
+                                    banManager.preformBanByIp(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true, true);
                                 } else {
                                     banManager.preformBanByIp(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true, true);
                                 }
@@ -634,19 +641,20 @@ public class BanCommand implements CommandExecutor {
                             }
                         }
 
-                        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                        if(!OtherUtils.isNotNullPlayer(player.getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                        if(player == null) {
                             if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                 sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
                                 return;
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                banManager.preformBan(args[0], BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                             } else {
                                 banManager.preformBan(args[0], BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                             }
                             return;
                         } else {
+                            
                             if(!player.isOnline()) {
                                 if(!sender.hasPermission("functionalservercontrol.ban.offline")) {
                                     sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -660,7 +668,7 @@ public class BanCommand implements CommandExecutor {
                                 }
                             }
                             if(!sender.hasPermission("functionalservercontrol.time-bypass")) {
-                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((Player)sender), true);
+                                banManager.preformBan(player, BanType.TIMED_NOT_IP, getReason(args, 1), sender, timeSettingsAccessor.getTimeManager().getMaxPlayerBanPunishTime((FunctionalPlayer)sender), true);
                             } else {
                                 banManager.preformBan(player, BanType.PERMANENT_NOT_IP, getReason(args, 1), sender, -1, true);
                             }

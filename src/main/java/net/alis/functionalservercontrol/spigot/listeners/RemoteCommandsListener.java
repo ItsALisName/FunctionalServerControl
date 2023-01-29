@@ -23,11 +23,11 @@ public class RemoteCommandsListener implements Listener {
         }
 
         if(ConsoleFilterHelper.getConsoleFilterHelper().getPluginCommands().contains("/" + command.split(" ")[0])) {
-            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&e[FunctionalServerControlSpigot | Log] %sender% used the command: &6%command%".replace("%command%", "/" + event.getCommand()).replace("%sender%", sender.getName())));
+            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&e[FunctionalServerControl | Log] %sender% used the command: &6%command%".replace("%command%", "/" + event.getCommand()).replace("%sender%", sender.getName())));
         }
-        if((command.contains("plugman") || command.contains("pg")) && event.getCommand().contains("FunctionalServerControlSpigot")) {
-            sender.sendMessage(TextUtils.setColors("&4&o[FunctionalServerControlSpigot] Reloading the plugin in this way is not allowed!"));
-            sender.sendMessage(TextUtils.setColors("&4&o[FunctionalServerControlSpigot] Use a full server restart for the safety of the plugin and the server!"));
+        if((command.contains("plugman") || command.contains("pg")) && event.getCommand().contains("FunctionalServerControl")) {
+            sender.sendMessage(TextUtils.setColors("&4&o[FunctionalServerControl] Reloading the plugin in this way is not allowed!"));
+            sender.sendMessage(TextUtils.setColors("&4&o[FunctionalServerControl] Use a full server restart for the safety of the plugin and the server!"));
             event.setCancelled(true);
         }
     }

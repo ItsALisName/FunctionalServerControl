@@ -17,7 +17,7 @@ public class HideFilter implements Filter {
     public Filter.Result checkMessage(String message) {
         if(ConsoleFilterHelper.getConsoleFilterHelper().isHidedMessage(message) == Result.DENY) {
             if(getConfigSettings().isAnnounceWhenLogHided()) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControlSpigot | Log] The incoming message to the console is safely hidden"));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&a[FunctionalServerControl | Log] The incoming message to the console is safely hidden"));
             }
             return Filter.Result.DENY;
         }

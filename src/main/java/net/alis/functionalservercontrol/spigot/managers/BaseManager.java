@@ -3,9 +3,8 @@ package net.alis.functionalservercontrol.spigot.managers;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.enums.MuteType;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import org.bukkit.OfflinePlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,63 +16,63 @@ import static net.alis.functionalservercontrol.spigot.additional.globalsettings.
 
 public class BaseManager {
 
-    public void insertIntoPlayersPunishInfo(UUID uuid) {
+    public void insertIntoPlayersPunishInfo(FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoPlayersPunishInfo(uuid); break;
+                getSQLiteManager().insertIntoPlayersPunishInfo(fid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoPlayersPunishInfo(uuid); break;
+                getMySQLManager().insertIntoPlayersPunishInfo(fid); break;
             }
             case H2: {}
         }
     }
 
-    public String getPlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+    public String getPlayerStatsInfo(FID fid, StatsType.Player statsType) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                return getSQLiteManager().getPlayerStatsInfo(player, statsType);
+                return getSQLiteManager().getPlayerStatsInfo(fid, statsType);
             }
             case MYSQL: {
-                return getMySQLManager().getPlayerStatsInfo(player, statsType);
-            }
-            case H2: {}
-        }
-        return null;
-    }
-
-    public String getAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
-        switch (getConfigSettings().getStorageType()) {
-            case SQLITE: {
-                return getSQLiteManager().getAdminStatsInfo(player, statsType);
-            }
-            case MYSQL: {
-                return getMySQLManager().getAdminStatsInfo(player, statsType);
+                return getMySQLManager().getPlayerStatsInfo(fid, statsType);
             }
             case H2: {}
         }
         return null;
     }
 
-    public void updatePlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+    public String getAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().updatePlayerStatsInfo(player, statsType); break;
+                return getSQLiteManager().getAdminStatsInfo(fid, statsType);
             }
             case MYSQL: {
-                getMySQLManager().updatePlayerStatsInfo(player, statsType); break;
+                return getMySQLManager().getAdminStatsInfo(fid, statsType);
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
+    public void updatePlayerStatsInfo(FID fid, StatsType.Player statsType) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                getSQLiteManager().updatePlayerStatsInfo(fid, statsType); break;
+            }
+            case MYSQL: {
+                getMySQLManager().updatePlayerStatsInfo(fid, statsType); break;
             }
             case H2: {}
         }
     }
 
-    public void updateAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
+    public void updateAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().updateAdminStatsInfo(player, statsType); break;
+                getSQLiteManager().updateAdminStatsInfo(fid, statsType); break;
             }
             case MYSQL: {
-                getMySQLManager().updateAdminStatsInfo(player, statsType); break;
+                getMySQLManager().updateAdminStatsInfo(fid, statsType); break;
             }
             case H2: {}
         }
@@ -155,16 +154,17 @@ public class BaseManager {
         return null;
     }
 
-    public void insertIntoAllPlayers(String name, UUID uuid, String ip) {
+    public boolean insertIntoAllPlayers(String name, UUID uuid, String ip, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoAllPlayers(name, uuid, ip); break;
+                return getSQLiteManager().insertIntoAllPlayers(name, uuid, ip, fid);
             }
             case MYSQL: {
-                getMySQLManager().insertIntoAllPlayers(name, uuid, ip); break;
+                return getMySQLManager().insertIntoAllPlayers(name, uuid, ip, fid);
             }
             case H2: {}
         }
+        return false;
     }
 
     public void deleteFromBannedPlayers(String expression, String param) {
@@ -199,73 +199,73 @@ public class BaseManager {
         }
     }
 
-    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime) {
+    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime); break;
+                getSQLiteManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime); break;
+                getMySQLManager().insertIntoBannedPlayers(id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid); break;
             }
             case H2: {}
         }
     }
 
-    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime) {
+    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, banDate, banTime, uuid, unmuteTime); break;
+                getSQLiteManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, banDate, banTime, uuid, unmuteTime, fid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, banDate, banTime, uuid, unmuteTime); break;
+                getMySQLManager().insertIntoMutedPlayers(id, ip, name, initiatorName, reason, muteType, banDate, banTime, uuid, unmuteTime, fid); break;
             }
             case H2: {}
         }
     }
 
-    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime) {
+    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoNullMutedPlayers(id, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime); break;
+                getSQLiteManager().insertIntoNullMutedPlayers(id, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoNullMutedPlayers(id, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime); break;
+                getMySQLManager().insertIntoNullMutedPlayers(id, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid); break;
             }
             case H2: {}
         }
     }
 
-    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime) {
+    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime, UUID randomUuid, FID randomFid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, banType, banDate, banTime, unbanTime); break;
+                getSQLiteManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, banType, banDate, banTime, unbanTime, randomUuid, randomFid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, banType, banDate, banTime, unbanTime); break;
+                getMySQLManager().insertIntoNullBannedPlayersIP(id, ip, initiatorName, reason, banType, banDate, banTime, unbanTime, randomUuid, randomFid); break;
             }
             case H2: {}
         }
     }
 
-    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime) {
+    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoNullBannedPlayers(id, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime); break;
+                getSQLiteManager().insertIntoNullBannedPlayers(id, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoNullBannedPlayers(id, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime); break;
+                getMySQLManager().insertIntoNullBannedPlayers(id, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid); break;
             }
             case H2: {}
         }
     }
 
-    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime) {
+    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime, UUID randomUuid, FID randomFid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, muteType, muteDate, muteTime, unmuteTime); break;
+                getSQLiteManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, muteType, muteDate, muteTime, unmuteTime, randomUuid, randomFid); break;
             }
             case MYSQL: {
-                getMySQLManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, muteType, muteDate, muteTime, unmuteTime); break;
+                getMySQLManager().insertIntoNullMutedPlayersIP(id, ip, initiatorName, reason, muteType, muteDate, muteTime, unmuteTime, randomUuid, randomFid); break;
             }
             case H2: {}
         }
@@ -466,6 +466,45 @@ public class BaseManager {
         return null;
     }
 
+    public FID getFunctionalIdByIp(String ip) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getFunctionalIdByIp(ip);
+            }
+            case MYSQL: {
+                return getMySQLManager().getFunctionalIdByIp(ip);
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
+    public FID getFunctionalIdByName(String playerName) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getFunctionalIdByName(playerName);
+            }
+            case MYSQL: {
+                return getMySQLManager().getFunctionalIdByName(playerName);
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
+    public String getIpByFunctionalId(FID fid) {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getIpByFunctionalId(fid);
+            }
+            case MYSQL: {
+                return getMySQLManager().getIpByFunctionalId(fid);
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
     public List<BanType> banTypesFromBannedPlayersTable() {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
@@ -531,16 +570,17 @@ public class BaseManager {
         return null;
     }
 
-    public void updateAllPlayers(Player player) {
+    public boolean updateAllPlayers(String name, UUID uuid, String address, FID fid) {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
-                getSQLiteManager().updateAllPlayers(player); break;
+                return getSQLiteManager().updateAllPlayers(name, uuid, address, fid);
             }
             case MYSQL: {
-                getMySQLManager().updateAllPlayers(player); break;
+                return getMySQLManager().updateAllPlayers(name, uuid, address, fid);
             }
             case H2: {}
         }
+        return false;
     }
 
     public List<String> getNamesFromAllPlayers() {
@@ -569,13 +609,26 @@ public class BaseManager {
         return null;
     }
 
-    public List<String> getUUIDsFromAllPlayers() {
+    public List<UUID> getUUIDsFromAllPlayers() {
         switch (getConfigSettings().getStorageType()) {
             case SQLITE: {
                 return getSQLiteManager().getUUIDsFromAllPlayers();
             }
             case MYSQL: {
                 return getMySQLManager().getUUIDsFromAllPlayers();
+            }
+            case H2: {}
+        }
+        return null;
+    }
+
+    public List<FID> getFidsFromAllPlayers() {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getFidsFromAllPlayers();
+            }
+            case MYSQL: {
+                return getMySQLManager().getFidsFromAllPlayers();
             }
             case H2: {}
         }
@@ -1008,6 +1061,19 @@ public class BaseManager {
         }
         return null;
     }
+    
+    public List<FID> getBannedFids() {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getBannedFids();
+            }
+            case MYSQL: {
+                return getMySQLManager().getBannedFids();
+            }
+            case H2: {}
+        }
+        return null;
+    }
 
     public List<String> getMutedIds() {
         switch (getConfigSettings().getStorageType()) {
@@ -1133,6 +1199,19 @@ public class BaseManager {
             }
             case MYSQL: {
                 return getMySQLManager().getUnmuteTimes();
+            }
+            case H2: {}
+        }
+        return null;
+    }
+    
+    public List<FID> getMutedFids() {
+        switch (getConfigSettings().getStorageType()) {
+            case SQLITE: {
+                return getSQLiteManager().getMutedFids();
+            }
+            case MYSQL: {
+                return getMySQLManager().getMutedFids();
             }
             case H2: {}
         }

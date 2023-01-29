@@ -1,8 +1,19 @@
 package net.alis.functionalservercontrol.spigot.additional.misc;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.Chat;
 import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.entity.OfflineFunctionalCraftPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FunctionalStatistics;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.checkers.InternalBanChecker;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.checkers.InternalMuteChecker;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.data.WritableOfflinePlayerMeta;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.data.container.CraftPlayersContainer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.registerer.OfflinePlayerRegisterer;
+
 import net.alis.functionalservercontrol.libraries.org.apache.commons.lang3.StringUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -11,18 +22,14 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
+import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.isTextNotNull;
 import static net.alis.functionalservercontrol.spigot.additional.misc.TextUtils.setColors;
 import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
 
@@ -60,8 +67,13 @@ public class OtherUtils {
         return BaseManager.getBaseManager().getNamesFromAllPlayers().contains(name);
     }
 
+    @Deprecated
     public static boolean isNotNullPlayer(UUID uuid) {
         return BaseManager.getBaseManager().getUUIDsFromAllPlayers().contains(String.valueOf(uuid));
+    }
+
+    public static boolean isNotNullPlayer(FID fid) {
+        return BaseManager.getBaseManager().getFidsFromAllPlayers().contains(fid);
     }
 
     public static boolean isNotNullIp(String ip) {
@@ -108,38 +120,29 @@ public class OtherUtils {
         return (int) (Math.random() * (299 + 1));
     }
 
-    public static boolean verifyNickNameFormat(String nickProtocolVersions) {
+    public static boolean verifyNickNameFormat(String name) {
         if(!getConfigSettings().isNickFormatControlEnabled()) return false;
-        boolean a = false;
         for(String blockedFormat : getConfigSettings().getBlockedNickFormats()) {
             String pattern = "(" + blockedFormat.replace("<num>", "[0-9]").replace("<let>", "[a-zA-Z]") + ")";
-            if(Pattern.compile(pattern).matcher(nickProtocolVersions).find()) {
-                a = true;
-                break;
+            if(Pattern.compile(pattern).matcher(name).find()) {
+                return true;
             }
         }
-        return a;
+        return false;
     }
 
     @Nullable
-    public static OfflinePlayer getOnlinePlayerByIP(String ip) {
-        for(Map.Entry<Player, String> e : TemporaryCache.getOnlineIps().entrySet()) {
+    public static OfflineFunctionalPlayer getOnlinePlayerByIP(String ip) {
+        for(Map.Entry<FID, String> e : TemporaryCache.getOnlineIps().entrySet()) {
             if(e.getValue().equalsIgnoreCase(ip)) {
-                return (OfflinePlayer)e.getKey();
+                return OfflineFunctionalPlayer.get(e.getKey());
             }
         }
         return null;
     }
 
-    @Nullable
-    public static OfflinePlayer getOfflinePlayerByName(String name) {
-        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(UUID.fromString(BaseManager.getBaseManager().getUuidByName(name)));
-        return player == null ? null : player;
-    }
-
-    public static OfflinePlayer getPlayerByIP(String ip) {
-        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(BaseManager.getBaseManager().getUUIDByIp(ip));
-        return player == null ? null : player;
+    public static OfflineFunctionalPlayer getPlayerByIP(String ip) {
+        return OfflineFunctionalPlayer.get(BaseManager.getBaseManager().getFunctionalIdByIp(ip));
     }
 
 
@@ -176,14 +179,6 @@ public class OtherUtils {
         if(version.startsWith("v1_19"))
             return true;
         return false;
-    }
-
-    public static boolean isServerSupportMDHoverText() {
-        return isClassExists("net.md_5.bungee.api.chat.hover.content.Text");
-    }
-
-    public static boolean isServerSupportAdventureApi() {
-        return isClassExists("net.kyori.adventure.text.Component");
     }
 
     public static ProtocolVersions convertProtocolVersion(int protocolVersion) {
@@ -228,7 +223,7 @@ public class OtherUtils {
     }
 
     public static ProtocolVersions getServerVersion(Server server) {
-        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        String packageName = server.getClass().getPackage().getName();
         String[] parts = packageName.split("\\.");
         String versionSuffix = parts[parts.length - 1];
         ProtocolVersions serverVersion = null;
@@ -238,25 +233,6 @@ public class OtherUtils {
             serverVersion = ProtocolVersions.valueOf("V" + versionSuffix.replace("v1_", "").replace("R", ""));
         }
         return serverVersion;
-    }
-
-    public static void plugmanInjection() {
-        TaskManager.preformAsync(() -> {
-            if(Bukkit.getPluginManager().getPlugin("PlugManX") != null) {
-                try {
-                    File pManConfigFile = new File("plugins/PlugManX/", "config.yml");
-                    if (pManConfigFile.exists()) {
-                        FileConfiguration pManConfig = YamlConfiguration.loadConfiguration(pManConfigFile);
-                        List<String> a = new ArrayList<>(Arrays.asList(StringUtils.substringBetween(pManConfig.getString("ignored-plugins"), "[", "]").split(",")));
-                        if (a.contains("FunctionalServerControlSpigot")) return;
-                        a.add("FunctionalServerControlSpigot");
-                        pManConfig.set("ignored-plugins", TextUtils.stringToMonolith("[" + String.join(",", a) + "]"));
-                        pManConfig.save(pManConfigFile);
-                    }
-                } catch (IOException ignored) {
-                }
-            }
-        });
     }
 
     public static List<Material> getLegacyMaterial(String material, String[] alternatives) {
@@ -274,27 +250,45 @@ public class OtherUtils {
     }
 
     public static String getCommandCheckMode(String cmd) {
+        if(!isTextNotNull(cmd)) throw new NullPointerException("[FunctionalServerControl] Couldn't determine incoming command. You can report about this bug to ALis");
         String checkMode = "first_arg";
         if(StringUtils.substringBetween(cmd, "[", "]").contains("checkMode=")) {
             checkMode = StringUtils.substringBetween(cmd, "[", "]").replace("checkMode=", "");
             if(checkMode.equalsIgnoreCase("first_arg") || checkMode.equalsIgnoreCase("all_args")) {
                 return checkMode;
             }
+
             return "first_arg";
         }
         return checkMode;
     }
 
     public static void loadCachedPlayers() {
-        TaskManager.preformAsync(() -> {
-            for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
-                BaseManager.getBaseManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp);
+        int i = 0;
+        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+            String randomIp = generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber() + "." + generateRandomNumber();
+            FID fid = new FID(player.getName());
+            if(BaseManager.getBaseManager().insertIntoAllPlayers(player.getName(), player.getUniqueId(), randomIp, fid)) {
+                WritableOfflinePlayerMeta meta = new WritableOfflinePlayerMeta(
+                        player.getName(),
+                        player.getUniqueId(),
+                        fid,
+                        player,
+                        InternalBanChecker.isPlayerBanned(fid),
+                        InternalMuteChecker.isPlayerMuted(fid),
+                        new FunctionalStatistics.PlayerStats(fid),
+                        new FunctionalStatistics.AdminStats(fid)
+                );
+                OfflineFunctionalCraftPlayer craftPlayer = new OfflineFunctionalCraftPlayer(meta);
+                CraftPlayersContainer.Offline.In.add(craftPlayer);
+                new OfflinePlayerRegisterer(craftPlayer).register();
+                i = i + 1;
             }
-        });
+        }
+        Bukkit.getConsoleSender().sendMessage(setColors("&3[FunctionalServerControl] &3&oLoaded " + i + " new players from your server to database"));
     }
 
-    public static void clearChat(CommandSender initiator, Chat.ClearType clearType, @Nullable Player player) {
+    public static void clearChat(CommandSender initiator, Chat.ClearType clearType, @Nullable FunctionalPlayer player) {
         TaskManager.preformAsync(() -> {
             if(clearType == Chat.ClearType.PLAYER) {
                 if(player.hasPermission("functionalservercontrol.clearchat.bypass") && !initiator.hasPermission("functionalservercontrol.bypass-break")) {
@@ -310,7 +304,7 @@ public class OtherUtils {
             }
             if(clearType == Chat.ClearType.ALL) {
                 if(initiator.hasPermission("functionalservercontrol.clearchat.all")) {
-                    for(Player target : Bukkit.getOnlinePlayers()) {
+                    for(FunctionalPlayer target : FunctionalApi.getOnlinePlayers()) {
                         if(!target.hasPermission("functionalservercontrol.clearchat.bypass") || (target.hasPermission("functionalservercontrol.clearchat.bypass") && initiator.hasPermission("functionalservercontrol.bypass-break"))) {
                             for(int start = 0; start < 25; start++) {
                                 target.sendMessage("");

@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.libraries.ru.leymooo.fixer.ItemChecker;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import org.bukkit.entity.Player;
@@ -15,11 +16,11 @@ public class InventoryClickListener implements Listener {
     public void onPlayerClickingInventory(InventoryClickEvent event) {
         if(Expansions.getProtocolLibManager().isProtocolLibSetuped() && getProtectionSettings().isItemFixerEnabled()){
             if (event.getWhoClicked() instanceof Player) return;
-            final Player whoClicked = (Player) event.getWhoClicked();
+            FunctionalPlayer whoClicked = FunctionalPlayer.get(event.getWhoClicked().getName());
             if (event.getCurrentItem() == null) return;
             if (ItemChecker.getItemChecker().isHackedItem(event.getCurrentItem(), whoClicked)) {
                 event.setCancelled(true);
-                whoClicked.updateInventory();
+                whoClicked.getBukkitPlayer().updateInventory();
             }
         }
     }

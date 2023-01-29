@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
@@ -138,18 +139,20 @@ public class UnmuteCommand implements CommandExecutor {
                         return;
                     }
                     if(args.length == 2) {
-                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
+                        if (player == null) {
                             unmuteManager.preformUnmute(args[1], sender, null, false);
                         } else {
-                            unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[1]), sender, null, false);
+                            unmuteManager.preformUnmute(player, sender, null, false);
                         }
                         return;
                     }
                     if(args.length > 2) {
-                        if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
+                        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[1]);
+                        if (player == null) {
                             unmuteManager.preformUnmute(args[1], sender, getReason(args, 2), false);
                         } else {
-                            unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[1]), sender, getReason(args, 2), false);
+                            unmuteManager.preformUnmute(player, sender, getReason(args, 2), false);
                         }
                         return;
                     }
@@ -157,19 +160,21 @@ public class UnmuteCommand implements CommandExecutor {
                 }
 
                 if(args.length == 1) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                    if (player == null) {
                         unmuteManager.preformUnmute(args[0], sender, null, true);
                     } else {
-                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, null, true);
+                        unmuteManager.preformUnmute(player, sender, null, true);
                     }
                     return;
                 }
 
                 if(args.length > 1) {
-                    if (!OtherUtils.isNotNullPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId())) {
+                    OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(args[0]);
+                    if (player == null) {
                         unmuteManager.preformUnmute(args[0], sender, getReason(args, 1), true);
                     } else {
-                        unmuteManager.preformUnmute(Bukkit.getOfflinePlayer(args[0]), sender, getReason(args, 1), true);
+                        unmuteManager.preformUnmute(player, sender, getReason(args, 1), true);
                     }
                     return;
                 }

@@ -1,15 +1,16 @@
 package net.alis.functionalservercontrol.spigot.managers.mute;
 
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.coreadapters.CoreAdapter;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
+
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.api.events.AsyncUnmutePreprocessEvent;
 import net.alis.functionalservercontrol.spigot.managers.IdsManager;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.*;
@@ -24,15 +25,15 @@ import static net.alis.functionalservercontrol.spigot.managers.mute.MuteManager.
 
 public class UnmuteManager {
 
-    public void preformUnmute(@NotNull OfflinePlayer player, @NotNull CommandSender unmuteInitiator, String unmuteReason, boolean announceUnmute) {
-        String initiatorName = null;
-        if(unmuteInitiator instanceof Player) {
-            initiatorName = ((Player) unmuteInitiator).getName();
+    public void preformUnmute(@NotNull OfflineFunctionalPlayer player, @NotNull CommandSender unmuteInitiator, String unmuteReason, boolean announceUnmute) {
+        String initiatorName;
+        if(unmuteInitiator instanceof FunctionalPlayer) {
+            initiatorName = unmuteInitiator.getName();
         } else {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         }
         if(!isPlayerMuted(player)) {
-            unmuteInitiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.player-not-muted")).replace("%1$f", player.getName()));
+            unmuteInitiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.player-not-muted")).replace("%1$f", player.nickname()));
             return;
         }
         if(!player.isOnline() && !unmuteInitiator.hasPermission("functionalservercontrol.unmute.offline")) {
@@ -48,7 +49,7 @@ public class UnmuteManager {
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
 
         if(unmuteReason == null) {
-            if(unmuteInitiator instanceof Player) {
+            if(unmuteInitiator instanceof FunctionalPlayer) {
                 if(!getConfigSettings().isUnmuteAllowedWithoutReason() && !unmuteInitiator.hasPermission("functionalservercontrol.use.no-reason")) {
                     unmuteInitiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                     asyncUnmutePreprocessEvent.setCancelled(true);
@@ -69,41 +70,39 @@ public class UnmuteManager {
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             BaseManager.getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-            BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-            if(unmuteInitiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
+            BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+            if(unmuteInitiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer)unmuteInitiator).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
             getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
             if(!isTextNotNull(unmuteReason)) {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.nickname())));
                 }
             } else {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", unmuteReason)));
                 }
             }
             if(player.isOnline()) {
                 if(getConfigSettings().isSendTitleWhenUnmuted()) {
-                    Player onlinePlayer = player.getPlayer();
-                    sendTitleWhenUnmuted(onlinePlayer, unmuteReason, initiatorName);
+                    sendTitleWhenUnmuted(player.getPlayer(), unmuteReason, initiatorName);
                 }
             }
         } else {
             BaseManager.getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-            BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-            if(unmuteInitiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
+            BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
+            if(unmuteInitiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer)unmuteInitiator).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
             if(!isTextNotNull(unmuteReason)) {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName())));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player.nickname())));
                 }
             } else {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.getName()).replace("%3$f", unmuteReason)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player.nickname()).replace("%3$f", unmuteReason)));
                 }
             }
             if(player.isOnline()) {
                 if(getConfigSettings().isSendTitleWhenUnmuted()) {
-                    Player onlinePlayer = player.getPlayer();
-                    sendTitleWhenUnmuted(onlinePlayer, unmuteReason, initiatorName);
+                    sendTitleWhenUnmuted(player.getPlayer(), unmuteReason, initiatorName);
                 }
             }
         }
@@ -111,7 +110,7 @@ public class UnmuteManager {
 
     public void preformUnmuteById(CommandSender initiator, String id, String unmuteReason, boolean announceUnmute) {
         String initiatorName;
-        if(initiator instanceof Player) {
+        if(initiator instanceof FunctionalPlayer) {
             initiatorName = initiator.getName();
         } else if(initiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
@@ -119,7 +118,7 @@ public class UnmuteManager {
             initiatorName = initiator.getName();
         }
         if(unmuteReason == null) {
-            if(initiator instanceof Player) {
+            if(initiator instanceof FunctionalPlayer) {
                 if(!getConfigSettings().isMuteAllowedWithoutReason() && !initiator.hasPermission("functionalservercontrol.use.no-reason")) {
                     initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                     return;
@@ -147,7 +146,7 @@ public class UnmuteManager {
         } else {
             playerName = BaseManager.getBaseManager().getMutedPlayersNames().get(BaseManager.getBaseManager().getMutedIds().indexOf(id));
         }
-        OfflinePlayer player = CoreAdapter.getAdapter().getOfflinePlayer(playerName);
+        OfflineFunctionalPlayer player = OfflineFunctionalPlayer.get(playerName);
         if(player != null) {
             if(!player.isOnline() && !initiator.hasPermission("functionalservercontrol.unmute.offline")) {
                 initiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.offline-no-perms")));
@@ -181,14 +180,14 @@ public class UnmuteManager {
             BaseManager.getBaseManager().deleteFromMutedPlayers("-id", id);
             BaseManager.getBaseManager().deleteFromNullMutedPlayers("-id", id);
         }
-        if(initiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_UNMUTES);
+        if(initiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(FunctionalPlayer.get(initiator.getName()).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
         if(!isTextNotNull(unmuteReason)) {
             if(announceUnmute) {
-                CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", playerName)));
+                Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", playerName)));
             }
         } else {
             if(announceUnmute) {
-                CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", playerName).replace("%3$f", unmuteReason)));
+                Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", playerName).replace("%3$f", unmuteReason)));
             }
         }
         return;
@@ -200,8 +199,8 @@ public class UnmuteManager {
             unmuteInitiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.player-not-muted")).replace("%1$f", player));
             return;
         }
-        if(unmuteInitiator instanceof Player) {
-            initiatorName = ((Player) unmuteInitiator).getName();
+        if(unmuteInitiator instanceof FunctionalPlayer) {
+            initiatorName = unmuteInitiator.getName();
         } else if(unmuteInitiator instanceof ConsoleCommandSender) {
             initiatorName = getGlobalVariables().getConsoleVariableName();
         } else {
@@ -220,7 +219,7 @@ public class UnmuteManager {
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
 
         if(unmuteReason == null) {
-            if(unmuteInitiator instanceof Player) {
+            if(unmuteInitiator instanceof FunctionalPlayer) {
                 if(!getConfigSettings().isUnmuteAllowedWithoutReason() && !unmuteInitiator.hasPermission("functionalservercontrol.use.no-reason")) {
                     unmuteInitiator.sendMessage(setColors(getFileAccessor().getLang().getString("other.no-reason")));
                     asyncUnmutePreprocessEvent.setCancelled(true);
@@ -244,34 +243,34 @@ public class UnmuteManager {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
             BaseManager.getBaseManager().deleteFromNullMutedPlayers("-n", player);
             BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-            if(unmuteInitiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
+            if(unmuteInitiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer)unmuteInitiator).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
             getMuteContainerManager().removeFromMuteContainer("-n", player);
             if(!isTextNotNull(unmuteReason)) {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                 }
             } else {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
                 }
             }
         } else {
             BaseManager.getBaseManager().deleteFromNullMutedPlayers("-n", player);
             BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmute").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", isTextNotNull(unmuteReason) ? unmuteReason : getGlobalVariables().getDefaultReason()).replace("%4$f", getDate() + ", " + getTime()));
-            if(unmuteInitiator instanceof Player) BaseManager.getBaseManager().updateAdminStatsInfo((Player)unmuteInitiator, StatsType.Administrator.STATS_UNMUTES);
+            if(unmuteInitiator instanceof FunctionalPlayer) BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer)unmuteInitiator).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
             if(!isTextNotNull(unmuteReason)) {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.without-reason").replace("%1$f", initiatorName).replace("%2$f", player)));
                 }
             } else {
                 if(announceUnmute) {
-                    CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
+                    Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmute.broadcast-message.with-reason").replace("%1$f", initiatorName).replace("%2$f", player).replace("%3$f", unmuteReason)));
                 }
             }
         }
     }
 
-    public void preformUnmute(OfflinePlayer player, String unmuteReason) {
+    public void preformUnmute(OfflineFunctionalPlayer player, String unmuteReason) {
         AsyncUnmutePreprocessEvent asyncUnmutePreprocessEvent = new AsyncUnmutePreprocessEvent(player, unmuteReason);
 
         if(getConfigSettings().isApiEnabled()) {
@@ -281,8 +280,8 @@ public class UnmuteManager {
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
 
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            BaseManager.getBaseManager().deleteFromMutedPlayers("-u", String.valueOf(player.getUniqueId()));
-            getMuteContainerManager().removeFromMuteContainer("-u", String.valueOf(player.getUniqueId()));
+            BaseManager.getBaseManager().deleteFromMutedPlayers("-fid", String.valueOf(player.getFunctionalId()));
+            getMuteContainerManager().removeFromMuteContainer("-fid", String.valueOf(player.getFunctionalId()));
             if(player.isOnline()) {
                 player.getPlayer().sendMessage(setColors(getFileAccessor().getLang().getString("other.player-notifying.when-muted.expired")));
             }
@@ -303,14 +302,12 @@ public class UnmuteManager {
         }
 
         if(asyncUnmutePreprocessEvent.isCancelled()) return;
-
-        unmuteReason = "The Ban time has expired";
-
+        FID fid = new FID(player);
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            BaseManager.getBaseManager().deleteFromNullMutedPlayers("-n", player);
-            getMuteContainerManager().removeFromMuteContainer("-n", player);
+            BaseManager.getBaseManager().deleteFromNullMutedPlayers("-fid", fid.toString());
+            getMuteContainerManager().removeFromMuteContainer("-fid", fid.toString());
         } else {
-            BaseManager.getBaseManager().deleteFromNullMutedPlayers("-n", player);
+            BaseManager.getBaseManager().deleteFromNullMutedPlayers("-fid", fid.toString());
         }
     }
 
@@ -339,26 +336,27 @@ public class UnmuteManager {
             getMutedPlayersContainer().getRealMuteTimeContainer().clear();
             getMutedPlayersContainer().getInitiatorNameContainer().clear();
             getMutedPlayersContainer().getReasonContainer().clear();
+            getMutedPlayersContainer().getFids().clear();
         }
         BaseManager.getBaseManager().clearMutes();
         BaseManager.getBaseManager().insertIntoHistory(getFileAccessor().getLang().getString("other.history-formats.unmuteall").replace("%1$f", initiatorName).replace("%2$f", getDate() + ", " + getTime()));
-        if(initiator instanceof Player) {
+        if(initiator instanceof FunctionalPlayer) {
             for (int i = 0; i < count; i++) {
-                BaseManager.getBaseManager().updateAdminStatsInfo((Player) initiator, StatsType.Administrator.STATS_UNMUTES);
+                BaseManager.getBaseManager().updateAdminStatsInfo(((FunctionalPlayer)initiator).getFunctionalId(), StatsType.Administrator.STATS_UNMUTES);
             }
         }
         initiator.sendMessage(setColors(getFileAccessor().getLang().getString("commands.unmuteall.success").replace("%1$f", String.valueOf(count))));
         if(announceUnmute) {
-            CoreAdapter.getAdapter().broadcast(setColors(getFileAccessor().getLang().getString("commands.unmuteall.broadcast-message").replace("%1$f", initiatorName)));
+            Bukkit.broadcastMessage(setColors(getFileAccessor().getLang().getString("commands.unmuteall.broadcast-message").replace("%1$f", initiatorName)));
         }
 
     }
 
-    public void sendTitleWhenUnmuted(Player player, String reason, String initiatorName) {
+    public void sendTitleWhenUnmuted(FunctionalPlayer player, String reason, String initiatorName) {
         if(reason == null) {
             reason = getGlobalVariables().getDefaultReason();
         }
-        CoreAdapter.getAdapter().sendTitle(player, setColors(getLanguage().getTitleWhenUnmuted()[0]), setColors(getLanguage().getTitleWhenUnmuted()[1].replace("%1$f", reason).replace("%2$f", initiatorName)));
+        player.title(setColors(getLanguage().getTitleWhenUnmuted()[0]), setColors(getLanguage().getTitleWhenUnmuted()[1].replace("%1$f", reason).replace("%2$f", initiatorName)));
     }
 
 }

@@ -1,9 +1,12 @@
 package net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.packettype;
 
+import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.PacketEvents;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.reflection.Reflection;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.reflection.SubclassUtil;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.server.ServerVersion;
+import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
+import org.bukkit.Bukkit;
 
 public class PacketTypeClasses {
     public static void load() {
@@ -22,12 +25,12 @@ public class PacketTypeClasses {
 
     public static class Status {
         public static class Client {
-            private static String PREFIX;
             public static Class<?> START, PING;
 
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.status.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.status.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
@@ -38,12 +41,12 @@ public class PacketTypeClasses {
         }
 
         public static class Server {
-            private static String PREFIX;
             public static Class<?> PONG, SERVER_INFO;
 
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.status.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.status.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
@@ -56,12 +59,12 @@ public class PacketTypeClasses {
 
     public static class Handshaking {
         public static class Client {
-            private static String PREFIX;
             public static Class<?> SET_PROTOCOL;
 
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.handshake.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.handshake.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
@@ -73,12 +76,12 @@ public class PacketTypeClasses {
 
     public static class Login {
         public static class Client {
-            private static String PREFIX;
             public static Class<?> CUSTOM_PAYLOAD, START, ENCRYPTION_BEGIN;
 
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.login.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.login.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
@@ -93,12 +96,12 @@ public class PacketTypeClasses {
         }
 
         public static class Server {
-            private static String PREFIX;
             public static Class<?> CUSTOM_PAYLOAD, DISCONNECT, ENCRYPTION_BEGIN, SUCCESS, SET_COMPRESSION;
 
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.login.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.login.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
@@ -119,8 +122,6 @@ public class PacketTypeClasses {
 
     public static class Play {
         public static class Client {
-            private static String COMMON_PREFIX;
-            private static String PREFIX;
             public static Class<?> FLYING, POSITION, POSITION_LOOK, LOOK, GROUND, CLIENT_COMMAND,
                     TRANSACTION, BLOCK_DIG, ENTITY_ACTION, USE_ENTITY,
                     WINDOW_CLICK, STEER_VEHICLE, CUSTOM_PAYLOAD, ARM_ANIMATION,
@@ -137,13 +138,14 @@ public class PacketTypeClasses {
              * Initiate all server-bound play packet classes.
              */
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
-                    PREFIX  = "net.minecraft.network.protocol.game.";
+                String PREFIX;
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+                    PREFIX = "net.minecraft.network.protocol.game.";
                 }
                 else {
                     PREFIX = ServerVersion.getNMSDirectory() + ".";
                 }
-                COMMON_PREFIX  = PREFIX + "PacketPlayIn";
+                String COMMON_PREFIX = PREFIX + "PacketPlayIn";
                 FLYING = Reflection.getClassByNameWithoutException(COMMON_PREFIX + "Flying");
                 try {
                     POSITION = Class.forName(COMMON_PREFIX + "Position");
@@ -154,7 +156,7 @@ public class PacketTypeClasses {
                     POSITION_LOOK = SubclassUtil.getSubClass(FLYING, "PacketPlayInPositionLook");
                     LOOK = SubclassUtil.getSubClass(FLYING, "PacketPlayInLook");
                 }
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
                     GROUND = SubclassUtil.getSubClass(FLYING, "d");
                 }
                 else {
@@ -166,8 +168,6 @@ public class PacketTypeClasses {
                 PONG = Reflection.getClassByNameWithoutException(PREFIX + "ServerboundPongPacket");
                 try {
                     SETTINGS = Class.forName(COMMON_PREFIX + "Settings");
-                    ENCHANT_ITEM = Class.forName(COMMON_PREFIX + "EnchantItem");
-
                     CLIENT_COMMAND = Class.forName(COMMON_PREFIX + "ClientCommand");
                     BLOCK_DIG = Class.forName(COMMON_PREFIX + "BlockDig");
                     ENTITY_ACTION = Class.forName(COMMON_PREFIX + "EntityAction");
@@ -256,7 +256,7 @@ public class PacketTypeClasses {
              * Initiate all client-bound packet classes.
              */
             public static void load() {
-                if (PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_17)) {
+                if (OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
                     PREFIX  = "net.minecraft.network.protocol.game.";
                 }
                 else {

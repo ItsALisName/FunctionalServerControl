@@ -1,5 +1,7 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.cooldowns.Cooldowns;
 import net.alis.functionalservercontrol.api.enums.MuteType;
@@ -10,7 +12,6 @@ import net.alis.functionalservercontrol.spigot.managers.GlobalCommandManager;
 import net.alis.functionalservercontrol.spigot.managers.time.TimeSettingsAccessor;
 import net.alis.functionalservercontrol.spigot.managers.*;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -25,11 +26,9 @@ public class PlayerCommandsListener implements Listener {
 
     @EventHandler
     public void onPlayerSendCommand(PlayerCommandPreprocessEvent event) {
-        Player player = event.getPlayer();
+        FunctionalPlayer player = FunctionalPlayer.get(event.getPlayer().getName());
         String command = event.getMessage();
         String[] args = command.split(" ");
-
-
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(CheatCheckerManager.getCheatCheckerManager().isPlayerChecking(player)) {
                 if (getConfigSettings().isPreventCommandsDuringCheatCheck()) {
@@ -107,7 +106,7 @@ public class PlayerCommandsListener implements Listener {
                         );
                     }
                     if (getConfigSettings().isPlayersNotification()) {
-                        for (Player admin : Bukkit.getOnlinePlayers()) {
+                        for (FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                             if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                 admin.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                         .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))
@@ -130,7 +129,7 @@ public class PlayerCommandsListener implements Listener {
                         );
                     }
                     if (getConfigSettings().isPlayersNotification()) {
-                        for (Player admin : Bukkit.getOnlinePlayers()) {
+                        for (FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                             if (player.hasPermission("functionalservercontrol.notification.mute")) {
                                 admin.sendMessage(TextUtils.setColors(getFileAccessor().getLang().getString("other.notifications.mute")
                                         .replace("%1$f", player.getName()).replace("%2$f", event.getMessage()).replace("%3$f", translatedTime))

@@ -73,7 +73,7 @@ public class ConfigUpdater {
                 continue;
             }
             if(trailingKey.contains("file-version")) {
-                parserConfig.set(trailingKey, "1.09.1");
+                parserConfig.set(trailingKey, "1.10.0");
             } else {
                 if(currentValue instanceof List<?>) {
                     parserConfig.set(trailingKey, new ArrayList<>(((List<?>) currentValue)));

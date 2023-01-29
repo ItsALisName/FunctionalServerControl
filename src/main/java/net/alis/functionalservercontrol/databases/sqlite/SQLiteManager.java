@@ -4,10 +4,9 @@ import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.enums.MuteType;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -36,35 +35,31 @@ public class SQLiteManager extends SQLiteCore {
                 sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
                 return sqlConnection;
             } catch (ClassNotFoundException | SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] -> Unknown error, try reinstalling the plugin."));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] No further work possible!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to connect to the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] -> Unknown error, try reinstalling the plugin."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
                 plugin.getPluginLoader().disablePlugin(plugin);
                 return null;
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] -> File &4&osqlite.db &4has not been found!"));
-            Bukkit.getConsoleSender().sendMessage("");
-            Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot] Attempt to create a file..."));
             try {
                 getFileAccessor().getSQLiteFile().createNewFile();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             if (getFileAccessor().getSQLiteFile().exists()) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot] Database file created successfully, reconnecting..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl] Database file created successfully, reconnecting..."));
                 try {
                     Class.forName("org.sqlite.JDBC");
                     sqlConnection = DriverManager.getConnection("jdbc:sqlite:" + getFileAccessor().getSQLiteFile().getPath());
-                    Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalServerControlSpigot] Connection to the database was successful."));
-                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
-                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
-                    String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
-                    String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
+                    Bukkit.getConsoleSender().sendMessage(setColors("&2[FunctionalServerControl] Connection to the database was successful."));
+                    String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+                    String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+                    String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24), fid varchar(128));";
+                    String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
+                    String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (fid varchar(128), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
+                    String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
                     String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
                     sqlStatement = sqlConnection.createStatement();
                     sqlStatement.executeUpdate(queryTableOne);
@@ -77,16 +72,16 @@ public class SQLiteManager extends SQLiteCore {
                     sqlStatement.close();
                     return sqlConnection;
                 } catch (ClassNotFoundException | SQLException ex) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to connect to the database!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to connect to the database!"));
                     ex.printStackTrace();
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] See error for more details!"));
-                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] See error for more details!"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
                     this.plugin.getPluginLoader().disablePlugin(plugin);
                     return null;
                 }
             } else {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] No further work possible!"));
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] Disabling the plugin..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] No further work possible!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] Disabling the plugin..."));
                 this.plugin.getPluginLoader().disablePlugin(plugin);
                 return null;
             }
@@ -96,12 +91,12 @@ public class SQLiteManager extends SQLiteCore {
     @Override
     public void setupTables() {
         sqlConnection = getSQLiteConnection();
-        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48));";
-        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24));";
-        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
-        String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (uuid varchar(64), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
-        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48));";
+        String queryTableOne = "CREATE TABLE IF NOT EXISTS bannedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+        String queryTableTwo = "CREATE TABLE IF NOT EXISTS nullBannedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(255), reason varchar(255), banType varchar(32), banDate varchar(32), banTime varchar(32), uuid varchar(64), unbanTime varchar(48), fid varchar(128));";
+        String queryTableThree = "CREATE TABLE IF NOT EXISTS allPlayers (name varchar(72), uuid varchar(64), ip varchar(24), fid varchar(128));";
+        String queryTableFour = "CREATE TABLE IF NOT EXISTS mutedPlayers (id varchar(16), ip varchar(24) , name varchar(72), initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
+        String queryTableFive = "CREATE TABLE IF NOT EXISTS playersStats (fid varchar(128), totalBans varchar(10), totalMutes varchar(10), totalKicks varchar(10), didBans varchar(10), didMutes varchar(10), didKicks varchar(10), didUnbans varchar(10), didUnmutes varchar(10), blockedCommandsUsed varchar(10), blockedWordsUsed varchar(10), advertiseAttempts varchar(10));";
+        String queryTableSix = "CREATE TABLE IF NOT EXISTS nullMutedPlayers (id varchar(16), ip varchar(24), name varchar(72) , initiatorName varchar(72), reason varchar(255), muteType varchar(32), muteDate varchar(32), muteTime varchar(32), uuid varchar(64), unmuteTime varchar(48), fid varchar(128));";
         String queryTableSeven = "CREATE TABLE IF NOT EXISTS History (history varchar(324));";
         try {
             sqlStatement = sqlConnection.createStatement();
@@ -114,7 +109,7 @@ public class SQLiteManager extends SQLiteCore {
             sqlStatement.executeUpdate(queryTableSeven);
             sqlStatement.close();
         } catch (SQLException a) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             a.printStackTrace();
         } finally {
             try {if (sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
@@ -123,38 +118,38 @@ public class SQLiteManager extends SQLiteCore {
         }
     }
 
-    public void insertIntoPlayersPunishInfo(UUID uuid) {
+    public void insertIntoPlayersPunishInfo(FID fid) {
         sqlConnection = getSQLiteConnection();
-        String getUUID = "SELECT uuid FROM playersStats;";
+        String getUUID = "SELECT fid FROM playersStats;";
         try {
             sqlResultSet = sqlConnection.createStatement().executeQuery(getUUID);
             while (sqlResultSet.next()) {
-                String rUuid = sqlResultSet.getString("uuid");
-                if(rUuid == null || rUuid.equalsIgnoreCase(String.valueOf(uuid))) return;
+                String rUuid = sqlResultSet.getString("fid");
+                if(rUuid == null || rUuid.equalsIgnoreCase(fid.toString())) return;
             }
-            String insertInfo = "INSERT INTO playersStats (uuid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + String.valueOf(uuid) + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
+            String insertInfo = "INSERT INTO playersStats (fid, totalBans, totalMutes, totalKicks, didBans, didMutes, didKicks, didUnbans, didUnmutes, blockedCommandsUsed, blockedWordsUsed, advertiseAttempts) VALUES ('" + fid.toString() + "', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');";
             sqlConnection.createStatement().executeUpdate(insertInfo);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ex) {}
-            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ex) {}
-            try {if(sqlResultSet != null) {sqlResultSet.close();}} catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) {sqlResultSet.close();}} catch (SQLException ignored) {}
         }
     }
 
-    public String getPlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
+    public String getPlayerStatsInfo(FID fid, StatsType.Player statsType) {
         sqlConnection = getSQLiteConnection();
         try {
             String a = "";
             switch (statsType) {
-                case STATS_BANS: a = "SELECT totalBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_KICKS: a = "SELECT totalKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_MUTES: a = "SELECT totalMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case BLOCKED_WORDS_USED: a = "SELECT blockedWordsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case BLOCKED_COMMANDS_USED: a = "SELECT blockedCommandsUsed FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case ADVERTISE_ATTEMPTS: a = "SELECT advertiseAttempts FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_BANS: a = "SELECT totalBans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_KICKS: a = "SELECT totalKicks FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_MUTES: a = "SELECT totalMutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case BLOCKED_WORDS_USED: a = "SELECT blockedWordsUsed FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case BLOCKED_COMMANDS_USED: a = "SELECT blockedCommandsUsed FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case ADVERTISE_ATTEMPTS: a = "SELECT advertiseAttempts FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
             }
             sqlResultSet = sqlConnection.createStatement().executeQuery(a);
             String info = "null";
@@ -174,37 +169,25 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public String getAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
+    public String getAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
         sqlConnection = getSQLiteConnection();
         try {
             String a = "";
             switch (statsType) {
-                case STATS_BANS: a = "SELECT didBans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_KICKS: a = "SELECT didKicks FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_MUTES: a = "SELECT didMutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_UNBANS: a = "SELECT didUnbans FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
-                case STATS_UNMUTES: a = "SELECT didUnmutes FROM playersStats WHERE uuid = '" + player.getUniqueId() + "';"; break;
+                case STATS_BANS: a = "SELECT didBans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_KICKS: a = "SELECT didKicks FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_MUTES: a = "SELECT didMutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_UNBANS: a = "SELECT didUnbans FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
+                case STATS_UNMUTES: a = "SELECT didUnmutes FROM playersStats WHERE fid = '" + fid.toString() + "';"; break;
             }
             if(sqlConnection == null) sqlConnection = getSQLiteConnection();
             sqlResultSet = sqlConnection.createStatement().executeQuery(a);
@@ -224,100 +207,64 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.close();
             return info.equalsIgnoreCase("null") ? null : info;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void updatePlayerStatsInfo(OfflinePlayer player, StatsType.Player statsType) {
-        if (getPlayerStatsInfo(player, statsType) != null) {
-            int total = Integer.parseInt(getPlayerStatsInfo(player, statsType));
+    public void updatePlayerStatsInfo(FID fid, StatsType.Player statsType) {
+        if (getPlayerStatsInfo(fid, statsType) != null) {
+            int total = Integer.parseInt(getPlayerStatsInfo(fid, statsType));
             sqlConnection = getSQLiteConnection();
             try {
                 String a = "null";
                 switch (statsType) {
-                    case STATS_BANS: a = "UPDATE playersStats SET totalBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_KICKS: a = "UPDATE playersStats SET totalKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_MUTES: a = "UPDATE playersStats SET totalMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case BLOCKED_COMMANDS_USED: a = "UPDATE playersStats SET blockedCommandsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case BLOCKED_WORDS_USED: a = "UPDATE playersStats SET blockedWordsUsed='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case ADVERTISE_ATTEMPTS: a = "UPDATE playersStats SET advertiseAttempts='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_BANS: a = "UPDATE playersStats SET totalBans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET totalKicks='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET totalMutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case BLOCKED_COMMANDS_USED: a = "UPDATE playersStats SET blockedCommandsUsed='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case BLOCKED_WORDS_USED: a = "UPDATE playersStats SET blockedWordsUsed='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case ADVERTISE_ATTEMPTS: a = "UPDATE playersStats SET advertiseAttempts='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
                 }
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
-                try {
-                    if(sqlConnection != null) {
-                        sqlConnection.close();
-                    }
-                } catch (SQLException ex) {}
-                try {
-                    if(sqlStatement != null) {
-                        sqlStatement.close();
-                    }
-                } catch (SQLException ex) {}
-                try {
-                    if(sqlResultSet != null) {
-                        sqlResultSet.close();
-                    }
-                } catch (SQLException ex) {}
+                try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
             }
         }
     }
 
-    public void updateAdminStatsInfo(OfflinePlayer player, StatsType.Administrator statsType) {
-        if (getAdminStatsInfo(player, statsType) != null) {
-            int total = Integer.parseInt(getAdminStatsInfo(player, statsType));
+    public void updateAdminStatsInfo(FID fid, StatsType.Administrator statsType) {
+        if (getAdminStatsInfo(fid, statsType) != null) {
+            int total = Integer.parseInt(getAdminStatsInfo(fid, statsType));
             sqlConnection = getSQLiteConnection();
             try {
                 String a = "null";
                 switch (statsType) {
-                    case STATS_BANS: a = "UPDATE playersStats SET didBans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_KICKS: a = "UPDATE playersStats SET didKicks='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_MUTES: a = "UPDATE playersStats SET didMutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_UNBANS: a = "UPDATE playersStats SET didUnbans='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
-                    case STATS_UNMUTES: a = "UPDATE playersStats SET didUnmutes='" + (total + 1) + "' WHERE uuid='" + player.getUniqueId() + "';"; break;
+                    case STATS_BANS: a = "UPDATE playersStats SET didBans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_KICKS: a = "UPDATE playersStats SET didKicks='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_MUTES: a = "UPDATE playersStats SET didMutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_UNBANS: a = "UPDATE playersStats SET didUnbans='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
+                    case STATS_UNMUTES: a = "UPDATE playersStats SET didUnmutes='" + (total + 1) + "' WHERE fid='" + fid.toString() + "';"; break;
                 }
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.close();
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
-                try {
-                    if(sqlConnection != null) {
-                        sqlConnection.close();
-                    }
-                } catch (SQLException ex) {}
-                try {
-                    if(sqlStatement != null) {
-                        sqlStatement.close();
-                    }
-                } catch (SQLException ex) {}
-                try {
-                    if(sqlResultSet != null) {
-                        sqlResultSet.close();
-                    }
-                } catch (SQLException ex) {}
+                try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+                try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+                try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
             }
         }
     }
@@ -328,24 +275,12 @@ public class SQLiteManager extends SQLiteCore {
             String a = "INSERT INTO History (history) VALUES ('" + message + "');";
             sqlConnection.createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -372,7 +307,7 @@ public class SQLiteManager extends SQLiteCore {
                 if(sqlConnection != null) sqlConnection.close();
                 if(sqlResultSet != null) sqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         } else {
@@ -394,7 +329,7 @@ public class SQLiteManager extends SQLiteCore {
                 if(sqlConnection != null) sqlConnection.close();
                 if(sqlResultSet != null) sqlResultSet.close();
             }catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
                 throw new RuntimeException(ex);
             }
         }
@@ -406,24 +341,12 @@ public class SQLiteManager extends SQLiteCore {
             String a = "DELETE FROM History;";
             getSQLiteConnection().createStatement().executeUpdate(a);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -443,29 +366,17 @@ public class SQLiteManager extends SQLiteCore {
             } else if(expression.equalsIgnoreCase("-u")) {
                 String a = "DELETE FROM mutedPlayers WHERE uuid = '" + param + "';";
                 sqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM mutedPlayers WHERE fid = '" + param + "';";
+                sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -478,29 +389,17 @@ public class SQLiteManager extends SQLiteCore {
             } else if(expression.equalsIgnoreCase("-id")) {
                 String a = "DELETE FROM nullMutedPlayers WHERE id = '" + param + "';";
                 sqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM nullMutedPlayers WHERE fid = '" + param + "';";
+                sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -520,30 +419,41 @@ public class SQLiteManager extends SQLiteCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : uuid;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
 
+    public FID getFunctionalIdByName(String playerName) {
+        sqlConnection = getSQLiteConnection();
+        try {
+            String a = "SELECT fid FROM allPlayers WHERE name = '" + playerName + "';";
+            sqlResultSet = sqlConnection.createStatement().executeQuery(a);
+            FID fid = null;
+            while (sqlResultSet.next()) {
+                fid = FID.fromString(sqlResultSet.getString("fid"));
+                if(fid != null) {
+                    return fid;
+                }
+            }
+            return null;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+    }
+
+
+    @Deprecated
     public UUID getUUIDByIp(String ip) {
         sqlConnection = getSQLiteConnection();
         try {
@@ -558,30 +468,36 @@ public class SQLiteManager extends SQLiteCore {
             }
             return uuid.equalsIgnoreCase("null") ? null : UUID.fromString(uuid);
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-
+    public FID getFunctionalIdByIp(String ip) {
+        sqlConnection = getSQLiteConnection();
+        try {
+            String a = "SELECT fid FROM allPlayers WHERE ip = '" + ip + "';";
+            sqlResultSet = sqlConnection.createStatement().executeQuery(a);
+            while (sqlResultSet.next()) {
+                FID fid = FID.fromString(sqlResultSet.getString("fid"));
+                if(fid != null) {
+                    return fid;
+                }
+            }
+            return null;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+    }
 
     public String getIpByUUID(UUID uuid) {
         sqlConnection = getSQLiteConnection();
@@ -594,58 +510,53 @@ public class SQLiteManager extends SQLiteCore {
             }
             return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-
-    public void insertIntoAllPlayers(String name, UUID uuid, String ip) {
+    public String getIpByFunctionalId(FID fid) {
         sqlConnection = getSQLiteConnection();
-        String getUUID = "SELECT uuid FROM allPlayers;";
+        String select = "SELECT ip FROM allPlayers WHERE fid = '" + fid.toString() + "';";
         try {
-            sqlResultSet = sqlConnection.createStatement().executeQuery(getUUID);
+            sqlResultSet = sqlConnection.createStatement().executeQuery(select);
+            String ip = "UNKNOWN_ERROR";
             while (sqlResultSet.next()) {
-                String rUuid = sqlResultSet.getString("uuid");
-                if(rUuid == null || rUuid.equalsIgnoreCase(String.valueOf(uuid))) return;
+                ip = sqlResultSet.getString("ip");
             }
-            String insertName = "INSERT INTO allPlayers (name, uuid, ip) VALUES ('" + name + "', '" + uuid + "', '" + ip + "');";
-            sqlConnection.createStatement().executeUpdate(insertName);
+            return ip;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+    }
+
+    public boolean insertIntoAllPlayers(String name, UUID uuid, String ip, FID fid) {
+        sqlConnection = getSQLiteConnection();
+        String getFID = "SELECT fid FROM allPlayers;";
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery(getFID);
+            while (sqlResultSet.next()) {
+                if(fid.equalsIgnoreCase(sqlResultSet.getString("fid"))) return false;
+            }
+            String insertName = "INSERT INTO allPlayers (name, uuid, ip, fid) VALUES ('" + name + "', '" + uuid.toString() + "', '" + ip + "', '" + fid.toString() + "');";
+            sqlConnection.createStatement().executeUpdate(insertName);
+            return true;
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        } finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -664,30 +575,18 @@ public class SQLiteManager extends SQLiteCore {
             } else if(expression.equalsIgnoreCase("-u")) {
                 String a = "DELETE FROM bannedPlayers WHERE uuid = '" + param + "';";
                 sqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM bannedPlayers WHERE fid = '" + param + "';";
+                sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -700,198 +599,114 @@ public class SQLiteManager extends SQLiteCore {
             } else if(expression.equalsIgnoreCase("-id")) {
                 String a = "DELETE FROM nullBannedPlayers WHERE id = '" + param + "';";
                 sqlConnection.createStatement().executeUpdate(a);
+            } else if(expression.equalsIgnoreCase("-fid")) {
+                String a = "DELETE FROM nullBannedPlayers WHERE fid = '" + param + "';";
+                sqlConnection.createStatement().executeUpdate(a);
             }
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if (sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {
-            }
-            try {
-                if (sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {
-            }
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime) {
+    public void insertIntoBannedPlayers(String id, String ip, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid, long unbanTime, FID fid) {
             sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO bannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unbanTime + "');";
+            String insert = "INSERT INTO bannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unbanTime + "', '" + fid.toString() +"');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime) {
+    public void insertIntoMutedPlayers(String id, String ip, String name, String initiatorName, String reason, MuteType muteType, String banDate, String banTime, UUID uuid, long unmuteTime, FID fid) {
         sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO mutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unmuteTime + "');";
+            String insert = "INSERT INTO mutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', '" + ip + "', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + banDate +"', '" + banTime +"', '" + uuid +"', '" + unmuteTime + "', '" + fid.toString() +"');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime) {
+    public void insertIntoNullBannedPlayers(String id, String name, String initiatorName, String reason, BanType banType, String banDate, String banTime, UUID uuid,  long unbanTime, FID fid) {
         sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid + "', '" + unbanTime + "');";
+            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + uuid + "', '" + unbanTime + "', '" + fid.toString() +"');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime) {
+    public void insertIntoNullMutedPlayers(String id, String name, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, UUID uuid, long unmuteTime, FID fid) {
         sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + uuid + "', '" + unmuteTime + "');";
+            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', 'NULL_PLAYER', '" + name + "', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + uuid + "', '" + unmuteTime + "', '" + fid.toString() + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime) {
+    public void insertIntoNullBannedPlayersIP(String id, String ip, String initiatorName, String reason, BanType banType, String banDate, String banTime, long unbanTime, UUID randomUuid, FID randomFid) {
         sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', 'NULL_PLAYER', '" + unbanTime + "');";
+            String insert = "INSERT INTO nullBannedPlayers (id, ip, name, initiatorName, reason, banType, banDate, banTime, uuid, unbanTime, fid) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + banType + "', '" + banDate +"', '" + banTime +"', '" + randomUuid.toString() + "', '" + unbanTime + "', '" + randomFid.toString() + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
-    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime) {
+    public void insertIntoNullMutedPlayersIP(String id, String ip, String initiatorName, String reason, MuteType muteType, String muteDate, String muteTime, long unmuteTime, UUID randomUuid, FID randomFid) {
         sqlConnection = getSQLiteConnection();
         try {
-            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', 'NULL_PLAYER', '" + unmuteTime + "');";
+            String insert = "INSERT INTO nullMutedPlayers (id, ip, name, initiatorName, reason, muteType, muteDate, muteTime, uuid, unmuteTime, fid) VALUES ('" + id + "', '" + ip + "', 'NULL_PLAYER', '" + initiatorName + "', '" + reason + "', '" + muteType + "', '" + muteDate +"', '" + muteTime +"', '" + randomUuid.toString() + "', '" + unmuteTime + "', '" + randomFid.toString() + "');";
             sqlConnection.createStatement().executeUpdate(insert);
             sqlResultSet.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(e);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -912,24 +727,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return unbanTimes;
     }
@@ -952,24 +755,12 @@ public class SQLiteManager extends SQLiteCore {
             }
             return ips;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         } finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -990,24 +781,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -1029,24 +808,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banDates;
     }
@@ -1068,24 +835,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banTimes;
     }
@@ -1107,24 +862,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1146,24 +889,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return names;
     }
@@ -1185,24 +916,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return iNames;
     }
@@ -1224,24 +943,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return reasons;
     }
@@ -1263,26 +970,36 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banTypes;
+    }
+
+    public List<FID> fidsFromNullBannedPlayers() {
+        sqlConnection = getSQLiteConnection();
+        String taskOne = "SELECT fid FROM nullBannedPlayers;";
+        List<FID> fids = new ArrayList<>();
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery(taskOne);
+            String fid = "BAN_TYPE_ERROR";
+            while (sqlResultSet.next()) {
+                fid = sqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     // nullBannedPlayersTable
@@ -1305,24 +1022,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1344,24 +1049,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return ids;
     }
@@ -1383,24 +1076,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return names;
     }
@@ -1422,24 +1103,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return initiators;
     }
@@ -1461,24 +1130,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return reasons;
     }
@@ -1500,24 +1157,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banTypes;
     }
@@ -1539,24 +1184,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banDates;
     }
@@ -1578,24 +1211,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return banTimes;
     }
@@ -1617,24 +1238,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -1656,63 +1265,61 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return unbanTimes;
     }
+
+    public List<FID> fidsFromBannedPlayers() {
+        sqlConnection = getSQLiteConnection();
+        List<FID> fids = new ArrayList<>();
+        String taskOne = "SELECT fid FROM bannedPlayers;";
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery(taskOne);
+            String fid;
+            while (sqlResultSet.next()) {
+                fid = sqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+        return fids;
+    }
+
     //bannedPlayer table
 
-    public void updateAllPlayers(Player player) {
-        if (!getIpByUUID(player.getUniqueId()).equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()) || !getUuidByName(player.getName()).equalsIgnoreCase(String.valueOf(player.getUniqueId()))) {
+    public boolean updateAllPlayers(String name, UUID uuid, String address, FID fid) {
+        if (!getIpByFunctionalId(fid).equalsIgnoreCase(address) || (!getUuidByName(name).equalsIgnoreCase(String.valueOf(uuid)) || !fid.equals(new FID(name)))) {
             sqlConnection = getSQLiteConnection();
             try {
-                String a = "DELETE FROM allPlayers WHERE uuid = '" + String.valueOf(player.getUniqueId()) + "';";
-                String b = "DELETE FROM allPlayer WHERE name = '" + player.getName() + "';";
+                String a = "DELETE FROM allPlayers WHERE fid = '" + fid.toString() + "';";
+                String b = "DELETE FROM allPlayers WHERE name = '" + name + "';";
                 sqlConnection.createStatement().executeUpdate(a);
                 sqlConnection.createStatement().executeUpdate(b);
-                sqlConnection.close();
-                insertIntoAllPlayers(player.getName(), player.getUniqueId(), player.getAddress().getAddress().getHostAddress());
+                String insertName = "INSERT INTO allPlayers (name, uuid, ip, fid) VALUES ('" + name + "', '" + uuid.toString() + "', '" + address + "', '" + fid.toString() + "');";
+                sqlConnection.createStatement().executeUpdate(insertName);
+                return true;
             } catch (SQLException ex) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
                 throw new RuntimeException(ex);
             } finally {
-                try {
-                    if (sqlConnection != null) {
-                        sqlConnection.close();
-                    }
-                } catch (SQLException ex) {
-                }
-                try {
-                    if (sqlStatement != null) {
-                        sqlStatement.close();
-                    }
-                } catch (SQLException ex) {
-                }
-                try {
-                    if (sqlResultSet != null) {
-                        sqlResultSet.close();
-                    }
-                } catch (SQLException ex) {
-                }
+                try {if (sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+                try {if (sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+                try {if (sqlResultSet != null) {sqlResultSet.close();}} catch (SQLException ignored) {}
             }
         }
+        return false;
     }
 
     public List<String> getNamesFromAllPlayers() {
@@ -1732,31 +1339,19 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return names;
     }
 
-    public List<String> getUUIDsFromAllPlayers() {
+    public List<UUID> getUUIDsFromAllPlayers() {
         sqlConnection = getSQLiteConnection();
-        List<String> uuids = new ArrayList<>();
+        List<UUID> uuids = new ArrayList<>();
         String taskOne = "SELECT uuid FROM allPlayers;";
         try {
             sqlResultSet = sqlConnection.createStatement().executeQuery(taskOne);
@@ -1765,30 +1360,18 @@ public class SQLiteManager extends SQLiteCore {
                 uuid = sqlResultSet.getString("uuid");
                 if(uuid == null) {
                     uuid = "NULL";
-                    uuids.add(uuid);
+                    uuids.add(UUID.fromString(uuid));
                 } else {
-                    uuids.add(uuid);
+                    uuids.add(UUID.fromString(uuid));
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return uuids;
     }
@@ -1810,26 +1393,36 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return ips;
+    }
+    
+    public List<FID> getFidsFromAllPlayers() {
+        sqlConnection = getSQLiteConnection();
+        List<FID> fids = new ArrayList<>();
+        String taskOne = "SELECT fid FROM allPlayers;";
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery(taskOne);
+            String fid = "NULL";
+            while (sqlResultSet.next()) {
+                fid = sqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public void clearBans() {
@@ -1841,24 +1434,12 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(b);
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -1871,24 +1452,12 @@ public class SQLiteManager extends SQLiteCore {
             sqlConnection.createStatement().executeUpdate(b);
             sqlConnection.close();
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to edit the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to edit the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -1963,6 +1532,13 @@ public class SQLiteManager extends SQLiteCore {
         unbanTimes.addAll(unbanTimesFromNullBannedPlayersTable());
         return unbanTimes;
     }
+    
+    public List<FID> getBannedFids() {
+        List<FID> fids = new ArrayList<>();
+        fids.addAll(fidsFromBannedPlayers());
+        fids.addAll(fidsFromNullBannedPlayers());
+        return fids;
+    }
 
     //Combining nullBannedPlayers and bannedPlayers list
 
@@ -1983,24 +1559,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2022,24 +1586,12 @@ public class SQLiteManager extends SQLiteCore {
             }
             return b;
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
     }
 
@@ -2059,24 +1611,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return b;
     }
@@ -2097,24 +1637,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2135,24 +1663,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2173,24 +1689,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2211,24 +1715,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2249,24 +1741,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2287,7 +1767,7 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }
         return a;
@@ -2309,26 +1789,35 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
+    }
+    
+    public List<FID> fidsFromNullMutedPlayers() {
+        sqlConnection = getSQLiteConnection();
+        List<FID> fids = new ArrayList<>();
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery("SELECT fid FROM nullMutedPlayers;");
+            String fid;
+            while (sqlResultSet.next()) {
+                fid = sqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public List<String> idsFromMutedPlayersTable() {
@@ -2347,24 +1836,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2385,24 +1862,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2423,23 +1888,11 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            throw new RuntimeException("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!");
+            throw new RuntimeException("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!");
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2460,24 +1913,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2498,24 +1939,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2536,24 +1965,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2574,24 +1991,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2612,24 +2017,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2650,24 +2043,12 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
     }
@@ -2688,26 +2069,35 @@ public class SQLiteManager extends SQLiteCore {
                 }
             }
         } catch (SQLException ex) {
-            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControlSpigot | SQLite] An error occurred while trying to read the database!"));
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
             throw new RuntimeException(ex);
         }finally {
-            try {
-                if(sqlConnection != null) {
-                    sqlConnection.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlStatement != null) {
-                    sqlStatement.close();
-                }
-            } catch (SQLException ex) {}
-            try {
-                if(sqlResultSet != null) {
-                    sqlResultSet.close();
-                }
-            } catch (SQLException ex) {}
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
         }
         return a;
+    }
+    
+    public List<FID> fidsFromMutedPlayers() {
+        sqlConnection = getSQLiteConnection();
+        List<FID> fids = new ArrayList<>();
+        try {
+            sqlResultSet = sqlConnection.createStatement().executeQuery("SELECT fid FROM mutedPlayers;");
+            String fid;
+            while (sqlResultSet.next()) {
+                fid = sqlResultSet.getString("fid");
+                fids.add(FID.fromString(fid));
+            }
+        } catch (SQLException ex) {
+            Bukkit.getConsoleSender().sendMessage(setColors("&4[FunctionalServerControl | SQLite] An error occurred while trying to read the database!"));
+            throw new RuntimeException(ex);
+        }finally {
+            try {if(sqlConnection != null) {sqlConnection.close();}} catch (SQLException ignored) {}
+            try {if(sqlStatement != null) {sqlStatement.close();}} catch (SQLException ignored) {}
+            try {if(sqlResultSet != null) { sqlResultSet.close(); }} catch (SQLException ignored) {}
+        }
+        return fids;
     }
 
     public List<String> getMutedIds() {
@@ -2778,6 +2168,13 @@ public class SQLiteManager extends SQLiteCore {
         a.addAll(unmuteTimesFromMutedPlayersTable());
         a.addAll(unmuteTimesFromNullMutedPlayersTable());
         return a;
+    }
+    
+    public List<FID> getMutedFids() {
+        List<FID> fids = new ArrayList<>();
+        fids.addAll(fidsFromMutedPlayers());
+        fids.addAll(fidsFromNullMutedPlayers());
+        return fids;
     }
 
 }

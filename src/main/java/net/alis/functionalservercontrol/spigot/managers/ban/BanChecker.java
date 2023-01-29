@@ -1,21 +1,21 @@
 package net.alis.functionalservercontrol.spigot.managers.ban;
 
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.Component;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.managers.file.SFAccessor;
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.alis.functionalservercontrol.spigot.additional.containers.StaticContainers.getBannedPlayersContainer;
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
-import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 
 public class BanChecker {
 
@@ -26,9 +26,9 @@ public class BanChecker {
      */
     public static boolean isPlayerBanned(String nullPlayerName) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getBannedPlayersContainer().getNameContainer().contains(nullPlayerName);
+            return getBannedPlayersContainer().getFidsContainer().contains(new FID(nullPlayerName));
         } else {
-            return BaseManager.getBaseManager().getBannedPlayersNames().contains(nullPlayerName);
+            return BaseManager.getBaseManager().getBannedFids().contains(new FID(nullPlayerName));
         }
     }
 
@@ -37,11 +37,11 @@ public class BanChecker {
      * @param player - player to be tested
      * @return true if player banned
      */
-    public static boolean isPlayerBanned(OfflinePlayer player) {
+    public static boolean isPlayerBanned(OfflineFunctionalPlayer player) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getBannedPlayersContainer().getNameContainer().contains(player.getName()) && getBannedPlayersContainer().getUUIDContainer().contains(String.valueOf(player.getUniqueId()));
+            return getBannedPlayersContainer().getFidsContainer().contains(player.getFunctionalId());
         } else {
-            return BaseManager.getBaseManager().getBannedUUIDs().contains(String.valueOf(player.getUniqueId()));
+            return BaseManager.getBaseManager().getBannedFids().contains(player.getFunctionalId());
         }
     }
 
@@ -63,19 +63,18 @@ public class BanChecker {
      * @param player - player whose ip will be verified
      * @return true if player ip is banned
      */
-    public static boolean isIpBanned(OfflinePlayer player) {
-
+    public static boolean isIpBanned(OfflineFunctionalPlayer player) {
         if(getConfigSettings().isAllowedUseRamAsContainer()) {
-            return getBannedPlayersContainer().getIpContainer().contains(BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()));
+            return getBannedPlayersContainer().getIpContainer().contains(BaseManager.getBaseManager().getIpByFunctionalId(player.getFunctionalId()));
         } else {
-            return BaseManager.getBaseManager().getBannedIps().contains(BaseManager.getBaseManager().getIpByUUID(player.getUniqueId()));
+            return BaseManager.getBaseManager().getBannedIps().contains(BaseManager.getBaseManager().getIpByFunctionalId(player.getFunctionalId()));
         }
     }
 
-    public static void bannedIpNotify(Player player) {
+    public static void bannedIpNotify(FunctionalPlayer player) {
         TaskManager.preformAsync(() -> {
             if(isIpBanned(player)) {
-                String playerIp = player.getAddress().getAddress().getHostAddress();
+                String playerIp = player.address();
                 List<String> bannedAccounts = new ArrayList<>();
                 if(getConfigSettings().isAllowedUseRamAsContainer()) {
                     for(String ip : getBannedPlayersContainer().getIpContainer()) {
@@ -87,48 +86,19 @@ public class BanChecker {
                     }
                 }
                 Bukkit.getConsoleSender().sendMessage(TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.same-ip")
-                        .replace("%1$f", player.getName())
+                        .replace("%1$f", player.nickname())
                         .replace("%2$f", playerIp)
                         .replace("%3$f", String.join(", ", bannedAccounts))));
 
-                for(Player admin : Bukkit.getOnlinePlayers()) {
+                for(FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                     if(admin.hasPermission("functionalservercontrol.notification.same-ip")) {
-                        if(admin.hasPermission("functionalservercontrol.ban") && getConfigSettings().isServerSupportsHoverEvents()) {
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                admin.spigot().sendMessage(
-                                        MD5TextUtils.appendTwo(
-                                                MD5TextUtils.stringToTextComponent(TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.same-ip")
-                                                        .replace("%1$f", player.getName())
-                                                        .replace("%2$f", playerIp)
-                                                        .replace("%3$f", String.join(", ", bannedAccounts)))),
-                                                MD5TextUtils.createClickableSuggestCommandText(
-                                                        TextUtils.setColors(" " + getGlobalVariables().getButtonBan()),
-                                                        "/ban " + player.getName()
-                                                )
-                                        )
-                                );
-                                continue;
-                            }
-                            if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                admin.sendMessage(
-                                        AdventureApiUtils.stringToComponent(TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.same-ip")
-                                                        .replace("%1$f", player.getName())
-                                                        .replace("%2$f", playerIp)
-                                                        .replace("%3$f", String.join(", ", bannedAccounts))))
-                                                .append(AdventureApiUtils.createClickableSuggestCommandText(
-                                                        TextUtils.setColors(" " + getGlobalVariables().getButtonBan()),
-                                                        "/ban " + player.getName()
-                                                ))
-                                );
-                                continue;
-                            }
-                        } else {
-                            admin.sendMessage(TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.same-ip")
-                                    .replace("%1$f", player.getName())
-                                    .replace("%2$f", playerIp)
-                                    .replace("%3$f", String.join(", ", bannedAccounts))
-                            ));
-                        }
+                        admin.expansion().message(Component.stringToSimplifiedComponent(TextUtils.setColors(SFAccessor.getFileAccessor().getLang().getString("other.notifications.same-ip")
+                                                .replace("%1$f", player.nickname())
+                                                .replace("%2$f", playerIp)
+                                                .replace("%3$f", String.join(", ", bannedAccounts)))),
+                                        Component.addPunishmentButtons(admin, player.nickname())
+                        );
+                        continue;
                     }
                 }
             }

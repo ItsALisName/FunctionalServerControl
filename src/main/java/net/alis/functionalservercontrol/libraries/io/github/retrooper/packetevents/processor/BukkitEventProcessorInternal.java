@@ -4,6 +4,7 @@ import net.alis.functionalservercontrol.libraries.io.github.retrooper.packeteven
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.event.impl.PostPlayerInjectEvent;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.player.ClientVersion;
 import net.alis.functionalservercontrol.libraries.io.github.retrooper.packetevents.utils.versionlookup.VersionLookupUtils;
+import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -20,13 +21,6 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 public class BukkitEventProcessorInternal implements Listener {
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onLogin(PlayerLoginEvent e) {
-        final Player player = e.getPlayer();
-        if (!PacketEvents.get().getSettings().shouldUseCompatibilityInjector()) {
-            PacketEvents.get().getInjector().injectPlayer(player);
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent e) {
@@ -40,7 +34,7 @@ public class BukkitEventProcessorInternal implements Listener {
         boolean dependencyAvailable = VersionLookupUtils.isDependencyAvailable();
         PacketEvents.get().getPlayerUtils().loginTime.put(player.getUniqueId(), System.currentTimeMillis());
         if (dependencyAvailable) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(PacketEvents.get().getPlugin(), () -> {
+            TaskManager.preformAsyncLater(() -> {
                 try {
                     int protocolVersion = VersionLookupUtils.getProtocolVersion(player);
                     ClientVersion version = ClientVersion.getClientVersion(protocolVersion);

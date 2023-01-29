@@ -21,17 +21,17 @@ public class ViaVersionManager {
     public void setupViaVersion() {
         if(isViaVersionInstalled()) {
             if(!getConfigSettings().isLessInformation()){
-                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot -> ViaVersion] ViaVersion detected, connecting..."));
+                Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl -> ViaVersion] ViaVersion detected, connecting..."));
             }
             viaVersion = Via.getAPI();
             if(viaVersion != null) {
                 this.viaVersionSetuped = true;
                 if(!getConfigSettings().isLessInformation()){
-                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot -> ViaVersion] Connection to ViaVersion was successful."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl -> ViaVersion] Connection to ViaVersion was successful."));
                 }
             } else {
                 this.viaVersionSetuped = false;
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot -> ViaVersion] Failed to connect to ViaVersion"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl -> ViaVersion] Failed to connect to ViaVersion"));
             }
         }
     }

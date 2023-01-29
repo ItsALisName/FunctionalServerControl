@@ -2,8 +2,8 @@ package net.alis.functionalservercontrol.spigot.managers.time;
 
 import net.alis.functionalservercontrol.api.enums.TimeRestrictionType;
 import net.alis.functionalservercontrol.api.enums.TimeUnit;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
-import org.bukkit.entity.Player;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getGlobalVariables;
 import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.getFileAccessor;
@@ -167,7 +167,7 @@ public class TimeManager {
         return convertToMillis(getFileAccessor().getGeneralConfig().getString("plugin-settings.time-settings.max-possible-ban-time").replace("|", ""));
     }
 
-    public long getMaxPlayerBanPunishTime(Player player) {
+    public long getMaxPlayerBanPunishTime(FunctionalPlayer player) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
             if (Expansions.getVaultManager().isVaultSetuped()) {
                 if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player) + ".ban")) {
@@ -191,7 +191,7 @@ public class TimeManager {
         return getMaxPossibleBanPunishTime();
     }
 
-    public long getMaxPlayerMutePunishTime(Player player) {
+    public long getMaxPlayerMutePunishTime(FunctionalPlayer player) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
             if (Expansions.getVaultManager().isVaultSetuped()) {
                 if(getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player) + ".mute")) {
@@ -215,7 +215,7 @@ public class TimeManager {
         return getMaxPossibleMutePunishTime();
     }
 
-    public boolean isBanTimeBiggerThanAllowedByGroup(Player player, String argTime) {
+    public boolean isBanTimeBiggerThanAllowedByGroup(FunctionalPlayer player, String argTime) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
             long maxTime = 0;
             if (Expansions.getVaultManager().isVaultSetuped()) {
@@ -230,7 +230,7 @@ public class TimeManager {
         return false;
     }
 
-    public boolean isMuteTimeBiggerThanAllowedByGroup(Player player, String argTime) {
+    public boolean isMuteTimeBiggerThanAllowedByGroup(FunctionalPlayer player, String argTime) {
         if(playerRestrictionType(player) == TimeRestrictionType.GROUP) {
             long maxTime = 0;
             if (Expansions.getVaultManager().isVaultSetuped()) {
@@ -245,7 +245,7 @@ public class TimeManager {
         return false;
     }
 
-    private TimeRestrictionType playerRestrictionType(Player player) {
+    private TimeRestrictionType playerRestrictionType(FunctionalPlayer player) {
         if (Expansions.getVaultManager().isVaultSetuped()) {
             if (getFileAccessor().getGeneralConfig().contains("plugin-settings.time-settings.per-groups." + Expansions.getVaultManager().getPlayerGroup(player))) {
                 return TimeRestrictionType.GROUP;

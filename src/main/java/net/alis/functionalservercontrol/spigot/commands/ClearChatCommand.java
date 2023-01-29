@@ -1,15 +1,14 @@
 package net.alis.functionalservercontrol.spigot.commands;
 
 import net.alis.functionalservercontrol.api.enums.Chat;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.alis.functionalservercontrol.spigot.FunctionalServerControlSpigot;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.commands.completers.ClearChatCompleter;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import static net.alis.functionalservercontrol.spigot.additional.globalsettings.SettingsAccessor.getConfigSettings;
@@ -37,12 +36,12 @@ public class ClearChatCommand implements CommandExecutor {
                     OtherUtils.clearChat(sender, Chat.ClearType.ALL, null);
                     return;
                 } else {
-                    Player player = Bukkit.getPlayer(args[0]);
-                    if(player == null) {
+                    FunctionalPlayer target = FunctionalPlayer.get(args[0]);
+                    if(target == null) {
                         sender.sendMessage(setColors(getFileAccessor().getLang().getString("other.target-offline").replace("%1$f", args[0])));
                         return;
                     }
-                    OtherUtils.clearChat(sender, Chat.ClearType.PLAYER, player);
+                    OtherUtils.clearChat(sender, Chat.ClearType.PLAYER, target);
                     return;
                 }
             } else {

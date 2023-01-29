@@ -25,7 +25,7 @@ public class HidedMessagesContainer {
             try {
                 Collections.addAll(this.hidedMessages, a);
             } catch (RuntimeException ignored) {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to load the list of messages hidden in the console ✘"));
+                Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to load the list of messages hidden in the console ✘"));
             }
         });
     }
@@ -36,7 +36,7 @@ public class HidedMessagesContainer {
         try {
             Collections.addAll(this.hidedMessages, a);
         } catch (RuntimeException ignored) {
-            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControlSpigot | Error] Failed to reload the list of messages hidden in the console."));
+            Bukkit.getConsoleSender().sendMessage(TextUtils.setColors("&4[FunctionalServerControl | Error] Failed to reload the list of messages hidden in the console."));
         }
     }
 

@@ -1,12 +1,12 @@
 package net.alis.functionalservercontrol.spigot.managers;
 
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.Component;
 import net.alis.functionalservercontrol.api.enums.StatsType;
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TemporaryCache;
 import net.alis.functionalservercontrol.spigot.dependencies.Expansions;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import static net.alis.functionalservercontrol.spigot.managers.file.SFAccessor.g
 
 public class ChatManager {
 
-    public String replaceMessageIfNeed(Player player, String message) {
+    public String replaceMessageIfNeed(FunctionalPlayer player, String message) {
         if(player.hasPermission("functionalservercontrol.chat.messages-replaces.bypass")) return message;
         for(Map.Entry<String, String> entry : getChatSettings().getMessageReplacer().entrySet()) {
             if(message.contains(entry.getKey())) return message.replace(entry.getKey(), entry.getValue());
@@ -24,15 +24,15 @@ public class ChatManager {
         return message;
     }
 
-    public boolean playerHasChatDelay(Player player) {
+    public boolean playerHasChatDelay(FunctionalPlayer player) {
         if(TemporaryCache.getChatDelays().containsKey(player.getUniqueId())) {
-            player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.chat-delay").replace("%1$f", String.valueOf(TemporaryCache.getChatDelays().get(player.getUniqueId())))));
+            player.message(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.chat-delay").replace("%1$f", String.valueOf(TemporaryCache.getChatDelays().get(player.getUniqueId())))));
             return true;
         }
         return false;
     }
 
-    public void setupChatDelay(Player player) {
+    public void setupChatDelay(FunctionalPlayer player) {
         if(player.hasPermission("functionalservercontrol.chat.delay.bypass")) return;
         TaskManager.preformAsync(() -> {
             if(getChatSettings().isUseGroups()) {
@@ -59,20 +59,20 @@ public class ChatManager {
         });
     }
 
-    public boolean isRepeatingMessage(Player player, String message) {
-        if(TemporaryCache.getRepeatingMessages().containsKey(player.getUniqueId()) && TemporaryCache.getRepeatingMessages().get(player.getUniqueId()).equalsIgnoreCase(message)) {
-            player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.repeating-message")));
+    public boolean isRepeatingMessage(FunctionalPlayer player, String message) {
+        if(TemporaryCache.getRepeatingMessages().containsKey(player.getFunctionalId()) && TemporaryCache.getRepeatingMessages().get(player.getUniqueId()).equalsIgnoreCase(message)) {
+            player.message(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.repeating-message")));
             return true;
         }
         return false;
     }
 
-    public void setRepeatingMessage(Player player, String message) {
+    public void setRepeatingMessage(FunctionalPlayer player, String message) {
         if(player.hasPermission("functionalservercontrol.chat.repeating-message.bypass")) return;
         TaskManager.preformAsync(() -> {
             if(getChatSettings().isBlockRepeatingMessages()) {
-                if (TemporaryCache.getRepeatingMessages().containsKey(player.getUniqueId())) {
-                    TemporaryCache.getRepeatingMessages().replace(player.getUniqueId(), message);
+                if (TemporaryCache.getRepeatingMessages().containsKey(player.getFunctionalId())) {
+                    TemporaryCache.getRepeatingMessages().replace(player.getFunctionalId(), message);
                 } else {
                     TemporaryCache.addRepeatingMessage(player, message);
                 }
@@ -80,17 +80,17 @@ public class ChatManager {
         });
     }
 
-    public boolean isMessageContainsBlockedWord(Player player, String message) {
+    public boolean isMessageContainsBlockedWord(FunctionalPlayer player, String message) {
         if(!getChatSettings().isBlockedWordsEnabled()) return false;
         if(player.hasPermission("functionalservercontrol.chat.blocked-words.bypass") || !getChatSettings().isBlockedWordsEnabled()) return false;
-        if(getChatSettings().getDisabledWorldsForBlockedWords().contains(player.getWorld().getName())) return false;
+        if(getChatSettings().getDisabledWorldsForBlockedWords().contains(player.world().getName())) return false;
         for(String word : getChatSettings().getBlockedWords()) {
             for (String messageArg : message.split(" ")) {
                 if (messageArg.equalsIgnoreCase(word)) {
-                    player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-chat").replace("%1$f", word)));
+                    player.message(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-chat").replace("%1$f", word)));
                     if (getChatSettings().isPunishEnabledForBlockedWords()) {
                         for (String punishCmd : getChatSettings().getPunishForBlockedWords()) {
-                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
+                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.nickname()).replace("%2$f", word)));
                         }
                     }
                     this.notifyAdminsAboutBlockedWord(player, word, message);
@@ -101,17 +101,17 @@ public class ChatManager {
         return false;
     }
 
-    public boolean isCommandContainsBlockedWord(Player player, String command) {
+    public boolean isCommandContainsBlockedWord(FunctionalPlayer player, String command) {
         if(!getChatSettings().isBlockedWordsEnabled()) return false;
         if(player.hasPermission("functionalservercontrol.commands.blocked-words.bypass")) return false;
-        if(getChatSettings().getDisabledWorldsForBlockedWords().contains(player.getWorld().getName())) return false;
+        if(getChatSettings().getDisabledWorldsForBlockedWords().contains(player.world().getName())) return false;
         for(String word : getChatSettings().getBlockedWords()) {
             for(String commandArg : command.split(" ")) {
                 if (commandArg.equalsIgnoreCase(word)) {
-                    player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-command").replace("%1$f", word)));
+                    player.message(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-in-command").replace("%1$f", word)));
                     if (getChatSettings().isPunishEnabledForBlockedWords()) {
                         for (String punishCmd : getChatSettings().getPunishForBlockedWords()) {
-                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.getName()).replace("%2$f", word)));
+                            TaskManager.preformSync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCmd.replace("%1$f", player.nickname()).replace("%2$f", word)));
                         }
                     }
                     this.notifyAdminsAboutBlockedWordInCommand(player, word, command);
@@ -122,39 +122,23 @@ public class ChatManager {
         return false;
     }
 
-    private void notifyAdminsAboutBlockedWord(Player player, String word, String message) {
-        BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+    private void notifyAdminsAboutBlockedWord(FunctionalPlayer player, String word, String message) {
+        BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.BLOCKED_WORDS_USED);
         TaskManager.preformAsync(() -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)));
-                for(Player admin : Bukkit.getOnlinePlayers()) {
-                    if(admin.hasPermission(" functionalservercontrol.notification.blocked-word")) {
-                        if(getConfigSettings().isServerSupportsHoverEvents()) {
-                            if(getConfigSettings().isButtonsOnNotifications()) {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(
-                                            MD5TextUtils.appendTwo(
-                                                    MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player),
-                                                    MD5TextUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player).append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                            } else {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(
-                                            MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player));
-                                    continue;
-                                }
-                            }
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", message)));
+                for(FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
+                    if(admin.hasPermission("functionalservercontrol.notification.blocked-word")) {
+                        if(getConfigSettings().isButtonsOnNotifications()) {
+                            admin.expansion().message(
+                                            Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", message)), player)
+                                                    .append(Component.addPunishmentButtons(admin, player.nickname())).translateDefaultColorCodes()
+                            );
+                            continue;
                         } else {
-                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)));
+                            admin.expansion().message(
+                                    Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.chat").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", message)), player).translateDefaultColorCodes());
+                            continue;
                         }
                     }
                 }
@@ -162,81 +146,45 @@ public class ChatManager {
         });
     }
 
-    public void notifyAdminsOnTryChat(Player player, String message, String timeLeft) {
+    public void notifyAdminsOnTryChat(FunctionalPlayer player, String message, String timeLeft) {
         TaskManager.preformAsync(() -> {
             if (getConfigSettings().isConsoleNotification()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)));
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.nickname()).replace("%2$f", message).replace("%3$f", timeLeft)));
             }
             if (getConfigSettings().isPlayersNotification()) {
-                for (Player admin : Bukkit.getOnlinePlayers()) {
+                for (FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                     if (admin.hasPermission("functionalservercontrol.notification.mute")) {
-                        if(getConfigSettings().isServerSupportsHoverEvents()) {
-                            if (getConfigSettings().isButtonsOnNotifications()) {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(
-                                            MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)), player),
-                                            MD5TextUtils.addPardonButtons(admin, player.getName()))
-                                    );
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(
-                                            AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)), player)
-                                                    .append(AdventureApiUtils.addPardonButtons(admin, player.getName())));
-                                    continue;
-                                }
-                            } else {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)), player));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)), player));
-                                    continue;
-                                }
-                            }
+                        if (getConfigSettings().isButtonsOnNotifications()) {
+                            admin.expansion().message(
+                                    Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.nickname()).replace("%2$f", message).replace("%3$f", timeLeft)), player)
+                                            .append(Component.addPardonButtons(admin, player.nickname())).translateDefaultColorCodes()
+                            );
+                        } else {
+                            admin.expansion().message(Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.nickname()).replace("%2$f", message).replace("%3$f", timeLeft)), player).translateDefaultColorCodes());
+                            continue;
                         }
-                        admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.mute").replace("%1$f", player.getName()).replace("%2$f", message).replace("%3$f", timeLeft)));
                     }
                 }
             }
         });
     }
 
-    private void notifyAdminsAboutBlockedWordInCommand(Player player, String word, String command) {
-        BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+    private void notifyAdminsAboutBlockedWordInCommand(FunctionalPlayer player, String word, String command) {
+        BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.BLOCKED_WORDS_USED);
         TaskManager.preformAsync(() -> {
             if(getChatSettings().isNotifyAboutBlockedWord()) {
-                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)));
-                for(Player admin : Bukkit.getOnlinePlayers()) {
-                    if(admin.hasPermission(" functionalservercontrol.notification.blocked-word")) {
-                        if(getConfigSettings().isServerSupportsHoverEvents()) {
-                            if(getConfigSettings().isButtonsOnNotifications()) {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(
-                                            MD5TextUtils.appendTwo(
-                                                    MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)), player),
-                                                    MD5TextUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(
-                                            AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)), player)
-                                                    .append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                            } else {
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)), player));
-                                    continue;
-                                }
-                                if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)), player));
-                                    continue;
-                                }
-                            }
+                Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", command)));
+                for(FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
+                    if(admin.hasPermission("functionalservercontrol.notification.blocked-word")) {
+                        if(getConfigSettings().isButtonsOnNotifications()) {
+                            admin.expansion().message(
+                                            Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", command)), player)
+                                                    .append(Component.addPunishmentButtons(admin, player.nickname())).translateDefaultColorCodes()
+                            );
+                            continue;
                         } else {
-                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", command)));
+                            admin.expansion().message(Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.command").replace("%1$f", player.nickname()).replace("%2$f", word).replace("%3$f", command)), player).translateDefaultColorCodes());
+                            continue;
                         }
                     }
                 }

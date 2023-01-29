@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -14,7 +15,7 @@ public class PlayerTeleportationListener implements Listener {
         if(getConfigSettings().isCheatCheckFunctionEnabled()) {
             if(!event.isCancelled()) {
                 if(getConfigSettings().isPreventTeleportDuringCheatCheck()) {
-                    if(getCheatCheckerManager().isPlayerChecking(event.getPlayer())) event.setCancelled(true);
+                    if(getCheatCheckerManager().isPlayerChecking(FunctionalPlayer.get(event.getPlayer().getUniqueId()))) event.setCancelled(true);
                 }
             }
         }

@@ -1,6 +1,8 @@
 package net.alis.functionalservercontrol.spigot.additional.reflect;
 
 import com.google.common.base.Preconditions;
+import net.alis.functionalservercontrol.api.enums.ProtocolVersions;
+import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Constructor;
@@ -35,6 +37,14 @@ public class MinecraftReflection {
     public static String getVersion() {
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
         return packageName.substring(packageName.lastIndexOf('.') + 1);
+    }
+
+    public static Class<?> getMinecraftPacket(String name) {
+        if(OtherUtils.getServerVersion(Bukkit.getServer()).ordinal() >= ProtocolVersions.V17.ordinal()) {
+            return getClass("net.minecraft.network.protocol.game." + name);
+        } else {
+            return getNMSClass(name);
+        }
     }
 
     public static Object getHandle(Object wrapper) {

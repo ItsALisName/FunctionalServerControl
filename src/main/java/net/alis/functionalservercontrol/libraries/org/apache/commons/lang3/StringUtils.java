@@ -1044,7 +1044,7 @@ public class StringUtils {
             return text;
         int replLength = searchString.length();
         int increase = replacement.length() - replLength;
-        increase = (increase < 0) ? 0 : increase;
+        increase = Math.max(increase, 0);
         increase *= (max < 0) ? 16 : ((max > 64) ? 64 : max);
         StrBuilder buf = new StrBuilder(text.length() + increase);
         while (end != -1) {
@@ -1079,7 +1079,7 @@ public class StringUtils {
         boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
         int textIndex = -1;
         int replaceIndex = -1;
-        int tempIndex = -1;
+        int tempIndex;
         for (int i = 0; i < searchLength; i++) {
             if (!noMoreMatchesForReplIndex[i] && searchList[i] != null && searchList[i].length() != 0 && replacementList[i] != null) {
                 tempIndex = text.indexOf(searchList[i]);

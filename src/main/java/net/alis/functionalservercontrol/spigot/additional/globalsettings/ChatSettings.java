@@ -290,7 +290,7 @@ public class ChatSettings {
         this.messageReplacer.clear();
         for(String r : messagesList) {
             if(!r.contains(" -> ")) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'chat-settings.yml' file! Invalid format in 'messages-replacer', the number of the sheet with the incorrect format %number%".replace("%number%", String.valueOf(messagesList.indexOf(r) + 1))));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'chat-settings.yml' file! Invalid format in 'messages-replacer', the number of the sheet with the incorrect format %number%".replace("%number%", String.valueOf(messagesList.indexOf(r) + 1))));
                 continue;
             }
             String[] rArgs = r.split(" -> ");
@@ -359,7 +359,7 @@ public class ChatSettings {
                     a = Integer.parseInt(getFileAccessor().getChatConfig().getString("chat.chat-delay.standard"));
                     if(a > 0) addChatDelay("global_delay", getFileAccessor().getChatConfig().getInt("chat.chat-delay.standard"));
                 } catch (NumberFormatException ignored) {
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay' parameter can only be an integer"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay' parameter can only be an integer"));
                 }
                 if(isUseGroups()) {
                     for(String groupName : getFileAccessor().getChatConfig().getConfigurationSection("chat.chat-delay.per-group").getKeys(false)) {
@@ -368,7 +368,7 @@ public class ChatSettings {
                             a = Integer.parseInt(getFileAccessor().getChatConfig().getString("chat.chat-delay.per-group." + groupName));
                             if(a > 0) addChatDelay(groupName, getFileAccessor().getChatConfig().getInt("chat.chat-delay.per-group." + groupName));
                         } catch (NumberFormatException ignored) {
-                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay -> per-group -> " + groupName + "' parameter can only be an integer"));
+                            Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay -> per-group -> " + groupName + "' parameter can only be an integer"));
                         }
                     }
                 }
@@ -438,7 +438,7 @@ public class ChatSettings {
                 a = Integer.parseInt(getFileAccessor().getChatConfig().getString("chat.chat-delay.standard"));
                 if(a > 0) addChatDelay("global_delay", getFileAccessor().getChatConfig().getInt("chat.chat-delay.standard"));
             } catch (NumberFormatException ignored) {
-                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay' parameter can only be an integer"));
+                Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay' parameter can only be an integer"));
             }
             if(isUseGroups()) {
                 for(String groupName : getFileAccessor().getChatConfig().getConfigurationSection("chat.chat-delay.per-group").getKeys(false)) {
@@ -447,7 +447,7 @@ public class ChatSettings {
                         a = Integer.parseInt(getFileAccessor().getChatConfig().getString("chat.chat-delay.per-group." + groupName));
                         if(a > 0) addChatDelay(groupName, getFileAccessor().getChatConfig().getInt("chat.chat-delay.per-group." + groupName));
                     } catch (NumberFormatException ignored) {
-                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay -> per-group -> " + groupName + "' parameter can only be an integer"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl] Error in the 'chat-settings.yml' file. The 'chat -> chat-delay -> per-group -> " + groupName + "' parameter can only be an integer"));
                     }
                 }
             }

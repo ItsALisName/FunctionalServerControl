@@ -1,5 +1,6 @@
 package net.alis.functionalservercontrol.spigot.dependencies.soft.vault;
 
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -21,17 +22,17 @@ public class VaultManager {
         if(vaultInstalled()) {
             if(permissionsProviderInstalled()) {
                 if(!getConfigSettings().isLessInformation()){
-                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControlSpigot -> Vault] Vault detected, connecting..."));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&e[FunctionalServerControl -> Vault] Vault detected, connecting..."));
                 }
                 permission = getPermissionRegisteredServiceProvider().getProvider();
                 if(permission != null) {
                     this.vaultSetuped = true;
                     if(!getConfigSettings().isLessInformation()){
-                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControlSpigot -> Vault] Connection to Vault was successful"));
+                        Bukkit.getConsoleSender().sendMessage(setColors("&a[FunctionalServerControl -> Vault] Connection to Vault was successful"));
                     }
                 } else {
                     this.vaultSetuped = false;
-                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControlSpigot -> Vault] Failed to connect to Vault"));
+                    Bukkit.getConsoleSender().sendMessage(setColors("&c[FunctionalServerControl -> Vault] Failed to connect to Vault"));
                 }
             }
         }
@@ -62,8 +63,16 @@ public class VaultManager {
         return getPermission().getPrimaryGroup(player);
     }
 
+    public String getPlayerGroup(FunctionalPlayer player) {
+        return getPermission().getPrimaryGroup(player.getBukkitPlayer());
+    }
+
     public String[] getPlayerGroups(Player player) {
         return getPermission().getPlayerGroups(player);
+    }
+
+    public String[] getPlayerGroups(FunctionalPlayer player) {
+        return getPermission().getPlayerGroups(player.getBukkitPlayer());
     }
 
     public String[] getAllGroups() {

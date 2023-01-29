@@ -2,7 +2,8 @@ package net.alis.functionalservercontrol.spigot.additional.containers;
 
 import net.alis.functionalservercontrol.api.enums.BanType;
 import net.alis.functionalservercontrol.api.interfaces.FunctionalBanEntry;
-import net.alis.functionalservercontrol.spigot.additional.misc.apiutils.BanEntry;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.entries.BanEntry;
+import net.alis.functionalservercontrol.api.naf.v1_10_0.util.FID;
 
 import java.util.*;
 
@@ -18,9 +19,10 @@ public class BannedPlayersContainer {
     private final List<String> realBanTimeContainer = new ArrayList<>();
     private final List<String> uuidContainer = new ArrayList<>();
     private final List<Long> banTimeContainer = new ArrayList<>();
+    private final List<FID> fidsContainer = new ArrayList<>();
     private final Set<FunctionalBanEntry> banEntries = new HashSet<>();
 
-    public void addToBansContainer(List<String> id, List<String> ip, List<String> playerName, List<String> initiatorName, List<String> reason, List<BanType> banType, List<String> realBanDate, List<String> realBanTime, List<String> uuid, List<Long> time) {
+    public void addToBansContainer(List<String> id, List<String> ip, List<String> playerName, List<String> initiatorName, List<String> reason, List<BanType> banType, List<String> realBanDate, List<String> realBanTime, List<String> uuid, List<Long> time, List<FID> fids) {
         this.idsContainer.addAll(id);
         this.ipContainer.addAll(ip);
         this.nameContainer.addAll(playerName);
@@ -31,14 +33,15 @@ public class BannedPlayersContainer {
         this.realBanTimeContainer.addAll(realBanTime);
         this.uuidContainer.addAll(uuid);
         this.banTimeContainer.addAll(time);
+        this.fidsContainer.addAll(fids);
         for(String bId : id) {
             int i = id.indexOf(bId);
-            BanEntry banEntry = new BanEntry(playerName.get(i), bId, ip.get(i), initiatorName.get(i), reason.get(i), banType.get(i), realBanDate.get(i), realBanTime.get(i), UUID.fromString(uuid.get(i)), time.get(i));
+            BanEntry banEntry = new BanEntry(playerName.get(i), bId, ip.get(i), initiatorName.get(i), reason.get(i), banType.get(i), realBanDate.get(i), realBanTime.get(i), UUID.fromString(uuid.get(i)), time.get(i), fids.get(i));
             banEntries.add(banEntry);
         }
     }
 
-    public void addToBansContainer(String id, String ip, String playerName, String initiatorName, String reason, BanType banType, String realBanDate, String realBanTime, String uuid, Long time) {
+    public void addToBansContainer(String id, String ip, String playerName, String initiatorName, String reason, BanType banType, String realBanDate, String realBanTime, String uuid, Long time, FID fid) {
         this.idsContainer.add(id);
         this.ipContainer.add(ip);
         this.nameContainer.add(playerName);
@@ -49,7 +52,8 @@ public class BannedPlayersContainer {
         this.realBanTimeContainer.add(realBanTime);
         this.uuidContainer.add(uuid);
         this.banTimeContainer.add(time);
-        BanEntry banEntry = new BanEntry(playerName, id, ip, initiatorName, reason, banType, realBanDate, realBanTime, UUID.fromString(uuid), time);
+        this.fidsContainer.add(fid);
+        BanEntry banEntry = new BanEntry(playerName, id, ip, initiatorName, reason, banType, realBanDate, realBanTime, UUID.fromString(uuid), time, fid);
         banEntries.add(banEntry);
     }
 
@@ -91,6 +95,10 @@ public class BannedPlayersContainer {
 
     public List<Long> getBanTimeContainer() {
         return banTimeContainer;
+    }
+
+    public List<FID> getFidsContainer() {
+        return fidsContainer;
     }
 
     public Set<FunctionalBanEntry> getBanEntries() {

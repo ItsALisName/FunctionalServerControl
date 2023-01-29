@@ -1,16 +1,17 @@
 package net.alis.functionalservercontrol.spigot.listeners;
 
+import net.alis.functionalservercontrol.api.FunctionalApi;
 import net.alis.functionalservercontrol.api.enums.Chat;
 import net.alis.functionalservercontrol.api.enums.StatsType;
 import net.alis.functionalservercontrol.api.events.PlayerAdvertiseEvent;
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.MD5TextUtils;
+import net.alis.functionalservercontrol.api.interfaces.FunctionalPlayer;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.Component;
+
 import net.alis.functionalservercontrol.spigot.managers.BaseManager;
 import net.alis.functionalservercontrol.spigot.managers.TaskManager;
-import net.alis.functionalservercontrol.spigot.additional.textcomponents.AdventureApiUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.OtherUtils;
 import net.alis.functionalservercontrol.spigot.additional.misc.TextUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
@@ -26,15 +27,15 @@ public class SignChangeListener implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         String[] lines = event.getLines();
-        Player player = event.getPlayer();
+        FunctionalPlayer player = FunctionalPlayer.get(event.getPlayer().getName());
         if(getChatSettings().isFunctionEnabled()) {
             if(getChatSettings().isBlockedWordsEnabled()) {
-                if (getChatSettings().isCheckSignsForBlockedWords() && !player.hasPermission("functionalservercontrol.signs.blocked-words.bypass") && !getChatSettings().getDisabledWorldsForBlockedWords().contains(player.getWorld().getName())) {
+                if (getChatSettings().isCheckSignsForBlockedWords() && !player.hasPermission("functionalservercontrol.signs.blocked-words.bypass") && !getChatSettings().getDisabledWorldsForBlockedWords().contains(player.world().getName())) {
                     for (String blockedWord : getChatSettings().getBlockedWords()) {
                         for (String line : lines) {
                             if (line.contains(blockedWord)) {
                                 event.setCancelled(true);
-                                BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.BLOCKED_WORDS_USED);
+                                BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.BLOCKED_WORDS_USED);
                                 player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.blocked-word-on-sign").replace("%1$f", blockedWord)));
                                 notifyAdmins(player, "\n" + String.join("\n", lines), blockedWord, false);
                                 if(getChatSettings().isPunishEnabledForBlockedWords()) {
@@ -51,7 +52,7 @@ public class SignChangeListener implements Listener {
             if(getChatSettings().isSignsIpProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.signs.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                 for(String line : lines) {
                     if(OtherUtils.isArgumentIP(TextUtils.stringToMonolith(line))) {
-                        BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
+                        BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-sign")));
                         notifyAdmins(player, "\n" + String.join("\n", lines), null, true);
                         for(String action : getChatSettings().getSignsIpProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", line));
@@ -65,7 +66,7 @@ public class SignChangeListener implements Listener {
             if(getChatSettings().isSignsDomainsProtectionEnabled() && !player.hasPermission("functionalservercontrol.advertise.signs.bypass") && !player.hasPermission("functionalservercontrol.advertise.bypass")) {
                 for(String line : lines) {
                     if(OtherUtils.isArgumentDomain(TextUtils.stringToMonolith(line))) {
-                        BaseManager.getBaseManager().updatePlayerStatsInfo(player, StatsType.Player.ADVERTISE_ATTEMPTS);
+                        BaseManager.getBaseManager().updatePlayerStatsInfo(player.getFunctionalId(), StatsType.Player.ADVERTISE_ATTEMPTS);
                         player.sendMessage(setColors(getFileAccessor().getLang().getString("other.chat-settings-messages.advertise-on-sign")));
                         notifyAdmins(player, "\n" + String.join("\n", lines), null, true);
                         for(String action : getChatSettings().getSignsDomainsProtectionActions()) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), action.replace("%1$f", player.getName()).replace("%2$f", line));
@@ -79,39 +80,21 @@ public class SignChangeListener implements Listener {
         }
     }
 
-    private void notifyAdmins(Player player, String message, @Nullable String word, boolean isAdvertise) {
+    private void notifyAdmins(FunctionalPlayer player, String message, @Nullable String word, boolean isAdvertise) {
         TaskManager.preformAsync(() -> {
             if(isAdvertise) {
                 if (getChatSettings().isNotifyAdminAboutAdvertise()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)));
-                    for (Player admin : Bukkit.getOnlinePlayers()) {
+                    for (FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
                         if (!admin.hasPermission("functionalservercontrol.notification.advertise")) return;
-                        if (getConfigSettings().isServerSupportsHoverEvents()) {
-                            if (getConfigSettings().isButtonsOnNotifications()) {
-                                if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(MD5TextUtils.appendTwo(
-                                            MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player),
-                                            MD5TextUtils.addPunishmentButtons(admin, player.getName())
-                                    ));
-                                    continue;
-                                }
-                                if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(
-                                            AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player).append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
-                                    continue;
-                                }
-                            } else {
-                                if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                    admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player));
-                                    continue;
-                                }
-                                if (getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                    admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player));
-                                    continue;
-                                }
-                            }
+                        if (getConfigSettings().isButtonsOnNotifications()) {
+                            admin.expansion().message(
+                                    Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player)
+                                            .append(Component.addPunishmentButtons(admin, player.nickname())).translateDefaultColorCodes()
+                            );
                         } else {
-                            admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)));
+                            admin.expansion().message(Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.advertise.sign").replace("%1$f", player.getName()).replace("%2$f", message)), player).translateDefaultColorCodes());
+                            continue;
                         }
                     }
                 }
@@ -119,33 +102,17 @@ public class SignChangeListener implements Listener {
                 if(getChatSettings().isNotifyAboutBlockedWord()) {
                     Bukkit.getConsoleSender().sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)
                     ));
-                    for(Player admin : Bukkit.getOnlinePlayers()) {
-                        if(admin.hasPermission(" functionalservercontrol.notification.blocked-word")) {
-                            if(getConfigSettings().isServerSupportsHoverEvents()) {
-                                if(getConfigSettings().isButtonsOnNotifications()) {
-                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                        admin.spigot().sendMessage(
-                                                MD5TextUtils.appendTwo(
-                                                        MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player),
-                                                        MD5TextUtils.addPunishmentButtons(admin, player.getName())));
-                                        continue;
-                                    }
-                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                        admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player).append(AdventureApiUtils.addPunishmentButtons(admin, player.getName())));
-                                        continue;
-                                    }
-                                } else {
-                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("MD5")) {
-                                        admin.spigot().sendMessage(MD5TextUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player));
-                                        continue;
-                                    }
-                                    if(getConfigSettings().getSupportedHoverEvents().equalsIgnoreCase("ADVENTURE")) {
-                                        admin.sendMessage(AdventureApiUtils.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player));
-                                        continue;
-                                    }
-                                }
+                    for(FunctionalPlayer admin : FunctionalApi.getOnlinePlayers()) {
+                        if(admin.hasPermission("functionalservercontrol.notification.blocked-word")) {
+                            if(getConfigSettings().isButtonsOnNotifications()) {
+                                admin.expansion().message(
+                                                Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player)
+                                                        .append(Component.addPunishmentButtons(admin, player.nickname())).translateDefaultColorCodes()
+                                );
+                                continue;
                             } else {
-                                admin.sendMessage(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)));
+                                admin.expansion().message(Component.createPlayerInfoHoverText(setColors(getFileAccessor().getLang().getString("other.notifications.blocked-word.sign").replace("%1$f", player.getName()).replace("%2$f", word).replace("%3$f", message)), player).translateDefaultColorCodes());
+                                continue;
                             }
                         }
                     }

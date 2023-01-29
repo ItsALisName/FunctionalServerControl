@@ -1,6 +1,7 @@
 package net.alis.functionalservercontrol.api.events;
 
 import net.alis.functionalservercontrol.api.enums.BanType;
+import net.alis.functionalservercontrol.api.interfaces.OfflineFunctionalPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -17,20 +18,22 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
     private long time;
     private final String banId;
     private final String translatedTime;
-    private OfflinePlayer player;
+    private OfflinePlayer bukkitPlayer;
+    private OfflineFunctionalPlayer player;
     private final CommandSender initiator;
     private final String realTime;
     private final String realDate;
     private String nullPlayer;
 
 
+    @Deprecated
     public AsyncBanPreprocessEvent(String banId, OfflinePlayer player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, String translatedTime) {
         super(true);
         this.banId = banId;
         this.banType = banType;
         this.initiator = initiator;
         this.time = time;
-        this.player = player;
+        this.bukkitPlayer = player;
         this.reason = reason;
         this.realTime = realTime;
         this.realDate = realDate;
@@ -50,6 +53,24 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
         this.translatedTime = translatedTime;
     }
 
+    public AsyncBanPreprocessEvent(String banId, OfflineFunctionalPlayer player, CommandSender initiator, BanType banType, long time, String reason, String realTime, String realDate, String translatedTime) {
+        super(true);
+        this.banId = banId;
+        this.banType = banType;
+        this.initiator = initiator;
+        this.time = time;
+        this.player = player;
+        this.bukkitPlayer = player.getOfflineBukkitPlayer();
+        this.reason = reason;
+        this.realTime = realTime;
+        this.realDate = realDate;
+        this.translatedTime = translatedTime;
+    }
+
+    public OfflineFunctionalPlayer getPlayer() {
+        return player;
+    }
+
     /**
      * Gets the ban id
      * @return ban id
@@ -63,7 +84,7 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
      * @return ip or nickname of the banned player
      */
     public String getNullPlayer() {
-        if(this.player != null) {
+        if(this.bukkitPlayer != null) {
             return "There is no need to use it now";
         }
         return nullPlayer;
@@ -93,8 +114,8 @@ public class AsyncBanPreprocessEvent extends Event implements Cancellable {
      * @return Offline Player(null if the player has never played on the server before)
      */
     @Nullable
-    public OfflinePlayer getPlayer() {
-        return player;
+    public OfflinePlayer getBukkitPlayer() {
+        return bukkitPlayer;
     }
 
     /**
