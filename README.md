@@ -109,3 +109,43 @@ public class YourCustomClass {
     }
 }
 ```
+
+Example of working with Component.SimplifiedComponent (simplified versions of components from md_5)
+```
+package your.custom.pack;
+
+import net.alis.functionalservercontrol.api.FunctionalApi;
+import net.alis.functionalservercontrol.libraries.net.md_5.bungee.api.chat.ClickEvent;
+import net.alis.functionalservercontrol.libraries.net.md_5.bungee.api.chat.HoverEvent;
+import net.alis.functionalservercontrol.libraries.net.md_5.bungee.api.chat.TextComponent;
+import net.alis.functionalservercontrol.spigot.additional.textcomponents.Component;
+
+public class Example {
+
+    public void sendCoolMessage(Player player) {
+        FunctionalApi api = FunctionalApi.get();
+        if(api != null) {
+            Component.SimplifiedComponent[] components = new Component.SimplifiedComponent[]{new Component.SimplifiedComponent("")};
+            TextComponent[] components2 = new TextComponent[]{new TextComponent(""), new TextComponent("")};
+            Component.SimplifiedComponent simplifiedComponent = new Component.SimplifiedComponent(); //Creating a lightweight version of TextComponent from md_5
+            simplifiedComponent
+                    .append(new TextComponent("your "))
+                    .append("custom ")
+                    .append(" ", components) // " " - delimiter
+                    .append(" ", components2)
+                    .setHoverEvent(HoverEvent.Action.SHOW_TEXT, "Some hover text")
+                    .setClickEvent(ClickEvent.Action.OPEN_URL, "https://vk.com/alphatwo")
+                    .appendOnStart(new Component.SimplifiedComponent("re "))
+                    .appendOnStart("He")
+                    .translateDefaultColorCodes(); //Correctly replaces color codes (usually when switching to a new line, colors using '§' and '&' do not work)
+            String content = simplifiedComponent.getString(); //We get the text content of the component
+            TextComponent component = simplifiedComponent.get();  //We get the original component from md_5
+            api.getCoreAdapter().expansion().sendMessage(player, simplifiedComponent); //We send the Simplified Component to the player
+            api.getCoreAdapter().expansion().sendMessage(player, component); //We send the original component to the player
+
+            player.spigot().sendMessage(simplifiedComponent); // <- Does not work
+            player.spigot().sendMessage(component); // <- Does not work
+        }
+    }
+}
+```
